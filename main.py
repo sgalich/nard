@@ -13,7 +13,7 @@ class Board(Widget):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.dice = None
+        self.dice = ''
 
     def roll_dice(self):
         self.dice = f'{random.randint(1, 6)} {random.randint(1, 6)}'
@@ -25,6 +25,7 @@ class NardApp(App):
     def build(self):
         Config.set('graphics', 'width', '630')
         Config.set('graphics', 'height', '600')
+        Config.set('graphics', 'resizable', False)
         return Board()
 
 
