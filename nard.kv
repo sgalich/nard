@@ -1,51 +1,114 @@
-#:kivy 1.11.1
+<Board>
+    GridLayout:
+        size: root.width, root.height
+        cols: 5
+        
+        Label:
+            size_hint: .125, None
+#            text: 'left side'
+        
+        GridLayout:
+            rows: 3
+            
+            GridLayout:
+                cols: 6
+                
+                Button:
+                    text: '23'
 
-<PongBall>:
-    size: 50, 50
-    canvas:
-        Ellipse:
-            pos: self.pos
-            size: self.size
+                Button:
+                    text: '22'
+                  
+                Button:
+                    text: '21'
+                  
+                Button:
+                    text: '20'
+                  
+                Button:
+                    text: '19'
+                  
+                Button:
+                    text: '18'
 
-<PongPaddle>:
-    size: 25, 200
-    canvas:
-        Rectangle:
-            pos:self.pos
-            size:self.size
+            Label:
+                size_hint: None, .25
+                text: 'Dice'
+            
+            GridLayout:
+                cols: 6
+               
+                Button:
+                    text: '0'
 
-<PongGame>:
-    ball: pong_ball
-    player1: player_left
-    player2: player_right
+                Button:
+                    text: '1'
 
-    canvas:
-        Rectangle:
-            pos: self.center_x - 5, 0
-            size: 10, self.height
+                Button:
+                    text: '2'
 
-    Label:
-        font_size: 70
-        center_x: root.width / 4
-        top: root.top - 50
-        text: str(root.player1.score)
+                Button:
+                    text: '3'
 
-    Label:
-        font_size: 70
-        center_x: root.width * 3 / 4
-        top: root.top - 50
-        text: str(root.player2.score)
+                Button:
+                    text: '4'
 
-    PongBall:
-        id: pong_ball
-        center: self.parent.center
+                Button:
+                    text: '5'
+            
+        Label:
+            size_hint: .125, None
+#            text: 'middle side'
+        
+        GridLayout:
+            rows: 3
+            
+            GridLayout:
+                cols: 6
+                
+                Button:
+                    text: '17'
 
-    PongPaddle:
-        id: player_left
-        x: root.x
-        center_y: root.center_y
+                Button:
+                    text: '16'
+                  
+                Button:
+                    text: '15'
+                  
+                Button:
+                    text: '14'
+                  
+                Button:
+                    text: '13'
+                  
+                Button:
+                    text: '12'
 
-    PongPaddle:
-        id: player_right
-        x: root.width - self.width
-        center_y: root.center_y
+            Label:
+                size_hint: None, .25
+                text: 'Dice'
+            
+            GridLayout:
+                cols: 6
+               
+                Button:
+                    text: '6'
+
+                Button:
+                    text: '7'
+
+                Button:
+                    text: '8'
+
+                Button:
+                    text: '9'
+
+                Button:
+                    text: '10'
+
+                Button:
+                    text: '11'
+            
+        Label:
+            size_hint: .125, None
+#            text: 'right side'
