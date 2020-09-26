@@ -1,114 +1,103 @@
-<Board>
+<Button>:
+    background_color: 0, 0, 0, 0
+
+<Board>:
+    Image:
+        size: root.width, root.height
+        allow_stretch: True
+        source: 'images/board.png'
+    
     GridLayout:
         size: root.width, root.height
         cols: 5
         
         Label:
             size_hint: .125, None
-#            text: 'left side'
-        
+            
         GridLayout:
             rows: 3
             
             GridLayout:
                 cols: 6
-                
                 Button:
                     text: '23'
-
                 Button:
                     text: '22'
-                  
                 Button:
                     text: '21'
-                  
                 Button:
                     text: '20'
-                  
                 Button:
                     text: '19'
-                  
                 Button:
                     text: '18'
-
+                    
             Label:
                 size_hint: None, .25
-                text: 'Dice'
-            
+                
             GridLayout:
                 cols: 6
-               
                 Button:
                     text: '0'
-
                 Button:
                     text: '1'
-
                 Button:
                     text: '2'
-
                 Button:
                     text: '3'
-
                 Button:
                     text: '4'
-
                 Button:
                     text: '5'
-            
+                    
         Label:
             size_hint: .125, None
-#            text: 'middle side'
-        
+            
         GridLayout:
             rows: 3
             
             GridLayout:
                 cols: 6
-                
                 Button:
                     text: '17'
-
                 Button:
                     text: '16'
-                  
                 Button:
                     text: '15'
-                  
                 Button:
                     text: '14'
-                  
                 Button:
                     text: '13'
-                  
                 Button:
                     text: '12'
-
-            Label:
-                size_hint: None, .25
-                text: 'Dice'
+            
+            GridLayout:
+                cols: 2
+                size_hint_y: 0.25
+                
+                Label:
+                    text: root.dice
+                
+                Button:
+                    text: 'Roll dice'
+                    font_size: 50
+                    background_color: 0., 1., 0., 1.
+                    on_release: root.roll_dice()
             
             GridLayout:
                 cols: 6
-               
                 Button:
                     text: '6'
-
                 Button:
                     text: '7'
-
                 Button:
                     text: '8'
-
                 Button:
                     text: '9'
-
                 Button:
                     text: '10'
-
                 Button:
                     text: '11'
-            
+                    
         Label:
             size_hint: .125, None
-#            text: 'right side'
