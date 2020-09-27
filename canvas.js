@@ -64,12 +64,22 @@ let ctx = canvas.getContext('2d');
 // let color = Math.round(Math.random() * 10 ** 10).toString(16).slice(0, 7)
 
 
-function Circle(x, y, dx, dy, radius=25) {
+// A circle func.
+function Circle(
+    x,    // x of the circul's center
+    y,    // y of the circul's center
+    dx,    // horizontal speed of the circle
+    dy,    // vertical speed of the circle
+    radius=25,    // radius of the circle
+    color_s='blue',
+    color_f=undefined,
+    z_index=0,
+    ) {
     random_x = Math.random() * window.innerWidth;
     while (random_x < radius || random_x > window.innerWidth - radius) {
         random_x = Math.random() * window.innerWidth;
     };
-    this.x = x ?? random_x
+    this.x = x ?? random_x;
     random_y = Math.random() * window.innerHeight;
     while (random_y < radius || random_y > window.innerHeight - radius) {
         random_y = Math.random() * window.innerHeight;
@@ -81,65 +91,110 @@ function Circle(x, y, dx, dy, radius=25) {
 
     this.draw = function() {
         ctx.beginPath();
-        ctx.fillStyle = 'green'    // "#c82124"    // red 
+        ctx.fillStyle = color_f; 
+        ctx.strokeStyle = color_s;
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.stroke();
+        ctx.stroke()
+        ctx.fill();
         ctx.closePath();
     }
 
-    this.update = function() {
-        if (this.x + this.radius > innerWidth || this.x <= this.radius) {
-            this.dx = -this.dx;
-        } else if (this.y + this.radius > innerHeight || this.y <= this.radius) {
-            this.dy = -this.dy;
+    this.update = function(z_index) {
+        if (z_index) {
+            if (this.x + this.radius > innerWidth || this.x <= this.radius) {
+                this.dx = -this.dx;
+            } else if (this.y + this.radius > innerHeight || this.y <= this.radius) {
+                this.dy = -this.dy;
+            }
+        } else {
+            if (this.x < 0 - this.radius || this.x >= innerWidth + this.radius) {
+                this.dx = -this.dx;
+            } else if (this.y > innerHeight + this.radius|| -this.y >= this.radius) {
+                this.dy = -this.dy;
+            }
         }
-        this.y += this.dy
+
+        this.y += this.dy;
         this.x += this.dx;
 
         this.draw();
     }
 }
 
+// A nice background picture.
+function Wobbles() {
+    let count = 500
+    let circles = [];
+    for (let i = 0; i < count; i++) {
+        let circle = new Circle(
+            x=Math.random() * window.innerWidth, 
+            y=Math.random() * window.innerWidth, 
+            dx=(Math.random() - 0.5) * 0.75, 
+            dy=(Math.random() - 0.5) * 0.75, 
+            100,
+            'blue', undefined,
+            z_index=1
+        );
+        circles.push(circle)
+    }
+    function animate() {
+        requestAnimationFrame(animate);
+        
+        ctx.clearRect(0, 0, innerWidth, innerHeight);
+        
+        for (let i = 0; i < circles.length; i++) {
+            circles[i].update();
+        }
+    }
+    animate();
+}
 
+// Put this by your cat and see what will happen.
+function PlayWithCat() {
 
+    function animate() {
+        requestAnimationFrame(animate);
+        
+        ctx.clearRect(0, 0, innerWidth, innerHeight);
 
-let circles = [];
-for (let i = 0; i < 200; i++) {
-    let circle = new Circle(undefined, undefined, undefined, undefined, 50);
-    circles.push(circle)
+        let circle = new Circle(undefined, undefined, undefined, undefined, 25);
+        circle.update();
+    }
+
+    // drawBoard();
+
+    animate();
 }
 
 
-function animate() {
-    requestAnimationFrame(animate);
+
+// Wobbles()
+// PlayWithCat()
+
+
+
+
+// function drawBoard(){
+//     let p = 0    // padding
     
-    ctx.clearRect(0, 0, innerWidth, innerHeight);
-    
-    for (let i = 0; i < circles.length; i++) {
-        circles[i].update();
-    }
-}
+//     ctx.strokeStyle = "black";
+//     for (var x = 0; x <= innerWidth; x += 50) {
+//         ctx.moveTo(x + p, p);
+//         ctx.lineTo(x + p, innerHeight + p);
+//     }
+//     for (var x = 0; x <= innerHeight; x += 50) {
+//         ctx.moveTo(p, x + p);
+//         ctx.lineTo(innerWidth + p, x + p);
+//     }
+//     ctx.stroke();
+// }
 
-// drawBoard();
-
-animate();
 
 
 
-function drawBoard(){
-    let p = 0    // padding
-    
-    ctx.strokeStyle = "black";
-    for (var x = 0; x <= innerWidth; x += 50) {
-        ctx.moveTo(x + p, p);
-        ctx.lineTo(x + p, innerHeight + p);
-    }
-    for (var x = 0; x <= innerHeight; x += 50) {
-        ctx.moveTo(p, x + p);
-        ctx.lineTo(innerWidth + p, x + p);
-    }
-    ctx.stroke();
-}
+
+
+
 
 
 
