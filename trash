@@ -1,0 +1,55 @@
+            <ol id='left_side'></ol>
+            <!-- LEFT PART-->
+            <div class="board_part">
+                <!-- LEFT UPPER ROW -->
+                <div>
+                    <ol class='field'></ol>
+                    <ol class='field'></ol>
+                    <ol class='field'></ol>
+                    <ol class='field'></ol>
+                    <ol class='field'></ol>
+                    <ol class='field'></ol>
+                </div>
+                <!-- LEFT MIDDLE STRIP -->
+                <div></div>
+                <!-- LEFT BOTTOM ROW -->
+                <div>
+                    <ol class='field'></ol>
+                    <ol class='field'></ol>
+                    <ol class='field'></ol>
+                    <ol class='field'></ol>
+                    <ol class='field'></ol>
+                    <ol class='field'></ol>
+                </div>
+            </div>
+            <!-- MIDDLE SPLITTER -->
+            <div id='middle_side'></ol>
+            <!-- RIGHT PART-->
+            <div class="board_part">
+                <!-- RIGHT UPPER ROW -->
+                <div>
+                    <ol class='field'></ol>
+                    <ol class='field'></ol>
+                    <ol class='field'></ol>
+                    <ol class='field'></ol>
+                    <ol class='field'></ol>
+                    <ol class='field'></ol>
+                </div>
+                <!-- RIGHT MIDDLE STRIP -->
+                <div>
+                    <!-- dice and the "Roll dice!" button -->
+                </div>
+                <!-- RIGHT BOTTOM ROW -->
+                <div>
+                    <ol class='field'></ol>
+                    <ol class='field'></ol>
+                    <ol class='field'></ol>
+                    <ol class='field'></ol>
+                    <ol class='field'></ol>
+                    <ol class='field'></ol>
+                </div>
+            </div>
+
+
+
+

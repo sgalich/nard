@@ -3,35 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <script src="script.js" defer></script>
+    <script src="dragging.js" defer></script>
     <title>Nard</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    
-
-
-    <!-- <div class="container">
-        <p class="black" draggable=true>1</p>
-        <div class="black_checker" style="transform: translate(100px, 100px);" draggable="true" style="background-image: url('./images/black.svg')"></div>
-        <p class="draggable" draggable="true">2</p>
-    </div>
-    <div class="container">
-        <p class="draggable" draggable="true">3</p>
-        <p class="draggable" draggable="true">4</p>
-        <div class="black" draggable="true">5</div>
-        <p class="black">6</p>
-    </div> -->
-
     <div class="game_wrapper">
-        <!-- <div id="board"> -->
-            <!-- <div class="board_side"></div> -->
-            <!-- <img id="background_img" src="./images/board.png"></img> -->
-            <!-- <div class="black_checker" draggable="true">1</div> -->
-            <!-- <figure class="black_checker" draggable="true">&nbsp;2</figure> -->
-
-
-        <!-- </div> -->
+        <div id="board">
+            <div class="vertical">
+                <div class="field" id="24" place='t'></div>
+                <div class="field" id="1" place='b'></div>
+            </div>
+            <div class="vertical">
+                <div class="field" id="23"></div>
+                <div class="field" id="2" place='b'></div>
+            </div>
+            <div class="vertical">
+                <div class="field" id="22"></div>
+                <div class="field" id="3" place='b'></div>
+            </div>
+            <div class="vertical">
+                <div class="field" id="21"></div>
+                <div class="field" id="4" place='b'></div>
+            </div>
+            <div class="vertical">
+                <div class="field" id="20"></div>
+                <div class="field" id="5" place='b'></div>
+            </div>
+            <div class="vertical">
+                <div class="field" id="19"></div>
+                <div class="field" id="6" place='b'></div>
+            </div>
+            <div id="middle_side"></div>
+            <div class="vertical">
+                <div class="field" id="18"></div>
+                <div class="field" id="7" place='b'></div>
+            </div>
+            <div class="vertical">
+                <div class="field" id="17"></div>
+                <div class="field" id="8" place='b'></div>
+            </div>
+            <div class="vertical">
+                <div class="field" id="16"></div>
+                <div class="field" id="9" place='b'></div>
+            </div>
+            <div class="vertical">
+                <div class="field" id="15"></div>
+                <div class="field" id="10" place='b'></div>
+            </div>
+            <div class="vertical">
+                <div class="field" id="14"></div>
+                <div class="field" id="11" place='b'></div>
+            </div>
+            <div class="vertical">
+                <div class="field" id="13"></div>
+                <div class="field" id="12" place='b'></div>
+            </div>          
+        </div>
     </div>
+
+
+
+
+    <!-- <div>
+        <ol data-draggable="target">
+            <li data-draggable="item">Item 0</li>
+            <li data-draggable="item">Item 1</li>
+            <li data-draggable="item">Item 2</li>
+            <li data-draggable="item">Item 3</li>
+          </ol>
+          
+          <ol data-draggable="target">
+            <li data-draggable="item">Item 4</li>
+            <li data-draggable="item">Item 5</li>
+          </ol>
+          
+          <ol data-draggable="target">
+            <li data-draggable="item">Item 6</li>
+            <li data-draggable="item">Item 7</li>
+          </ol>
+          
+          <ol data-draggable="target">
+            <li data-draggable="item">Item 8</li>
+          </ol>
+    </div> -->
 
     <!-- <canvas></canvas> -->
     <!-- <script src="canvas.js"></script> -->

@@ -23,37 +23,74 @@
 // }
 
 
+// Place checker at x, y point
+function place_checker(color, x=0, y=0) {
+    const board = document.getElementById("board");
+    let checker = document.createElement('checker');   // Create a black checker
+    checker.setAttribute('color', color);    // make it draggable
+    checker.setAttribute('draggable', 'true');    // make it draggable
+    checker.setAttribute('style', `transform: translate(${x}px, ${y}px);`);    // place it on the board
+    board.appendChild(checker);               // Append <button> to <body>
+}
 
+// Place checker at certain field
+function place_checker(color, id) {
+    const field = document.getElementById(id);
+    let checker = document.createElement('checker');   // Create a black checker
+    checker.setAttribute('color', color);    // make it draggable
+    checker.setAttribute('draggable', 'true');    // make it draggable
 
+    checker.setAttribute('data-draggable', 'item');    // test
 
-const board = document.getElementById("board");
-let black_checker = document.createElement("black_checker");   // Create a black checker
-black_checker.setAttribute('draggable', 'true');    // make it draggable
-black_checker.setAttribute('style', "background-image: url(./images/black.svg);");    // set background svg image
+    // checker.setAttribute('style', `transform: translate(${x}px, ${y}px);`);    // place it on the board
+    field.appendChild(checker);               // Append <button> to <body>
+}
 
+// for (let x = 0; x < 200; x += 100) {
+//     for (let y = 0; y < 300; y += 100) {
+//         place_checker('black', x, y);
+//     }
+// }
 
+// place_checker('white', 700, 200)
+// place_checker('white', 600, 130)
+
+// for (let i = 0; i < 3; i += 1) {
+//     place_checker('black', i)
+// }
+
+place_checker('black', 1)
+place_checker('black', 2)
+place_checker('black', 3)
+place_checker('black', 4)
+place_checker('black', 5)
+place_checker('black', 6)
+place_checker('black', 7)
+place_checker('black', 8)
+place_checker('black', 9)
+place_checker('black', 10)
+place_checker('black', 11)
+place_checker('black', 12)
+place_checker('black', 13)
+place_checker('black', 14)
+place_checker('black', 15)
+
+place_checker('white', 10)
+place_checker('white', 11)
+place_checker('white', 12)
+place_checker('white', 13)
+place_checker('white', 14)
+place_checker('white', 23)
 
 // let boardWidth = board.getBoundingClientRect().width;
 // let boardHeight = board.getBoundingClientRect().height;
-let checkerBoardRatio = 0.3;    // checker diameter / board width/height
+// let checkerBoardRatio = 0.4;    // checker diameter / board width/height
 // checker_diameter = Math.min(boardWidth * checkerBoardRatio, boardHeight * checkerBoardRatio);
 
-checker_diameter = Math.min(
-    board.getBoundingClientRect().width * checkerBoardRatio,
-    board.getBoundingClientRect().height * checkerBoardRatio,
-);
-
-
-
-
-
-
-
-
-
-
-
-
+// checker_diameter = Math.min(
+//     board.getBoundingClientRect().width * checkerBoardRatio,
+//     board.getBoundingClientRect().height * checkerBoardRatio,
+// );
 
 
 
@@ -99,17 +136,16 @@ checker_diameter = Math.min(
 
 
 
-black_checker.innerHTML = "&nbsp;3";                   // Insert text
-
-// document.body.appendChild(black_checker);               // Append <button> to <body>
-board.appendChild(black_checker);               // Append <button> to <body>
 
 
 
-console.log(board.getBoundingClientRect());
-console.log(black_checker.getBoundingClientRect());
-console.log(css_black_checker);
-console.log(checker_diameter);
+
+
+
+
+// console.log(board.getBoundingClientRect());
+// console.log(black_checker.getBoundingClientRect());
+// console.log(checker_diameter);
 
 // document.body.insertBefore(black_checker, currentDiv);
 
@@ -122,3 +158,11 @@ console.log(checker_diameter);
 //     this.innerHTML = "<b>I'm an x-foo-with-markup!</b>";
 //   };
 // board.appendChild(new blackChecker());
+
+
+
+
+
+
+
+
