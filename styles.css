@@ -56,9 +56,7 @@ body {
     flex: 1;
     flex-wrap: nowrap;
     align-items: center;
-
-
-    /* justify-content: center; */
+    /* justify-content: space-evenly; */
 
 
 
