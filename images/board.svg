@@ -1,20 +1,29 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:x="http://www.w3.org/1999/xlink"
-     viewBox="0 0 8 8" shape-rendering="crispEdges">
-<g id="a">
-  <g id="b">
-    <g id="c">
-      <g id="d">
-        <rect width="1" height="1" fill="#f0d9b5" id="e"/>
-        <use x="1" y="1" href="#e" x:href="#e"/>
-        <rect y="1" width="1" height="1" fill="#b58863" id="f"/>
-        <use x="1" y="-1" href="#f" x:href="#f"/>
-      </g>
-      <use x="2" href="#d" x:href="#d"/>
-    </g>
-    <use x="4" href="#c" x:href="#c"/>
-  </g>
-  <use y="2" href="#b" x:href="#b"/>
-</g>
-<use y="4" href="#a" x:href="#a"/>
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="780" width="40" height="900" fill="#E0E0DF"/>
+<rect x="820" width="780" height="900" fill="#CCCCCC"/>
+<rect width="780" height="900" fill="#CCCCCC"/>
+<path d="M65 550L130 900H0L65 550Z" fill="#B58863"/>
+<path d="M325 550L390 900H260L325 550Z" fill="#B58863"/>
+<path d="M585 550L650 900H520L585 550Z" fill="#B58863"/>
+<path d="M885 550L950 900H820L885 550Z" fill="#B58863"/>
+<path d="M1145 550L1210 900H1080L1145 550Z" fill="#B58863"/>
+<path d="M1405 550L1470 900H1340L1405 550Z" fill="#B58863"/>
+<path d="M195 350L130 0H260L195 350Z" fill="#B58863"/>
+<path d="M455 350L390 0H520L455 350Z" fill="#B58863"/>
+<path d="M715 350L650 0H780L715 350Z" fill="#B58863"/>
+<path d="M1015 350L950 0H1080L1015 350Z" fill="#B58863"/>
+<path d="M1275 350L1210 0H1340L1275 350Z" fill="#B58863"/>
+<path d="M1535 350L1470 0H1600L1535 350Z" fill="#B58863"/>
+<path d="M65 350L0 0H130L65 350Z" fill="#F0D9B5"/>
+<path d="M195 550L260 900H130L195 550Z" fill="#F0D9B5"/>
+<path d="M455 550L520 900H390L455 550Z" fill="#F0D9B5"/>
+<path d="M715 550L780 900H650L715 550Z" fill="#F0D9B5"/>
+<path d="M1015 550L1080 900H950L1015 550Z" fill="#F0D9B5"/>
+<path d="M1275 550L1340 900H1210L1275 550Z" fill="#F0D9B5"/>
+<path d="M1535 550L1600 900H1470L1535 550Z" fill="#F0D9B5"/>
+<path d="M325 350L260 0H390L325 350Z" fill="#F0D9B5"/>
+<path d="M585 350L520 0H650L585 350Z" fill="#F0D9B5"/>
+<path d="M885 350L820 0H950L885 350Z" fill="#F0D9B5"/>
+<path d="M1145 350L1080 0H1210L1145 350Z" fill="#F0D9B5"/>
+<path d="M1405 350L1340 0H1470L1405 350Z" fill="#F0D9B5"/>
 </svg>

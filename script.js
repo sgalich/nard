@@ -24,23 +24,35 @@
 
 
 // Place checker at x, y point
-function place_checker(color, x=0, y=0) {
+function place_abs_checker(color, x=0, y=0) {
     const board = document.getElementById("board");
-    let checker = document.createElement('checker');   // Create a black checker
-    checker.setAttribute('color', color);    // make it draggable
+    let checker = document.createElement('abs_checker');   // Create a black checker
+    
+    
+    checker.setAttribute('color', color);
+    // checker.setAttribute('src', `./images/${color}.svg`);
+
     checker.setAttribute('draggable', 'true');    // make it draggable
     checker.setAttribute('style', `transform: translate(${x}px, ${y}px);`);    // place it on the board
     board.appendChild(checker);               // Append <button> to <body>
 }
 
+
+
+
 // Place checker at certain field
 function place_checker(color, id) {
     const field = document.getElementById(id);
     let checker = document.createElement('checker');   // Create a black checker
-    checker.setAttribute('color', color);    // make it draggable
     checker.setAttribute('draggable', 'true');    // make it draggable
 
-    checker.setAttribute('data-draggable', 'item');    // test
+    checker.setAttribute('style', 'width: 80px; height: 80px;');
+
+
+    checker.setAttribute('color', color);
+    // checker.setAttribute('src', `./images/${color}.svg`);
+
+    // checker.setAttribute('data-draggable', 'item');    // test
 
     // checker.setAttribute('style', `transform: translate(${x}px, ${y}px);`);    // place it on the board
     field.appendChild(checker);               // Append <button> to <body>
@@ -59,21 +71,8 @@ function place_checker(color, id) {
 //     place_checker('black', i)
 // }
 
-place_checker('black', 1)
-place_checker('black', 2)
-place_checker('black', 3)
-place_checker('black', 4)
-place_checker('black', 5)
-place_checker('black', 6)
-place_checker('black', 7)
-place_checker('black', 8)
-place_checker('black', 9)
-place_checker('black', 10)
-place_checker('black', 11)
-place_checker('black', 12)
-place_checker('black', 13)
-place_checker('black', 14)
-place_checker('black', 15)
+place_abs_checker('black', 1)
+
 
 place_checker('white', 10)
 place_checker('white', 11)
