@@ -49,7 +49,7 @@
     document.addEventListener('drop', function(e) {
         //if this element is a drop target, move the movingChecker here 
         //then prevent default to allow the action (same as dragover)
-        if (e.target.className == 'field') {
+        if (e.target.classList.contains('field')) {
             e.target.appendChild(movingChecker); 
             e.preventDefault();
         }

@@ -45,11 +45,29 @@ body {
     display: table-cell;
 }
 .field {
-    border: 1px solid green;
+    /* border: 1px solid green; */
     margin: 0px;
     padding: 0px;
     height: 50%;
     z-index: 2;
+    position: relative;
+
+    display: flex;
+    flex: 1;
+    flex-wrap: nowrap;
+    align-items: center;
+
+
+    /* justify-content: center; */
+
+
+
+}
+.top {
+    flex-direction: column;
+}
+.bottom {
+    flex-direction: column-reverse;
 }
 [color='white'] {
     background-image: url('./images/white.svg');
@@ -60,22 +78,23 @@ body {
 abs_checker {
     background-size: cover;
     will-change: transform;
-    margin: 0px;
     padding: 0px;
-    z-index: 2;  
+    z-index: 3;  
     position: absolute;
     /* TODO: fix a little slicing in different positions & while dragging. */
     width: 7.25vw;
     height: 7.25vw;
-    max-height: 13vh;
-    max-width: 13vh;
-
-
-
-
+    max-height: 12.8889vh;
+    max-width: 12.8889vh;
 }
 
-
+#test {
+    width: 20px;
+    height: 40px;
+    background-color: aqua;
+    position: absolute;
+    z-index: 2;
+}
 
 
 
@@ -83,26 +102,17 @@ abs_checker {
 checker {
     background-size: cover;
     will-change: transform;
-    margin: 0px;
     padding: 0px;
-    z-index: 10;  
-    position: relative;
-
-
+    z-index: 3;  
+    position: absolute;
+    /* TODO: fix a little slicing in different positions & while dragging. */
     width: 7.25vw;
     height: 7.25vw;
-    max-height: 12.888889vh;
-    max-width: 12.888889vh;
+    max-height: 12.8889vh;
+    max-width: 12.8889vh;
 
-
-    /* border: 1px solid red; */
-
-    /* height: 90px; */
-    /* height: calc(96% / 9 * 16); */
-    display: block;
-
-
-
+    flex-grow: 4;
+    flex-shrink: 3;
 }
 
 

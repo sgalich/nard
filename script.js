@@ -40,6 +40,8 @@ function place_abs_checker(color, x=0, y=0) {
 
 
 
+
+
 // Place checker at certain field
 function place_checker(color, id) {
     const field = document.getElementById(id);
@@ -71,15 +73,21 @@ function place_checker(color, id) {
 //     place_checker('black', i)
 // }
 
-place_abs_checker('black', 1)
+// place_abs_checker('black')
+// place_abs_checker('black')
 
+place_checker('black', 1);
+place_checker('black', 1);
+place_checker('black', 1);
+place_checker('black', 1);
+place_checker('black', 24);
 
-place_checker('white', 10)
-place_checker('white', 11)
-place_checker('white', 12)
-place_checker('white', 13)
-place_checker('white', 14)
-place_checker('white', 23)
+place_checker('white', 10);
+place_checker('white', 11);
+place_checker('white', 12);
+place_checker('white', 13);
+place_checker('white', 14);
+place_checker('white', 23);
 
 // let boardWidth = board.getBoundingClientRect().width;
 // let boardHeight = board.getBoundingClientRect().height;
@@ -165,3 +173,9 @@ place_checker('white', 23)
 
 
 
+// var list = document.querySelector('ul');
+// list.addEventListener('click', function(ev) {
+//   if (ev.target.tagName === 'LI') {
+//      ev.target.classList.toggle('done'); 
+//   }
+// }, false);
