@@ -6,7 +6,7 @@ body {
     font-family: 'Noto Sans', Sans-Serif;
 }
 #board {
-    background-image: url('./images/board.svg');
+    background-image: url('../images/board.svg');
     background-size: 100%;
     position: absolute;
     top: 0px; 
@@ -58,10 +58,10 @@ body {
     flex-direction: column-reverse;
 }
 [color='white'] {
-    background-image: url('./images/white.svg');
+    background-image: url('../images/white.svg');
 }
 [color='black'] {
-    background-image: url('./images/black.svg');
+    background-image: url('../images/black.svg');
 }
 checker {
     background-size: cover;
