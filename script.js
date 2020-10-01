@@ -1,3 +1,6 @@
+let CHECKEROVERLAP = 5.5
+
+
 // document.body.onload = addElement;
 
 // function addElement () { 
@@ -47,16 +50,14 @@ function place_checker(color, id) {
     const field = document.getElementById(id);
     let checker = document.createElement('checker');   // Create a black checker
     checker.setAttribute('draggable', 'true');    // make it draggable
-
-    checker.setAttribute('style', 'width: 80px; height: 80px;');
-
-
     checker.setAttribute('color', color);
-    // checker.setAttribute('src', `./images/${color}.svg`);
-
-    // checker.setAttribute('data-draggable', 'item');    // test
-
-    // checker.setAttribute('style', `transform: translate(${x}px, ${y}px);`);    // place it on the board
+    checker.style.visibility = "visible"
+    let checkersInField = field.children.length;
+    if (field.classList.contains('top')) {
+        checker.setAttribute('style', `top: calc(${checkersInField} * ${CHECKEROVERLAP}%);`);
+    } else {
+        checker.setAttribute('style', `bottom: calc(${checkersInField} * ${CHECKEROVERLAP}%);`);
+    };
     field.appendChild(checker);               // Append <button> to <body>
 }
 
@@ -76,18 +77,11 @@ function place_checker(color, id) {
 // place_abs_checker('black')
 // place_abs_checker('black')
 
-place_checker('black', 1);
-place_checker('black', 1);
-place_checker('black', 1);
-place_checker('black', 1);
-place_checker('black', 24);
+for (let i = 0; i < 15; i++) {
+    place_checker('black', 1);
+    place_checker('white', 13);
+}
 
-place_checker('white', 10);
-place_checker('white', 11);
-place_checker('white', 12);
-place_checker('white', 13);
-place_checker('white', 14);
-place_checker('white', 23);
 
 // let boardWidth = board.getBoundingClientRect().width;
 // let boardHeight = board.getBoundingClientRect().height;
@@ -179,3 +173,12 @@ place_checker('white', 23);
 //      ev.target.classList.toggle('done'); 
 //   }
 // }, false);
+
+
+
+
+
+
+
+
+

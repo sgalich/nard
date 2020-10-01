@@ -1,37 +1,30 @@
-// $('abs_checker').on("mousedown",function(me){
-//     var move = $(this);
-    
-//     var lastOffset = move.data('lastTransform');
-//     var lastOffsetX = lastOffset ? lastOffset.dx : 0,
-//         lastOffsetY = lastOffset ? lastOffset.dy : 0;
-         
-//     var startX = me.pageX - lastOffsetX, startY = me.pageY - lastOffsetY;
-    
-//     $(document).on("mousemove",function(e){
-//         var newDx = e.pageX - startX,
-//             newDy = e.pageY - startY;
-//         console.log("dragging", e.pageX-startX, e.pageY-startY);
-//         move.css('transform', 'translate(' + newDx + 'px, ' + newDy + 'px)');
-        
-//         // we need to save last made offset
-//         move.data('lastTransform', {dx: newDx, dy: newDy});
-//     });
-// });
-// $(document).on("mouseup",function(){
-//     $(this).off("mousemove");
-// });
+// import settings from "../settings.json";
 
 
-// It works
+
+// let CHECKEROVERLAP = settings['CHECKEROVERLAP']
+// console.log(CHECKEROVERLAP)
+
+
+// import config from "../settings.json";
+// const _config = { params: config };
+// export { _config as config };
+// console.log(browser.params.CHECKEROVERLAP)
+
+
+
+
+
+// WORKING DRAGGING ALGORITHM
+// TODO: Remake it with mouseclick
 (function() {
     let movingChecker = null;
 
     // Start dragging
      function dragstart(e) {
         // Set the movingChecker object
-        movingChecker = e.target;
+        movingChecker = e.target.parentNode.lastChild;
     };
-
     document.addEventListener('dragstart', dragstart, false)
 
 
@@ -47,12 +40,37 @@
 
     //drop event to allow the element to be dropped into valid targets
     document.addEventListener('drop', function(e) {
-        //if this element is a drop target, move the movingChecker here 
-        //then prevent default to allow the action (same as dragover)
+        e.preventDefault();
+        let NewField = null;
         if (e.target.classList.contains('field')) {
-            e.target.appendChild(movingChecker); 
-            e.preventDefault();
+            NewField = e.target;
+        } else if (e.target.tagName === 'CHECKER') {
+            NewField = e.target.parentNode;
+        } else {    // middle side of the board
+            return;
+        };
+        // Reject operation if the field contains checkers w/ opposit color
+        // let fieldChild = NewField.lastChild
+        // console.log(fieldChild)
+        // let fieildColor = NewField.lastChild.getAttribute('color')
+        let checkerColor = movingChecker.getAttribute('color')
+        if (NewField.lastChild && NewField.lastChild.getAttribute('color') != checkerColor) {
+            return;
+        }; 
+        // Place the checker correctly inside the target
+        let checkersInNewField = NewField.children.length;
+        // If the checker goes back to it's field, then move it under the new place
+        if (movingChecker.parentNode === NewField) {
+            checkersInNewField -= 1;
         }
+        movingChecker.style.removeProperty('top');
+        movingChecker.style.removeProperty('bottom');
+        if (NewField.classList.contains('top')) {
+            movingChecker.setAttribute('style', `top: calc(${checkersInNewField} * ${CHECKEROVERLAP}%);`);
+        } else {
+            movingChecker.setAttribute('style', `bottom: calc(${checkersInNewField} * ${CHECKEROVERLAP}%);`);
+        };
+        NewField.appendChild(movingChecker);
     }, false);
     
     //dragend event to clean-up after drop or abort
@@ -61,6 +79,10 @@
         movingChecker = null;
     }, false);
 })();
+
+
+
+
 
 
 
@@ -99,3 +121,31 @@
 //   abs_checker.ondragstart = function() {
 //     return false;
 //   };
+
+
+
+
+
+
+// $('abs_checker').on("mousedown",function(me){
+//     var move = $(this);
+    
+//     var lastOffset = move.data('lastTransform');
+//     var lastOffsetX = lastOffset ? lastOffset.dx : 0,
+//         lastOffsetY = lastOffset ? lastOffset.dy : 0;
+         
+//     var startX = me.pageX - lastOffsetX, startY = me.pageY - lastOffsetY;
+    
+//     $(document).on("mousemove",function(e){
+//         var newDx = e.pageX - startX,
+//             newDy = e.pageY - startY;
+//         console.log("dragging", e.pageX-startX, e.pageY-startY);
+//         move.css('transform', 'translate(' + newDx + 'px, ' + newDy + 'px)');
+        
+//         // we need to save last made offset
+//         move.data('lastTransform', {dx: newDx, dy: newDy});
+//     });
+// });
+// $(document).on("mouseup",function(){
+//     $(this).off("mousemove");
+// });
