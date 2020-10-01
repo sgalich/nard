@@ -69,25 +69,35 @@ checker {
     padding: 0px;
     margin: 0px;
     z-index: 3;
-    /* position: absolute; */
     /* TODO: fix a little slicing in different positions & while dragging. */
     width: 7.25vw;
     height: 7.25vw;
     max-height: 12.8889vh;
     max-width: 12.8889vh;
-    visibilitiy: visible;
-
-
     position: absolute;
-    /* right: -30px; */
     z-index: 3;
-    /* top: 50%; */
-    /* transform: translateY(-50%); */
-
-
-
-
-
+}
+.diceBox {
+    /* background-color: gold; */
+    position: absolute;
+    width: 15%;
+    height: 11%;
+    top: calc(50% - 11% / 2);
+    right: 16.5%;
+}
+.die {
+    background-image: url('./images/die.svg');
+    background-size: cover;
+    position: absolute;
+    width: 40%;
+    height: 100%;
+    z-index: 2;
+}
+#die1 {
+    left: 0px;
+}
+#die2 {
+    right: 0px;
 }
 
 

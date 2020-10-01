@@ -31,11 +31,9 @@
     //dragover event to allow the drag by preventing its default
     //ie. the default action of an element is not to allow dragging 
     document.addEventListener('dragover', function(e) {
-        if(movingChecker)
-        {
+        if(movingChecker) {
             e.preventDefault();
         }
-    
     }, false);  
 
     //drop event to allow the element to be dropped into valid targets
@@ -49,10 +47,7 @@
         } else {    // middle side of the board
             return;
         };
-        // Reject operation if the field contains checkers w/ opposit color
-        // let fieldChild = NewField.lastChild
-        // console.log(fieldChild)
-        // let fieildColor = NewField.lastChild.getAttribute('color')
+        // Reject operation if the field contains checkers w/ the opposite color
         let checkerColor = movingChecker.getAttribute('color')
         if (NewField.lastChild && NewField.lastChild.getAttribute('color') != checkerColor) {
             return;
