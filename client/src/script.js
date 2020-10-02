@@ -59,7 +59,7 @@ function place_checker(color, id) {
         checker.setAttribute('style', `bottom: calc(${checkersInField} * ${CHECKEROVERLAP}%);`);
     };
     field.appendChild(checker);               // Append <button> to <body>
-}
+};
 
 // for (let x = 0; x < 200; x += 100) {
 //     for (let y = 0; y < 300; y += 100) {
@@ -77,10 +77,31 @@ function place_checker(color, id) {
 // place_abs_checker('black')
 // place_abs_checker('black')
 
+
+
 for (let i = 0; i < 15; i++) {
     place_checker('black', 1);
     place_checker('white', 13);
-}
+};
+let body = document.getElementsByTagName('body')
+let test = document.getElementsByClassName('test')[0]
+console.log(test.getBoundingClientRect())
+test.innerHTML = `
+window.innerHeight: ${window.innerHeight}
+window.innerHeight: ${window.innerHeight}
+document.documentElement.clientHeight: ${document.documentElement.clientHeight}
+document.body.clientHeight: ${document.body.clientHeight}
+`
+
+
+
+window.addEventListener("load",function() {
+	// Set a timeout...
+	setTimeout(function(){
+		// Hide the address bar!
+		window.scrollTo(0, 1);
+	}, 0);
+});
 
 
 // let boardWidth = board.getBoundingClientRect().width;
