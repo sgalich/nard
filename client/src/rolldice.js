@@ -23,7 +23,11 @@ function rollDice() {
     });
 }
 
-let move1 = null;
-let move2 = null;
+var move1 = null;
+var move2 = null;
 rollDice()
+
+document.getElementsByClassName('diceBox')[0].addEventListener('click', (e) => {
+    rollDice()
+}, false);
 

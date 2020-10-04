@@ -1,46 +1,7 @@
 let CHECKEROVERLAP = 5.5
 
 
-// document.body.onload = addElement;
-
-// function addElement () { 
-//   // create a new div element 
-//   const black_checker = document.createElement("black_checker");
-//   black_checker.setAttribute('draggable', 'true');
-  
-// //   // and give it some content 
-// //   const newContent = document.createTextNode("Hi there and greetings!"); 
-  
-// //   // add the text node to the newly created div
-// //   black_checker.appendChild(newContent);  
-
-//   // add the newly created element and its content into the DOM 
-//   const currentDiv = document.querySelector(".end_board");
-//   console.log(currentDiv)
-//   console.log(black_checker)
-// //   newDiv.appendChild(currentDiv);
-
-//   document.body.insertBefore(black_checker, currentDiv);
-
-
-// }
-
-
-// Place checker at x, y point
-// function place_abs_checker(color, x=0, y=0) {
-//     const board = document.getElementById("board");
-//     let checker = document.createElement('abs_checker');   // Create a black checker
-    
-    
-//     checker.setAttribute('color', color);
-//     // checker.setAttribute('src', `./images/${color}.svg`);
-
-//     checker.setAttribute('draggable', 'true');    // make it draggable
-//     checker.setAttribute('style', `transform: translate(${x}px, ${y}px);`);    // place it on the board
-//     board.appendChild(checker);               // Append <button> to <body>
-// }
-
-place_checker('black', 1);
+// place_checker('black', 1);
 
 
 
@@ -91,28 +52,12 @@ function place_checker(color, id) {
     field.appendChild(checker);               // Append <button> to <body>
 };
 
-// for (let x = 0; x < 200; x += 100) {
-//     for (let y = 0; y < 300; y += 100) {
-//         place_checker('black', x, y);
-//     }
-// }
-
-// place_checker('white', 700, 200)
-// place_checker('white', 600, 130)
-
-// for (let i = 0; i < 3; i += 1) {
-//     place_checker('black', i)
-// }
-
-// place_abs_checker('black')
-// place_abs_checker('black')
-
 
 // Place checkers
-// for (let i = 0; i < 15; i++) {
-//     place_checker('black', 1);
-//     place_checker('white', 13);
-// };
+for (let i = 0; i < 15; i++) {
+    place_checker('black', 1);
+    place_checker('white', 13);
+};
 
 
 
