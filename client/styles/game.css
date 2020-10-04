@@ -26,8 +26,8 @@ body {
     /* Set a size */
     width: 100vw;
     height: 56.25vw;
-    max-height: 90vh;
-    max-width: 160vh;
+    max-height: 100vh;
+    max-width: 177.7778vh;
     /* Settings for children */ 
     z-index: 1;
     display: flex;
@@ -81,7 +81,7 @@ checker {
     will-change: transform;
     padding: 0px;
     margin: 0px;
-    z-index: 3;
+    z-index: 300;
     /* TODO: fix a little slicing in different positions & while dragging. */
     width: 7.25vw;
     height: 7.25vw;
@@ -90,6 +90,15 @@ checker {
     position: absolute;
     z-index: 3;
     --webkit-user-drag: element;
+    overflow: visible;
+}
+checker.selected {
+    /* transform: translateY(-15%); */
+    margin-bottom: 15%;
+}
+checker.unselected {
+    /* transform: translateY(-15%); */
+    margin-bottom: 0px;
 }
 @font-face {
     font-family: 'Open Sans';

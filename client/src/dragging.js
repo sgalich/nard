@@ -25,7 +25,8 @@
         // Set the movingChecker object
         movingChecker = e.target.parentNode.lastChild;
     };
-    document.addEventListener('dragstart', dragstart, false)
+    document.addEventListener('dragstart', dragstart, false);
+    document.addEventListener('ondragstart', dragstart);
 
 
     //dragover event to allow the drag by preventing its default
@@ -74,6 +75,7 @@
         movingChecker = null;
     }, false);
 })();
+
 
 
 

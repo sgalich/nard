@@ -27,29 +27,41 @@ let CHECKEROVERLAP = 5.5
 
 
 // Place checker at x, y point
-function place_abs_checker(color, x=0, y=0) {
-    const board = document.getElementById("board");
-    let checker = document.createElement('abs_checker');   // Create a black checker
+// function place_abs_checker(color, x=0, y=0) {
+//     const board = document.getElementById("board");
+//     let checker = document.createElement('abs_checker');   // Create a black checker
     
     
-    checker.setAttribute('color', color);
-    // checker.setAttribute('src', `./images/${color}.svg`);
+//     checker.setAttribute('color', color);
+//     // checker.setAttribute('src', `./images/${color}.svg`);
 
-    checker.setAttribute('draggable', 'true');    // make it draggable
-    checker.setAttribute('style', `transform: translate(${x}px, ${y}px);`);    // place it on the board
-    board.appendChild(checker);               // Append <button> to <body>
-}
+//     checker.setAttribute('draggable', 'true');    // make it draggable
+//     checker.setAttribute('style', `transform: translate(${x}px, ${y}px);`);    // place it on the board
+//     board.appendChild(checker);               // Append <button> to <body>
+// }
+
+place_checker('black', 1);
 
 
 
 
 
+
+function checkerUnclick() {
+    let checker = document.getElementsByClassName('selected')[0];
+    console.log(checker);
+    document.addEventListener('click', e => {
+        checker.setAttribute('class', 'unselected');    // make it selectable
+        // document.removeEventListener('click', checkerUnclick);
+    });
+};
 
 // Place checker at certain field
 function place_checker(color, id) {
     const field = document.getElementById(id);
     let checker = document.createElement('checker');   // Create a black checker
     checker.setAttribute('draggable', 'true');    // make it draggable
+    checker.setAttribute('class', 'unselected');    // make it selectable
     checker.setAttribute('color', color);
     checker.style.visibility = "visible"
     let checkersInField = field.children.length;
@@ -58,6 +70,24 @@ function place_checker(color, id) {
     } else {
         checker.setAttribute('style', `bottom: calc(${checkersInField} * ${CHECKEROVERLAP}%);`);
     };
+    checker.addEventListener('click', e => {
+        // Checker goes up
+        // checker.classList.add('selected');
+        console.log('click!')
+        checker.setAttribute('class', 'selected');
+        
+        
+        // Uncklick cause checker to move down
+        //
+        // 
+        //
+
+
+
+    }, false);
+    checker.addEventListener('mousedown', (e) => {
+        document.querySelector(".selected").classList.remove('selected');
+    }, false);
     field.appendChild(checker);               // Append <button> to <body>
 };
 
@@ -78,30 +108,46 @@ function place_checker(color, id) {
 // place_abs_checker('black')
 
 
+// Place checkers
+// for (let i = 0; i < 15; i++) {
+//     place_checker('black', 1);
+//     place_checker('white', 13);
+// };
 
-for (let i = 0; i < 15; i++) {
-    place_checker('black', 1);
-    place_checker('white', 13);
+
+
+function placeTestTExt() {
+    let board = document.getElementById('board');
+    let test = document.getElementsByClassName('test')[0];
+    let boardCos = board.getBoundingClientRect();
+    console.log(board.getBoundingClientRect());
+    test.innerHTML = `
+    boardCos.bottom: ${boardCos.bottom}
+    boardCos.height: ${boardCos.height}
+    boa rdCos.top: ${boardCos.top}
+    `;
 };
-let body = document.getElementsByTagName('body')
-let test = document.getElementsByClassName('test')[0]
-console.log(test.getBoundingClientRect())
-test.innerHTML = `
-window.innerHeight: ${window.innerHeight}
-window.innerHeight: ${window.innerHeight}
-document.documentElement.clientHeight: ${document.documentElement.clientHeight}
-document.body.clientHeight: ${document.body.clientHeight}
-`
+// document.addEventListener('click', e => {
+//     placeTestTExt();
+// });
 
 
 
-window.addEventListener("load",function() {
-	// Set a timeout...
-	setTimeout(function(){
-		// Hide the address bar!
-		window.scrollTo(0, 1);
-	}, 0);
-});
+// window.addEventListener('scroll', function(e) {
+//     let board = document.getElementById('board');
+//     board.setAttribute('style', 'bottom: 0px;');
+// });
+
+
+// let checkers = document.getElementsByTagName('checker');
+// checkers.forEach(checker => {
+//     checker.addEventListener('click', e => {
+//         checker.setAttribute('style', 'transform: translateX(+10%);');
+//     });
+// });
+
+
+
 
 
 // let boardWidth = board.getBoundingClientRect().width;
