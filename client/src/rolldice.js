@@ -1,5 +1,8 @@
+var move1 = null;
+var move2 = null;
+
 // What spots to show on the dice
-let diceMap = {
+const whatToShowOnDie = {
     1: [5],
     2: [3, 7],
     3: [3, 5, 7],
@@ -8,23 +11,29 @@ let diceMap = {
     6: [1, 3, 4, 6, 7, 9]
 }
 
+// Main function to roll dice
 function rollDice() {
-    [1, 2].forEach(diceId => {
-        let random = Math.floor(Math.random() * 6) + 1;
-        let spotsToShow = diceMap[random];
-        let die = document.getElementById(`die${diceId}`);
-        die.innerHTML = '';
-        // Create a new spots on the dice
-        spotsToShow.forEach(el => {
-            let spot = document.createElement('spot');
-            spot.setAttribute('id', `spot${el}`);
-            die.appendChild(spot);
-        });
-    });
+    move1 = Math.floor(Math.random() * 6) + 1;
+    move2 = Math.floor(Math.random() * 6) + 1;
+    renderDie(move1, 1);
+    renderDie(move2, 2);
 }
 
-var move1 = null;
-var move2 = null;
+
+// Render die result
+function renderDie(move, diceId) {
+    let die = document.getElementById(`die${diceId}`);
+    die.innerHTML = '';
+    // Render new spots on the dice
+    whatToShowOnDie[move].forEach(el => {
+        let spot = document.createElement('spot');
+        spot.setAttribute('id', `spot${el}`);
+        die.appendChild(spot);
+    });
+};
+
+
+
 rollDice()
 
 document.getElementsByClassName('diceBox')[0].addEventListener('click', (e) => {

@@ -51,7 +51,8 @@ body {
     padding: 0px;
     height: 100%;
     width: 6.25%;
-    display: table-cell;
+    display: flex;
+    flex-direction: column;
 }
 .field {
     /* border: 1px solid green; */
@@ -69,6 +70,12 @@ body {
 }
 .bottom {
     flex-direction: column-reverse;
+}
+.field.middle {
+    height: 100%;
+}
+.field.marked {
+    border: 1px solid red;
 }
 [color='white'] {
     background-image: url('../images/white.svg');
@@ -92,9 +99,13 @@ checker {
     --webkit-user-drag: element;
     overflow: visible;
 }
-checker.selected {
+checker[color='black'].selected {
     /* transform: translateY(-15%); */
-    margin-bottom: 15%;
+    background-image: url('../images/blackSelected.svg');
+}
+checker[color='white'].selected {
+    /* transform: translateY(-15%); */
+    background-image: url('../images/whiteSelected.svg');
 }
 checker.unselected {
     /* transform: translateY(-15%); */

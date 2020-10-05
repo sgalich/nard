@@ -15,66 +15,17 @@
 
 
 
-// WORKING DRAGGING ALGORITHM
-// TODO: Remake it with mouseclick
-(function() {
-    let movingChecker = null;
-
-    // Start dragging
-     function dragstart(e) {
-        // Set the movingChecker object
-        movingChecker = e.target.parentNode.lastChild;
-    };
-    document.addEventListener('dragstart', dragstart, false);
-    document.addEventListener('ondragstart', dragstart);
 
 
-    //dragover event to allow the drag by preventing its default
-    //ie. the default action of an element is not to allow dragging 
-    document.addEventListener('dragover', function(e) {
-        if(movingChecker) {
-            e.preventDefault();
-        }
-    }, false);  
 
-    //drop event to allow the element to be dropped into valid targets
-    document.addEventListener('drop', function(e) {
-        e.preventDefault();
-        let NewField = null;
-        if (e.target.classList.contains('field')) {
-            NewField = e.target;
-        } else if (e.target.tagName === 'CHECKER') {
-            NewField = e.target.parentNode;
-        } else {    // middle side of the board
-            return;
-        };
-        // Reject operation if the field contains checkers w/ the opposite color
-        let checkerColor = movingChecker.getAttribute('color')
-        if (NewField.lastChild && NewField.lastChild.getAttribute('color') != checkerColor) {
-            return;
-        }; 
-        // Place the checker correctly inside the target
-        let checkersInNewField = NewField.children.length;
-        // If the checker goes back to it's field, then move it under the new place
-        if (movingChecker.parentNode === NewField) {
-            checkersInNewField -= 1;
-        }
-        movingChecker.style.removeProperty('top');
-        movingChecker.style.removeProperty('bottom');
-        if (NewField.classList.contains('top')) {
-            movingChecker.setAttribute('style', `top: calc(${checkersInNewField} * ${CHECKEROVERLAP}%);`);
-        } else {
-            movingChecker.setAttribute('style', `bottom: calc(${checkersInNewField} * ${CHECKEROVERLAP}%);`);
-        };
-        NewField.appendChild(movingChecker);
-    }, false);
-    
-    //dragend event to clean-up after drop or abort
-    //which fires whether or not the drop target was valid
-    document.addEventListener('dragend', function(e) {
-        movingChecker = null;
-    }, false);
-})();
+
+
+
+
+
+
+
+
 
 
 

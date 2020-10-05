@@ -8,7 +8,7 @@ TODO:
 2. Click on checker (field):
     - active field:
         - triangle changes color
-        - ?
+        - checker blinks
     - possible moves:
         - spot under the triangle
         - triangle's got a stroke
@@ -29,4 +29,4 @@ BUGS:
  - iPhone:
     - no dragging
     - scrolling
-    
+- Unselect when roll dice
