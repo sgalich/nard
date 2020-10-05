@@ -31,11 +31,11 @@ function place_checker(color, id) {
     } else {
         checker.setAttribute('style', `bottom: calc(${checkersInField} * ${CHECKEROVERLAP}%);`);
     };
-    checker.addEventListener('click', e => {
+    // checker.addEventListener('click', e => {
         // Checker goes up
         // checker.classList.add('selected');
-        console.log('click!')
-        checker.setAttribute('class', 'selected');
+        // console.log('click!')
+        // checker.setAttribute('class', 'selected');
         
         
         // Uncklick cause checker to move down
@@ -45,10 +45,10 @@ function place_checker(color, id) {
 
 
 
-    }, false);
-    checker.addEventListener('mousedown', (e) => {
-        document.querySelector(".selected").classList.remove('selected');
-    }, false);
+    // }, false);
+    // checker.addEventListener('mousedown', (e) => {
+    //     document.querySelector(".selected").classList.remove('selected');
+    // }, false);
     field.appendChild(checker);               // Append <button> to <body>
 };
 
