@@ -6,7 +6,9 @@ function place_checker(color, id) {
     const field = document.getElementById(id);
     let checker = document.createElement('checker');   // Create a checker
     checker.setAttribute('draggable', 'true');    // make it draggable
-    checker.setAttribute('class', 'unselected');    // make it selectable
+    // checker.setAttribute('class', 'unselected');    // make it selectable
+    checker.classList.add('unselected');
+    checker.classList.add('hvr-pulse-grow');    // hvr-ripple-out
     checker.setAttribute('color', color);
     checker.style.visibility = "visible"
     let checkersInField = field.children.length;
@@ -32,17 +34,38 @@ for (field of fields) {
         // If it is highlighted field => move checker
         // else: ...
 
-        unselectChecker();
-        let activeChecker = this.lastChild;
-        if (activeChecker != null) {
-            checkerSelected(activeChecker);
+        // Selected field to make a move
+        if (this.classList.contains('marked')) {    // if it is allowed to make this move
+            let movingChecker = document.getElementsByClassName('selected')[0];
+            // Place the checker correctly inside the target
+            let checkersInNewField = this.children.length;
+            // If the checker goes back to it's field, then move it under the new place
+            if (movingChecker.parentNode === this) {
+                checkersInNewField -= 1;
+            }
+            movingChecker.style.removeProperty('top');
+            movingChecker.style.removeProperty('bottom');
+            if (this.classList.contains('top')) {
+                movingChecker.setAttribute('style', `top: calc(${checkersInNewField} * ${CHECKEROVERLAP}%);`);
+            } else {
+                movingChecker.setAttribute('style', `bottom: calc(${checkersInNewField} * ${CHECKEROVERLAP}%);`);
+            };
+            this.appendChild(movingChecker);
+            console.log('move checker here:', this.id);
+            unselectChecker();
+        } else {    // Selected a checker to think about a move
+            unselectChecker();
+            let activeChecker = this.lastChild;
+            if (activeChecker != null) {
+                checkerSelected(activeChecker);
+            };
         };
     });
 };
 
 // Select a checker
 function checkerSelected(checker) {
-    checker.setAttribute('class', 'selected');
+    checker.classList.add('selected');
     let selectedId = Number(checker.parentNode.id);
     highlightAllPossibleMoves(selectedId);
 };
@@ -50,23 +73,23 @@ function checkerSelected(checker) {
 // Highlight all possible moves
 var allPossibleMoves;
 function highlightAllPossibleMoves(selectedId) {
-    // Create a list with all possible moves
-    // black -> ++ || white -> --
-    // ...
     allPossibleMoves = [
-        document.getElementById(selectedId + move1),
-        document.getElementById(selectedId + move2),
-        document.getElementById(selectedId + move1 + move2)
+        document.getElementById((selectedId + move1) % 24),
+        document.getElementById((selectedId + move2) % 24),
+        document.getElementById((selectedId + move1 + move2) % 24)
     ];
-    allPossibleMoves.filter(field => field != null)
-        .forEach(el => el.classList.add('marked'));
+    allPossibleMoves.filter(field => field != null);
+    for (let i = 0; i < allPossibleMoves.length; i++) {
+        // 
+        allPossibleMoves[i].classList.add('marked');
+    };
 };
 
 // Unselects the selected checker if it exists
 var unselectChecker = function() {
     let selectedChecker = document.getElementsByClassName('selected')[0];
     if (selectedChecker != undefined) {
-        selectedChecker.setAttribute('class', 'unselected');
+        selectedChecker.classList.remove('selected');
         unmarkMarkedFields();
     };
 };
@@ -129,7 +152,7 @@ function unmarkMarkedFields() {
             NewField = e.target;
         } else if (e.target.tagName === 'CHECKER') {
             NewField = e.target.parentNode;
-        } else {    // middle side of the board
+        } else {
             return;
         };
         // Reject operation if the field contains checkers w/ the opposite color
