@@ -3,11 +3,15 @@ var die1;    // random result from die1
 var die2;    // random result from die2
 var turn;    // 'black' or 'white' - who is moving checkers now
 var wait;    // 'white' or 'black' - who is awaiting now
+var turn4User;    // turn for user as black/white or yellow/blue, etc.
 var winner;
 var allPossibleMoves;    // Object {fieled id with checker: [field ids where is allowed to make a move]},
 var roundN;    // round number
 const board = {};
+    // 1: '0',    <--    fieldId: '<count><color>', i.e. '1b'/'2a'
 
+
+// color = -1 / 1 for black / white
 
 // THE MAIN FUNCTION TO START A GAME
 var startGame = function () {
@@ -36,23 +40,50 @@ function whoIsFirst() {
         while (die1 == die2) {
             rollDice();
         };
-        [turn, wait] = (die1 > die2) ? ['black', 'white'] : ['white', 'black'];
-        printHint(`Black: ${die1}<br>White: ${die2}<br>${turn} are first!`);
+        [turn4User, turn, wait] = (die1 < die2) ? ['yellow', 1, -1] : ['blue', -1, 1];
+        printHint(`Black: ${die1}<br>White: ${die2}<br>${turn4User} are first!`);
     }, 2000);
 };
 
-
 // Nessesary changes when it's going to be next round
 function nextRound() {
-    [turn, wait] = (die1 > die2) ? ['black', 'white'] : ['white', 'black'];
+    [turn4User, turn, wait] = (die1 < die2) ? ['yellow', 1, -1] : ['blue', -1, 1];
     printHint(`Black: ${die1}<br>White: ${die2}<br>${turn} are first!`);
 }
 
+// Place one checker at certain field by id
+function createChecker(color, id) {
+    const field = document.getElementById(id);
+    let checker = document.createElement('checker');   // Create a checker
+    checker.setAttribute('draggable', 'true');    // make it draggable
+    // checker.setAttribute('class', 'unselected');    // make it selectable
+    checker.classList.add('unselected');
+    // checker.classList.add('hvr-grow');    // hvr-ripple-out
+    checker.setAttribute('color', color);
+    checker.style.visibility = "visible"
+    let checkersInField = field.children.length;
+    if (field.classList.contains('top')) {
+        checker.setAttribute('style', `top: calc(${checkersInField} * ${CHECKEROVERLAP}%);`);
+    } else {
+        checker.setAttribute('style', `bottom: calc(${checkersInField} * ${CHECKEROVERLAP}%);`);
+    };
+    field.appendChild(checker);    // Place checker inside the field
+    board[id] += color;
+};
+
 // 3.0 Place checkers
 function placeChackers() {
+    
+    // Fill the const board with zeroes
+    (function initBoard() {
+        for (let i = 1; i < 25; i++) {
+            board[i] = 0;
+        };
+    }());
+
     for (let i = 0; i < 15; i++) {
-        place_checker('black', 1);
-        place_checker('white', 13);
+        createChecker(-1, 1);    // -1 - black
+        createChecker(1, 13);    // 1 - white
     };
 };
 
@@ -65,11 +96,29 @@ function play() {
 };
 
 
+
+
+// create a move func
+// call this func when useer is making move suggestions
+// then in move func see: what move does user suggest?
+// is it valid color?
+// is it legal?
+//    - dice?
+//    - ...
+
+
+
+
+
+
+
+
+
 function round() {
     rollDice();
-    printHint(`${turn}\'s turn<br>${die1} : ${die2}`);
+    printHint(`${turn4User}\'s turn<br>${die1} : ${die2}`);
     // Find all possible moves
-    findAllPossibleMoves();
+    // findAllPossibleMoves();
     
     
     
@@ -122,24 +171,7 @@ function findAllPossibleMoves() {
 
 
 
-// Place one checker at certain field by id
-function place_checker(color, id) {
-    const field = document.getElementById(id);
-    let checker = document.createElement('checker');   // Create a checker
-    checker.setAttribute('draggable', 'true');    // make it draggable
-    // checker.setAttribute('class', 'unselected');    // make it selectable
-    checker.classList.add('unselected');
-    // checker.classList.add('hvr-grow');    // hvr-ripple-out
-    checker.setAttribute('color', color);
-    checker.style.visibility = "visible"
-    let checkersInField = field.children.length;
-    if (field.classList.contains('top')) {
-        checker.setAttribute('style', `top: calc(${checkersInField} * ${CHECKEROVERLAP}%);`);
-    } else {
-        checker.setAttribute('style', `bottom: calc(${checkersInField} * ${CHECKEROVERLAP}%);`);
-    };
-    field.appendChild(checker);    // Place checker inside the field
-};
+
 
 
 
@@ -187,7 +219,6 @@ for (field of fields) {
                 movingChecker.setAttribute('style', `bottom: calc(${checkersInNewField} * ${CHECKEROVERLAP}%);`);
             };
             this.appendChild(movingChecker);
-            console.log('move checker here:', this.id);
             unselectAllCheckers();
         } else {    // Selected a checker to think about a move
             unselectAllCheckers();

@@ -9,6 +9,10 @@
     font-family: 'Noto Sans', Sans-Serif;
     background-color: #DBE0EC;
 }
+
+
+/* BOARD */
+
 #board {
     /* TEST SETTINGS */
     /* background-color: gold; */
@@ -88,6 +92,10 @@
     flex-direction: column-reverse;
     border-bottom: 4px solid green;
 }
+
+
+/* CHECKERS */
+
 checker {
     background-size: cover;
     will-change: transform;
@@ -104,16 +112,16 @@ checker {
     --webkit-user-drag: element;
     overflow: visible;
 }
-[color='white'] {
-    background-image: url('../images/white.svg');
-}
-[color='black'] {
+[color='-1'] {
     background-image: url('../images/black.svg');
 }
-checker[color='black'].selected {
+[color='1'] {
+    background-image: url('../images/white.svg');
+}
+checker[color='-1'].selected {
     background-image: url('../images/blackSelected.svg');
 }
-checker[color='white'].selected {
+checker[color='1'].selected {
     background-image: url('../images/whiteSelected.svg');
 }
 checker.selected {
@@ -129,16 +137,20 @@ checker.selected {
     -webkit-transform: scale(var(--scale-selected-checker));
     transform: scale(var(--scale-selected-checker));
 }
-checker[color='black']:hover {
+checker[color='-1']:hover {
     background-image: url('../images/blackSelected.svg');
     -webkit-transform: scale(var(--scale-selected-checker));
     transform: scale(var(--scale-selected-checker));
 }
-checker[color='white']:hover {
+checker[color='1']:hover {
     background-image: url('../images/whiteSelected.svg');
     -webkit-transform: scale(var(--scale-selected-checker));
     transform: scale(var(--scale-selected-checker));
 }
+
+
+/* MISC */
+
 @font-face {
     font-family: 'Open Sans';
     font-style: normal;
