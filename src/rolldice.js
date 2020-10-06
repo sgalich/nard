@@ -1,6 +1,3 @@
-var move1 = null;
-var move2 = null;
-
 // What spots to show on the dice
 const whatToShowOnDie = {
     1: [5],
@@ -9,16 +6,7 @@ const whatToShowOnDie = {
     4: [1, 3, 7, 9],
     5: [1, 3, 5, 7, 9],
     6: [1, 3, 4, 6, 7, 9]
-}
-
-// Main function to roll dice
-function rollDice() {
-    move1 = Math.floor(Math.random() * 6) + 1;
-    move2 = Math.floor(Math.random() * 6) + 1;
-    renderDie(move1, 1);
-    renderDie(move2, 2);
-}
-
+};
 
 // Render die result
 function renderDie(move, diceId) {
@@ -32,10 +20,22 @@ function renderDie(move, diceId) {
     });
 };
 
+// Main function to roll dice
+var rollDice = function () {
+    die1 = Math.floor(Math.random() * 6) + 1;
+    die2 = Math.floor(Math.random() * 6) + 1;
+    renderDie(die1, 1);
+    renderDie(die2, 2);
+};
 
 
-rollDice()
 
+
+
+
+
+
+// Temp function REMOVE IT !
 document.getElementsByClassName('diceBox')[0].addEventListener('click', (e) => {
     rollDice()
 }, false);

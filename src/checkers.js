@@ -1,4 +1,122 @@
 const CHECKEROVERLAP = 5.5
+var die1;    // random result from die1
+var die2;    // random result from die2
+var turn;    // 'black' or 'white' - who is moving checkers now
+var wait;    // 'white' or 'black' - who is awaiting now
+var winner;
+var allPossibleMoves;    // Object {fieled id with checker: [field ids where is allowed to make a move]},
+var roundN;    // round number
+const board = {};
+
+
+// THE MAIN FUNCTION TO START A GAME
+var startGame = function () {
+    findRival();
+    whoIsFirst();
+    setTimeout(function() {
+        placeChackers();
+        play();
+    }, 4000);
+};
+
+// 1. Find a rival, share the link
+function findRival() {
+    alert('Rival is found! Great!');
+    // Make a shadow and a modal window:
+    // "Let's play with our friend, here is the shareble link"
+    // 
+    printHint(`Players are defined!`);
+};
+
+// 2. Choose who makes the first move
+function whoIsFirst() {
+    printHint(`Let\'s see who is first...`);
+    setTimeout(function() {
+        rollDice();
+        while (die1 == die2) {
+            rollDice();
+        };
+        [turn, wait] = (die1 > die2) ? ['black', 'white'] : ['white', 'black'];
+        printHint(`Black: ${die1}<br>White: ${die2}<br>${turn} are first!`);
+    }, 2000);
+};
+
+
+// Nessesary changes when it's going to be next round
+function nextRound() {
+    [turn, wait] = (die1 > die2) ? ['black', 'white'] : ['white', 'black'];
+    printHint(`Black: ${die1}<br>White: ${die2}<br>${turn} are first!`);
+}
+
+// 3.0 Place checkers
+function placeChackers() {
+    for (let i = 0; i < 15; i++) {
+        place_checker('black', 1);
+        place_checker('white', 13);
+    };
+};
+
+// 3. The Game functions
+function play() {
+    // while (winner == undefined) {
+    //     round();
+    // };
+    round();
+};
+
+
+function round() {
+    rollDice();
+    printHint(`${turn}\'s turn<br>${die1} : ${die2}`);
+    // Find all possible moves
+    findAllPossibleMoves();
+    
+    
+    
+    
+    
+    // while (die1 != null && die2 != null) {
+        // console.log(die1, die2);
+        // if there is not possible moves
+        // or player has done his moves    =>     die1 = null; die2 = null;
+        // Player need to make all moves
+    // };
+    // Round finished, rival's turn
+
+
+
+    // turn = (turn == 'black') ? 'white' : 'black';
+    // printHint(`Turn: ${turn}`);
+};
+
+// Find all possible moves
+function findAllPossibleMoves() {
+
+    // 1. Get the fields FROM we can move the checkers
+    // count checkers!!!
+    let fromFields = new Set();
+    document.querySelectorAll(`[color=${turn}]`).forEach(el => {
+        fromFields.add(el.parentElement.id);
+    });
+    console.log(fromFields);
+
+    // 2. Get the fields TO where we can move the checkers
+    let toFields = new Set();
+    document.querySelectorAll(`[color=${wait}]`).forEach(el => {
+        fromFields.add(el.parentElement.id);
+    });
+
+    /// FIND ALL BOARD - MAKE AN OBJECT !!!
+
+    // 1. find all fields with turn color
+    let turnsFields = [];
+    // 
+    // 2. find all moves for each field
+    // .Duplicates?
+};
+
+
+
 
 
 
@@ -23,11 +141,26 @@ function place_checker(color, id) {
     field.appendChild(checker);    // Place checker inside the field
 };
 
-// Place checkers
-for (let i = 0; i < 15; i++) {
-    place_checker('black', 1);
-    place_checker('white', 13);
+
+
+
+
+
+
+
+
+
+// HANDLERS
+
+function printHint(hint) {
+    document.getElementById('hint').innerHTML = null;    // clear
+    document.getElementById('hint').innerHTML = hint;    // write
 };
+
+
+
+
+
 
 // Checker selection & moving
 var fields = document.getElementsByClassName('field');
@@ -79,22 +212,21 @@ function checkerSelected(checker) {
 
 
 // Highlight all possible moves
-var allPossibleMoves;
 function highlightAllPossibleMoves(selectedId) {
     allPossibleMoves = [
-        document.getElementById((selectedId + move1) % 24),
-        document.getElementById((selectedId + move2) % 24),
-        document.getElementById((selectedId + move1 + move2) % 24)
+        document.getElementById((selectedId + die1) % 24),
+        document.getElementById((selectedId + die2) % 24),
+        document.getElementById((selectedId + die1 + die2) % 24)
     ];
     // Add new fields if there is duplicate dice
 
-    // Think about it
-    if (move1 == move2) {
+    // // Think about it
+    // if (move1 == move2) {
 
-    };
+    // };
     allPossibleMoves.filter(field => field != null);
     for (let i = 0; i < allPossibleMoves.length; i++) {
-        let fieldToMoveOn = allPossibleMoves[i]
+        // let fieldToMoveOn = allPossibleMoves[i]
         // DO NOT ALLOW TO MOVE IF:
 
         allPossibleMoves[i].classList.add('marked');
@@ -211,7 +343,7 @@ function unmarkMarkedFields() {
 
 
 
-
+startGame();
 
 
 function placeTestText() {
