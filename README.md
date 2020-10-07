@@ -30,3 +30,6 @@ BUGS:
     - no dragging
     - scrolling
 - Unselect when roll dice
+
+???
+desynch, reconciliation, lag compensation

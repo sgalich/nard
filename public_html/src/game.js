@@ -1,8 +1,8 @@
 const CHECKEROVERLAP = 5.5
 var die1;    // random result from die1
 var die2;    // random result from die2
-var turn;    // 'black' or 'white' - who is moving checkers now
-var wait;    // 'white' or 'black' - who is awaiting now
+var turn;    // -1 or 1 (for 'black' or 'white') - who is moving checkers now
+var wait;    // 1 or -1 (for 'white' or 'black') - who is awaiting now
 var turn4User;    // turn for user as black/white or yellow/blue, etc.
 var winner;
 var allPossibleMoves;    // Object {fieled id with checker: [field ids where is allowed to make a move]},
@@ -13,19 +13,16 @@ const board = {};
 
 // color = -1 / 1 for black / white
 
+
 // THE MAIN FUNCTION TO START A GAME
 var startGame = function () {
     findRival();
     whoIsFirst();
-    setTimeout(function() {
-        placeChackers();
-        play();
-    }, 4000);
+    placeChackers();
 };
 
 // 1. Find a rival, share the link
 function findRival() {
-    alert('Rival is found! Great!');
     // Make a shadow and a modal window:
     // "Let's play with our friend, here is the shareble link"
     // 
@@ -35,20 +32,18 @@ function findRival() {
 // 2. Choose who makes the first move
 function whoIsFirst() {
     printHint(`Let\'s see who is first...`);
-    setTimeout(function() {
+    rollDice();
+    while (die1 == die2) {
         rollDice();
-        while (die1 == die2) {
-            rollDice();
-        };
-        [turn4User, turn, wait] = (die1 < die2) ? ['yellow', 1, -1] : ['blue', -1, 1];
-        printHint(`Black: ${die1}<br>White: ${die2}<br>${turn4User} are first!`);
-    }, 2000);
+    };
+    [turn4User, turn, wait] = (die1 < die2) ? ['yellow', 1, -1] : ['blue', -1, 1];
+    printHint(`Black: ${die1}, White: ${die2}, ${turn4User} are first!`);
 };
 
 // Nessesary changes when it's going to be next round
 function nextRound() {
     [turn4User, turn, wait] = (die1 < die2) ? ['yellow', 1, -1] : ['blue', -1, 1];
-    printHint(`Black: ${die1}<br>White: ${die2}<br>${turn} are first!`);
+    printHint(`Black: ${die1}, White: ${die2}, ${turn} are first!`);
 }
 
 // Place one checker at certain field by id
@@ -185,9 +180,18 @@ function findAllPossibleMoves() {
 // HANDLERS
 
 function printHint(hint) {
-    document.getElementById('hint').innerHTML = null;    // clear
-    document.getElementById('hint').innerHTML = hint;    // write
+    // document.getElementById('hint').innerHTML = null;    // clear
+    // document.getElementById('hint').innerHTML = hint;    // write
+    time = new Date;
+    hint = time.getHours() + ':' + time.getMinutes() + ' ' + hint;
+    const parent = document.getElementById('hint');
+    const el = document.createElement('p');
+    el.innerHTML = hint;
+    parent.appendChild(el);
+    parent.scrollTop = parent.scrollHeight;
 };
+
+
 
 
 
@@ -373,21 +377,5 @@ function unmarkMarkedFields() {
 
 
 
-
-startGame();
-
-
-function placeTestText() {
-    let board = document.getElementById('board');
-    let test = document.getElementsByClassName('test')[0];
-    let boardCos = board.getBoundingClientRect();
-    console.log(board.getBoundingClientRect());
-    test.innerHTML = `
-    boardCos.bottom: ${boardCos.bottom}
-    boardCos.height: ${boardCos.height}
-    boa rdCos.top: ${boardCos.top}
-    `;
-};
-// document.addEventListener('click', e => {
-//     placeTestText();
-// });
+// module.exports.startGame = startGame;
+// startGame();
