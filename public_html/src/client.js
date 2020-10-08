@@ -20,6 +20,14 @@ const onFormSubmitted = (e) => {
 };
 
 // document.cookie = "user_id=" + user_id;
+var clientRoom = sessionStorage.getItem('room');
+if (clientRoom === null) {
+    sessionStorage.setItem('room', '04598034589');
+};
+
+
+
+
 
 const socket = io();
 
