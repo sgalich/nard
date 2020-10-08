@@ -34,6 +34,10 @@ socket.on('place_checkers', startGame);
 // Render dice after them are rolled from the server
 socket.on('dice_rolled', renderDice);
 
+// Reconnection
+socket.on('user-reconnected', function (username) {
+    console.log(username + ' just reconnected');
+});
 
 // TO THE SERVER
 

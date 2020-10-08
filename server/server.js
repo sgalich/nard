@@ -15,7 +15,7 @@ const clientPath = `${__dirname}/../public_html`;
 console.log(`serving static from ${clientPath}`);
 app.use(express.static(clientPath));
 
-
+ 
 const server = http.createServer(app);
 
 
@@ -27,6 +27,15 @@ var game;
 // Match two players that are on site but do not play yet
 let waitingPlayer = null;
 io.on('connection', (socket) => {
+    
+    
+    
+    console.log(socket.client.conn.id);
+    // console.log(socket.username);
+
+
+
+
     if (waitingPlayer) {
         // start a game
         // [socket, waitingPlayer].forEach((player) => {player.emit('hint', 'Game is starting.')});
