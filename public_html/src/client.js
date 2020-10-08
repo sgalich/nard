@@ -15,7 +15,6 @@ const onFormSubmitted = (e) => {
     const input = document.querySelector('#chat');
     const text = input.value;
     input.value = '';
-
     console.log(text);
     socket.emit('hint', text);
 };
@@ -24,13 +23,37 @@ const onFormSubmitted = (e) => {
 
 const socket = io();
 
+// FROM THE SERVER
+
 // socket.emit('start', startGame);
 socket.on('hint', printHint);
 
+// Place checkers
+socket.on('place_checkers', startGame);
+
+// Render dice after them are rolled from the server
+socket.on('dice_rolled', renderDice);
+
+
+// TO THE SERVER
+
+// Roll dice by click
+// Temp function REMOVE IT !
+document
+    .getElementsByClassName('diceBox')[0]
+    .addEventListener('click', (e) => {
+        socket.emit('roll_dice');
+    }, false);
 
 document
     .querySelector('#chat-form')
     .addEventListener('submit', onFormSubmitted);
+
+
+
+
+
+
 
 // socket.on('start', startGame);
 // // socket.on('start', startGame);

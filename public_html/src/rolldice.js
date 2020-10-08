@@ -8,35 +8,21 @@ const whatToShowOnDie = {
     6: [1, 3, 4, 6, 7, 9]
 };
 
-// Render die result
-function renderDie(move, diceId) {
-    let die = document.getElementById(`die${diceId}`);
+// Render a single die
+function renderASingleDie(randomResult, dieId) {
+    // Render new spots on the die 1
+    let die = document.getElementById(`die${dieId}`);
     die.innerHTML = '';
-    // Render new spots on the dice
-    whatToShowOnDie[move].forEach(el => {
+    whatToShowOnDie[randomResult].forEach(el => {
         let spot = document.createElement('spot');
         spot.setAttribute('id', `spot${el}`);
         die.appendChild(spot);
     });
 };
 
-// Main function to roll dice
-var rollDice = function () {
-    die1 = Math.floor(Math.random() * 6) + 1;
-    die2 = Math.floor(Math.random() * 6) + 1;
-    renderDie(die1, 1);
-    renderDie(die2, 2);
+// Render both dice results
+function renderDice([die1, die2]) {
+    console.log(die1, die2);
+    renderASingleDie(die1, 1);
+    renderASingleDie(die2, 2);
 };
-
-
-
-
-
-
-
-
-// Temp function REMOVE IT !
-document.getElementsByClassName('diceBox')[0].addEventListener('click', (e) => {
-    rollDice()
-}, false);
-

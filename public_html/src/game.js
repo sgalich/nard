@@ -16,29 +16,11 @@ const board = {};
 
 // THE MAIN FUNCTION TO START A GAME
 var startGame = function () {
-    findRival();
-    whoIsFirst();
     placeChackers();
 };
 
-// 1. Find a rival, share the link
-function findRival() {
-    // Make a shadow and a modal window:
-    // "Let's play with our friend, here is the shareble link"
-    // 
-    printHint(`Players are defined!`);
-};
 
-// 2. Choose who makes the first move
-function whoIsFirst() {
-    printHint(`Let\'s see who is first...`);
-    rollDice();
-    while (die1 == die2) {
-        rollDice();
-    };
-    [turn4User, turn, wait] = (die1 < die2) ? ['yellow', 1, -1] : ['blue', -1, 1];
-    printHint(`Black: ${die1}, White: ${die2}, ${turn4User} are first!`);
-};
+
 
 // Nessesary changes when it's going to be next round
 function nextRound() {

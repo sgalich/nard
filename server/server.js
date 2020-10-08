@@ -22,26 +22,17 @@ const server = http.createServer(app);
 const io = socketio(server);
 
 
+var game;
+
+// Match two players that are on site but do not play yet
 let waitingPlayer = null;
-
-
-
-
-
-
-
-
-
-
-
 io.on('connection', (socket) => {
-    
     if (waitingPlayer) {
         // start a game
         // [socket, waitingPlayer].forEach((player) => {player.emit('hint', 'Game is starting.')});
         socket.emit('hint', 'GAme starts');
         waitingPlayer.emit('hint', 'Game starts');
-        new Nard(waitingPlayer, socket);
+        game =new Nard(waitingPlayer, socket);
         waitingPlayer = null;
     } else {
         waitingPlayer = socket;
@@ -57,15 +48,22 @@ io.on('connection', (socket) => {
     // socket.emit('hint', 'Hi, you are connected');    // SEND TO SINGLE CLIENT
     
     
-    
+    // Chat
     socket.on('hint', (text) => {             // RECIEVE
         console.log('Someone send this: ', text);
         io.emit('hint', text);                       // SEND TO ALL
     });
 
-
+    // Roll dice
+    socket.on('roll_dice', (socket) => {
+        game.rollDice();
+        // io.emit('dice_rolled', rollDice());
+    });
 
 });
+
+
+
 
 
 
