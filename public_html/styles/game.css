@@ -1,5 +1,6 @@
 :root {
     --scale-selected-checker: 1.025;
+    --checker-size: 7.5vw;
 }
   body {
     width:  100%;
@@ -103,8 +104,8 @@ checker {
     margin: 0px;
     z-index: 300;
     /* TODO: fix a little slicing in different positions & while dragging. */
-    width: 8.3vw;
-    height: 8.3vw;
+    width: var(--checker-size);
+    height: var(--checker-size);
     max-height: 12.8889vh;
     max-width: 12.8889vh;
     position: absolute;
@@ -180,6 +181,7 @@ checker[color='1']:hover {
     vertical-align: bottom;
     text-align: bottom;
     flex-direction: column;
+    visibility: hidden;
 }
 #hint > p {
     margin: 0px;
@@ -194,15 +196,16 @@ checker[color='1']:hover {
     right: 16.5%;
 }
 .die {
+    background-image: url('../images/die.svg');
     position: absolute;
     width: 40%;
     height: 100%;
-    background: linear-gradient(45deg, rgba(117, 71, 74, 0) 97.4%, rgba(117, 71, 74, 0) 100%);
-    border-width: 10%;
-    border-style: solid;
-    border-color: #372526;
-    box-sizing: border-box;
-    border-radius: 25%;
+    /* background: linear-gradient(45deg, rgba(117, 71, 74, 0) 97.4%, rgba(117, 71, 74, 0) 100%); */
+    /* border-width: 10%; */
+    /* border-style: solid; */
+    /* border-color: #372526; */
+    /* box-sizing: border-box; */
+    /* border-radius: 25%; */
     z-index: 2;
 }
 #die1 {
