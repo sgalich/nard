@@ -19,7 +19,7 @@ const onFormSubmitted = (e) => {
     socket.emit('hint', text);
 };
 
-
+// document.cookie = "user_id=" + user_id;
 
 const socket = io();
 

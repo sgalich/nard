@@ -13,24 +13,136 @@ const Nard = require('./nard');
 const app = express();
 const clientPath = `${__dirname}/../public_html`;
 console.log(`serving static from ${clientPath}`);
-app.use(express.static(clientPath));
+
 
  
+
+
+
+
+
+
+// TRYING TO SET COOKIE
+function attach_cookie(url, cookie, value) {
+    return function(req, res, next) {
+      if (req.url == url) {
+        res.cookie(cookie, value);
+      }
+      next();
+    }
+  }
+  
+
+app.use(attach_cookie('/index.html', 'mycookie', 'value'));
+app.use(express.static(clientPath));
+
+
+
+
+
+// const cookieParser = require('cookie-parser');
+// app.use(cookieParser());
+
+
+// // RETURN EMPTY PAGE
+// app.get('/', function (req, res) {
+//     res.cookie('myCookie', 'looks good');
+//     // var cookies = parseCookies(req);
+//     console.log('cook OK');
+//     res.end('HI! HUJ BLYAD');
+//     // return res.sendFile(clientPath);
+//     // next();
+// });
+// app.use(express.static(clientPath));
+
+
+
+
+// set a cookie
+// app.use(function (req, res, next) {
+    
+    
+//     console.log('09341ubg3r9ugb34!!!!');
+
+
+
+//     // check if client sent cookie
+//     var cookie = req.cookies.cookieName;
+//     if (cookie === undefined) {
+//       // no: set a new cookie
+//       var randomNumber=Math.random().toString();
+//       randomNumber=randomNumber.substring(2,randomNumber.length);
+//       res.cookie('cookieName',randomNumber, { maxAge: 900000, httpOnly: true });
+//       console.log('cookie created successfully');
+//     } else {
+//       // yes, cookie was already present 
+//       console.log('cookie exists', cookie);
+//     } 
+//     next(); // <-- important!
+//   });
+
+
+//   app.get('/', (req,res)=>{
+//     console.log('09341ubg3r9ugb34!!!!');
+//     // read cookies
+//     console.log(req.cookies) 
+
+//     let options = {
+//         maxAge: 1000 * 60 * 15, // would expire after 15 minutes
+//         httpOnly: true, // The cookie only accessible by the web server
+//         signed: true // Indicates if the cookie should be signed
+//     }
+
+//     // Set cookie
+//     res.cookie('cookieName', 'cookieValue', options) // options is optional
+//     res.send('')
+
+// });
+
+
+
+
+
+
+
+
+// app.get('/', (req,res)=>{
+//     console.log('09341ubg3r9ugb34!!!!');
+//     // read cookies
+//     console.log(req.cookies) 
+
+//     let options = {
+//         maxAge: 1000 * 60 * 15, // would expire after 15 minutes
+//         httpOnly: true, // The cookie only accessible by the web server
+//         signed: true // Indicates if the cookie should be signed
+//     }
+
+//     // Set cookie
+//     res.cookie('cookieName', 'cookieValue', options) // options is optional
+//     res.send('')
+
+// });
+
+
+
+
 const server = http.createServer(app);
 
 
 const io = socketio(server);
-
-
 var game;
 
 // Match two players that are on site but do not play yet
 let waitingPlayer = null;
 io.on('connection', (socket) => {
     
+
+
+
     
-    
-    console.log(socket.client.conn.id);
+      // let static middleware do its job
+    app.use(express.static(clientPath));
+    // console.log(socket.client.conn.id);
     // console.log(socket.username);
 
 

@@ -22,7 +22,6 @@ function renderASingleDie(randomResult, dieId) {
 
 // Render both dice results
 function renderDice([die1, die2]) {
-    console.log(die1, die2);
     renderASingleDie(die1, 1);
     renderASingleDie(die2, 2);
 };
