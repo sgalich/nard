@@ -16,6 +16,8 @@
     padding: 0px;
     background: #2F3136;
     position:     absolute;
+    /* Add this declaration when the game starts */
+    /* display: none; */ 
 }
     /* Take a template from jQuery ! */
     #start-modal {
