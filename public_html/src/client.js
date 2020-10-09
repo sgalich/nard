@@ -19,11 +19,7 @@ const onFormSubmitted = (e) => {
     socket.emit('hint', text);
 };
 
-// document.cookie = "user_id=" + user_id;
-var clientRoom = sessionStorage.getItem('room');
-if (clientRoom === null) {
-    sessionStorage.setItem('room', '04598034589');
-};
+
 
 
 
@@ -31,23 +27,28 @@ if (clientRoom === null) {
 
 const socket = io();
 
-// FROM THE SERVER
 
-// socket.emit('start', startGame);
-socket.on('hint', printHint);
 
-// Place checkers
-socket.on('place_checkers', startGame);
 
-// Render dice after them are rolled from the server
-socket.on('dice_rolled', renderDice);
 
-// Reconnection
-socket.on('user-reconnected', function (username) {
-    console.log(username + ' just reconnected');
-});
+
+
+
+
+
+
 
 // TO THE SERVER
+
+// Get tabId in order to identify user
+var tabId= sessionStorage.getItem('tabId');
+// Generate a new tabId if there is not any tabId
+if (tabId === null) {
+    socket.emit('newTabId');
+};
+
+
+
 
 // Roll dice by click
 // Temp function REMOVE IT !
@@ -62,6 +63,31 @@ document
     .addEventListener('submit', onFormSubmitted);
 
 
+
+
+
+// FROM THE SERVER
+
+// Set a generated on the server tabId
+socket.on('setTabId', function (tabId) {
+    sessionStorage.setItem('tabId', String(tabId));
+});
+
+
+
+// socket.emit('start', startGame);
+socket.on('hint', printHint);
+
+// Place checkers
+socket.on('place_checkers', startGame);
+
+// Render dice after them are rolled from the server
+socket.on('dice_rolled', renderDice);
+
+// Reconnection
+socket.on('user-reconnected', function (username) {
+    console.log(username + ' just reconnected');
+});
 
 
 

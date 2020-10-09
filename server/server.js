@@ -5,6 +5,7 @@ const socketio = require('socket.io');
 
 const Nard = require('./nard');
 
+const uuid = require('uuid');
 
 // const randomColor = require('randomcolor');
 // const createBoard = require('./create-board');
@@ -14,27 +15,55 @@ const app = express();
 const clientPath = `${__dirname}/../public_html`;
 console.log(`serving static from ${clientPath}`);
 
-
+// var domain = 'https://onlinenard.com';    # Truly domain
+var domain = 'localhost:8081';
+// var domain = clientPath;
  
 
 
-
-
-
-
-// TRYING TO SET COOKIE
-function attach_cookie(url, cookie, value) {
-    return function(req, res, next) {
-      if (req.url == url) {
-        res.cookie(cookie, value);
-      }
-      next();
+// Generate a pseudo link to share with a friend
+function ganerateSharePage(length) {
+    let sharePage = '';
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+        let newChar = characters.charAt(Math.floor(Math.random() * charactersLength));
+        sharePage += newChar;
     }
-  }
-  
+    return sharePage;
+};
 
-app.use(attach_cookie('/index.html', 'mycookie', 'value'));
+// Redirect to the page with the game
+var sharePage = ganerateSharePage(8);
+console.log(sharePage);
+app.get(`/${sharePage}`, function(req, res){
+    console.log('YES !!!!!!!1');
+    res.redirect('/');
+});
+
+
+
+
+
+
+// function SharePage(url, cookie, value) {
+//     return function(req, res, next) {
+//       if (req.url == url) {
+//         res.cookie(cookie, value);
+//       }
+//       next();
+//     }
+//   }
+// app.use(attach_cookie('/index.html', 'mycookie', 'value'));
+
+
+
+
+
 app.use(express.static(clientPath));
+
+
+
 
 
 
@@ -140,20 +169,20 @@ io.on('connection', (socket) => {
 
 
     
-      // let static middleware do its job
+    // let static middleware do its job
     app.use(express.static(clientPath));
     // console.log(socket.client.conn.id);
     // console.log(socket.username);
 
 
 
-
+    // START A GAME WITH THE FIRST PEER
     if (waitingPlayer) {
         // start a game
         // [socket, waitingPlayer].forEach((player) => {player.emit('hint', 'Game is starting.')});
         socket.emit('hint', 'GAme starts');
         waitingPlayer.emit('hint', 'Game starts');
-        game =new Nard(waitingPlayer, socket);
+        game = new Nard(waitingPlayer, socket);
         waitingPlayer = null;
     } else {
         waitingPlayer = socket;
@@ -162,6 +191,16 @@ io.on('connection', (socket) => {
 
 
 
+
+
+    // Generate a new tabId
+    socket.on('newTabId', () => {
+        let tabId = uuid.v5(
+            uuid.v1(Date.now()),
+            uuid.v4()
+        );
+        socket.emit('setTabId', tabId);
+    });
 
 
 

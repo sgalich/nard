@@ -33,3 +33,5 @@ BUGS:
 
 ???
 desynch, reconciliation, lag compensation
+
+- Make the board resizible ? - https://jqueryui.com/resizable/

@@ -386,7 +386,7 @@ spot {
 
     overflow: hidden;
     /* -webkit-overflow-scrolling: touch; */
-    vertical-align: baseline;
+    /* vertical-align: baseline; */
     box-sizing: border-box;
 
 }
