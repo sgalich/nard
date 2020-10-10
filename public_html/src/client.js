@@ -1,5 +1,19 @@
 // START SCREEN
 
+// Game - nard
+function gameIsNard() {
+    // Highlight
+    document.getElementById('game-backgammon').classList.remove('selected');
+    document.getElementById('game-nard').classList.add('selected');
+};
+
+// Game - backgammon
+function gameIsBackgammon() {
+    // Highlight
+    document.getElementById('game-nard').classList.remove('selected');
+    document.getElementById('game-backgammon').classList.add('selected');
+};
+
 // Rival - a friend
 function rivalIsFriend() {
     document.getElementById('rival-random').classList.remove('selected');
@@ -57,6 +71,10 @@ const socket = io();
 
 
 // ON THE PAGE
+
+// Choose: nard or backgammon
+document.getElementById('game-nard').onclick = gameIsNard;    // a nard
+document.getElementById('game-backgammon').onclick = gameIsBackgammon;    // a backgammon
 
 // Choose a rival
 document.getElementById('start-play-btn').classList.add('selected');    // By default the friend's link is invisible 
