@@ -1,3 +1,26 @@
+// START SCREEN
+
+// Rival - a friend
+function rivalIsFriend() {
+    document.getElementById('rival-random').classList.remove('selected');
+    document.getElementById('rival-friend').classList.add('selected');
+    socket.emit('generateFriendsLink');    // Generate a friend's link
+    document.getElementById('start-play-btn').classList.remove('selected');
+    document.getElementById('start-play-link').classList.add('selected');
+};
+
+// Rival - a friend
+function rivalIsRandom() {
+    document.getElementById('rival-friend').classList.remove('selected');
+    document.getElementById('rival-random').classList.add('selected');
+    document.getElementById('start-play-link').classList.remove('selected');
+    document.getElementById('start-play-btn').classList.add('selected');
+};
+
+
+// BOARD SCREEN
+
+// Print message in chat
 function printHint(hint) {
     // document.getElementById('hint').innerHTML = null;    // clear
     // document.getElementById('hint').innerHTML = hint;    // write
@@ -10,6 +33,7 @@ function printHint(hint) {
     parent.scrollTop = parent.scrollHeight;
 };
 
+// Send message from a player in chat
 const onFormSubmitted = (e) => {
     e.preventDefault();
     const input = document.querySelector('#chat');
@@ -24,7 +48,6 @@ const onFormSubmitted = (e) => {
 
 
 
-
 const socket = io();
 
 
@@ -33,8 +56,12 @@ const socket = io();
 
 
 
+// ON THE PAGE
 
-
+// Choose a rival
+document.getElementById('start-play-btn').classList.add('selected');    // By default the friend's link is invisible 
+document.getElementById('rival-friend').onclick = rivalIsFriend;    // a friend
+document.getElementById('rival-random').onclick = rivalIsRandom;    // a random
 
 
 
@@ -46,6 +73,8 @@ var tabId= sessionStorage.getItem('tabId');
 if (tabId === null) {
     socket.emit('newTabId');
 };
+
+
 
 
 
@@ -71,6 +100,11 @@ document
 // Set a generated on the server tabId
 socket.on('setTabId', function (tabId) {
     sessionStorage.setItem('tabId', String(tabId));
+});
+
+// Set a friend's link
+socket.on('setFriendsLink', function(sharePage) {
+    document.getElementById('start-friends-link').innerHTML = sharePage;
 });
 
 

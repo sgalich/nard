@@ -8,7 +8,6 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
 
     <title>Play Nard Online</title>
-    <link rel="stylesheet" type="text/css" href="//cloud.typography.com/6804272/781004/css/fonts.css" />
     <link rel="stylesheet" href="styles/start.css">
     <link rel="stylesheet" href="styles/game.css">
     
@@ -144,74 +143,52 @@
 
   <!-- START SCREEN -->
   <div id="start-wrapper">
+    <!-- START MODAL -->
     <div id="start-modal">
-        <form>
+
             
-            <!-- Greetings -->
-            <div id="start-header">
-                <p>Welcome back!</p>
-                <p id="greeting-small">We're so exited to see you again!</p>
+        <!-- START MODAL HEADER-->
+        <div id="start-header">
+            <p>Welcome back!</p>
+            <p id="greeting-small">We're so exited to see you again!</p>
+        </div>
+
+        <!-- Nard / Backgammon -->
+        <div class="start-modal-row">
+            <button class="start option selected">nard</button>
+            <button class="start option" title="Sorry, this game is not ready yet.">backgammon</button>
+        </div>
+
+        <!-- Random / Friend -->
+        <div class="start-modal-row">
+            <button id="rival-random" class="start option selected">random rival</button>
+            <button id="rival-friend" class="start option">friend</button>
+        </div>
+
+            <!-- START MODAL FOOTER-->
+        <div class="start-modal-footer">
+            
+            <div id="start-play-link">
+                <div class="start link">
+                    <span id="start-friends-link">
+                        https://onlinenard.com/QmlRATyC
+                    </span>
+                    <svg id="copy-icon" viewBox="0 0 32 32"><g fill="none" fill-rule="evenodd"><path fill="#b9bbbe" fill-rule="nonzero" d="M4,8 L4,28 L24,28 L24,8 L4,8 Z M4,6 L24,6 C25.1045695,6 26,6.8954305 26,8 L26,28 C26,29.1045695 25.1045695,30 24,30 L4,30 C2.8954305,30 2,29.1045695 2,28 L2,8 C2,6.8954305 2.8954305,6 4,6 Z"/><path fill="#b9bbbe" fill-rule="nonzero" d="M8,6 L6,6 L6,4 C6,2.8954305 6.8954305,2 8,2 L28,2 C29.1045695,2 30,2.8954305 30,4 L30,24 C30,25.1045695 29.1045695,26 28,26 L26,26 L26,24 L28,24 L28,4 L8,4 L8,6 Z"/></g></svg>
+                </div>
+                <div>The game will start as soon as your friend visits this link.</div>
             </div>
             
-            <!-- Random / Friend -->
-            <div class="start-modal-row">
-                
-                <div id="start-random-rival">
-                    <p>with <br>a random<br> rival</p>
-                </div>
-                
-                <div class="start-toggle-switch">
-                    <label class="switch">
-                        <input type="checkbox">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                
-                <div id="start-with-friend">
-                    <p>WITH FRIEND</p>
-                    <svg id="share-svg"><use href="#share-icon"></use></svg>
-                    <div id="friends-link">
-                        <div>https://onlinenard.com/YbNazB4bJ
-                            <button id="share-copy-button">Copy Link</button>
-                        </div>
-                    </div>                
-                </div>
+            <button id="start-play-btn" class="start">play</button>
 
-            </div>
-
-            <!-- Nard / Backgammon -->
-            <div class="start-modal-row">
-                <div id="start-nard">
-                    <p>nard</p>
-                </div>
-                <div class="start-toggle-switch">
-                    <div class="start-toggle-switch">
-                        <label class="switch">
-                            <input type="checkbox">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                </div>
-                <div id="start-backgammon">
-                    <p>backgammon</p>
-                </div>
+        </div>
             
-            </div>
 
-            <!-- PLAY BUTTON -->
-            <div class="start-modal-row">
-                <a id="start-play-btn">
-                    <span>Play</span>
-                </a>  
-            </div>
-
-
-            <svg>
-                <defs>
-                    <symbol id="share-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-share"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></symbol>
-                </defs>
-            </svg>
-        </form>
+        
+        
+        
+        
+        
+        
     </div>
   </div>
 

@@ -223,7 +223,7 @@ checker[color='1']:hover {
     padding-left: 30px;
     padding-right: 30px;
   }
-  button, .share-button {
+ .share-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -243,7 +243,7 @@ checker[color='1']:hover {
     border: 1px solid #ddd;
     cursor: pointer;
   }
-  button:hover, .share-button:hover {
+.share-button:hover {
     border-color: #cdd;
     -webkit-transform: scale(1.01);
     transform: scale(1.01);

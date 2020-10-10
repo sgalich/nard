@@ -15,10 +15,11 @@ const app = express();
 const clientPath = `${__dirname}/../public_html`;
 console.log(`serving static from ${clientPath}`);
 
-// var domain = 'https://onlinenard.com';    # Truly domain
-var domain = 'localhost:8081';
+var domain = 'https://onlinenard.com/';    // Truly domain
+// var domain = 'localhost:8081';
 // var domain = clientPath;
  
+
 
 
 // Generate a pseudo link to share with a friend
@@ -30,7 +31,7 @@ function ganerateSharePage(length) {
         let newChar = characters.charAt(Math.floor(Math.random() * charactersLength));
         sharePage += newChar;
     }
-    return sharePage;
+    return domain + sharePage;
 };
 
 // Redirect to the page with the game
@@ -200,6 +201,12 @@ io.on('connection', (socket) => {
             uuid.v4()
         );
         socket.emit('setTabId', tabId);
+    });
+
+    // Generate friend's link
+    socket.on('generateFriendsLink', () => {
+        var sharePage = ganerateSharePage(8);
+        socket.emit('setFriendsLink', sharePage);
     });
 
 
