@@ -35,3 +35,4 @@ BUGS:
 desynch, reconciliation, lag compensation
 
 - Make the board resizible ? - https://jqueryui.com/resizable/
+- Suble click on the Friend button generates a new link. Stop it!

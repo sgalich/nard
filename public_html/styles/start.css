@@ -1,3 +1,12 @@
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+    outline: none;
+    outline-width: 0;
+}
+
+
 /* START MODAL WINDOW */
 
 #start-wrapper {
@@ -160,6 +169,7 @@
                 border:        1px solid #232428;
             }
             div.start.link > span {
+                user-select:    all;
                 font-size:      15px;
                 text-indent:    10px;
                 font-weight:    600;
@@ -170,6 +180,30 @@
                 vertical-align: middle;
                 font-family:    "Lucida Sans Unicode", "Lucida Grande", sans-serif; 
             }
+            #start-friends-link, #start-friends-link:hover, #start-friends-link:focus {
+                height:    40px;
+                width:     340px;
+                margin-top:    0;
+                margin-bottom: 0;
+                padding-left:  0;
+                border-radius: 3px;
+                display:       table;
+                background:  #313339; 
+                cursor:        text;
+                border:        1px solid #232428;
+                font-size:   20px;
+                line-height: 20px;
+                font-weight: 500;
+                color: #8e9297;
+                text-indent: 10px;
+                outline-width: 0;
+                border: none;
+                background: inherit;
+                -webkit-user-select: all;
+                -moz-user-select: all;
+                -ms-user-select: all;
+                user-select: all;
+            }
             #copy-icon {
                 /* border: 1px solid red; */
                 width: 27px;
@@ -178,6 +212,7 @@
                 right: 10px;
                 margin-top: 7px;
                 cursor: pointer;
+                margin-right: 10px;
             }
 
 /* SWITCH */

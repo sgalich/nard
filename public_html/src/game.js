@@ -292,7 +292,7 @@ function unmarkMarkedFields() {
     document.addEventListener('ondragstart', dragstart);
 
 
-    // Show dragging checker
+    // Show dragging checker - DOES NOT WORK !!!
     function showDraggingChecker(e) {
         let selectedChecker = document.getElementsByClassName('selected')[0];
         if (selectedChecker != undefined) {

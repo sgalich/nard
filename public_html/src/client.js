@@ -31,6 +31,19 @@ function rivalIsRandom() {
     document.getElementById('start-play-btn').classList.add('selected');
 };
 
+// Copy friend's link to clipboard by clicking the copy-icon
+document.getElementById('copy-icon')
+    .addEventListener('mousedown', function() {
+        let friendsLink = document.getElementById('start-friends-link');
+        friendsLink.focus();
+        friendsLink.select();
+        try {
+            var successful = document.execCommand('copy');
+        } catch (err) {
+            console.error('Failed to copy by the copy-icon', err);
+    };
+});
+
 
 // BOARD SCREEN
 
@@ -122,7 +135,8 @@ socket.on('setTabId', function (tabId) {
 
 // Set a friend's link
 socket.on('setFriendsLink', function(sharePage) {
-    document.getElementById('start-friends-link').innerHTML = sharePage;
+    // document.getElementById('start-friends-link').innerHTML = sharePage;
+    document.getElementById('start-friends-link').value = sharePage;
 });
 
 
