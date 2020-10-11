@@ -44,7 +44,7 @@ class Nard {
     // Socket is in the game
     placeInTheGame(socket) {
         this.renderBoard(socket);
-        socket.emit('hint', `Welcome to the ${socket.player.game} game!`);
+        // socket.emit('hint', `Welcome to the ${socket.player.game} game!`);
         socket.on('roll_dice', () => { this.rollDice() });
         socket.on('turn', () => { this._onTurn(idx, turn) });
     };

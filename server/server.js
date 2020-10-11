@@ -327,10 +327,10 @@ io.on('connection', (socket) => {
 
 
         // Chat
-        socket.on('hint', (text) => {             // RECIEVE
-            console.log('Someone send this: ', text);
-            io.emit('hint', text);                       // SEND TO ALL
-        });
+        // socket.on('hint', (text) => {             // RECIEVE
+        //     console.log('Someone send this: ', text);
+        //     io.emit('hint', text);                       // SEND TO ALL
+        // });
 
 
 

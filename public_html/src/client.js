@@ -137,27 +137,27 @@ function renderCheckers(board) {
 };
 
 // Print message in chat
-function printHint(hint) {
-    // document.getElementById('hint').innerHTML = null;    // clear
-    // document.getElementById('hint').innerHTML = hint;    // write
-    let time = new Date;
-    hint = time.getHours() + ':' + time.getMinutes() + ' ' + hint;
-    const parent = document.getElementById('hint');
-    const el = document.createElement('p');
-    el.innerHTML = hint;
-    parent.appendChild(el);
-    parent.scrollTop = parent.scrollHeight;
-};
+// function printHint(hint) {
+//     // document.getElementById('hint').innerHTML = null;    // clear
+//     // document.getElementById('hint').innerHTML = hint;    // write
+//     let time = new Date;
+//     hint = time.getHours() + ':' + time.getMinutes() + ' ' + hint;
+//     const parent = document.getElementById('hint');
+//     const el = document.createElement('p');
+//     el.innerHTML = hint;
+//     parent.appendChild(el);
+//     parent.scrollTop = parent.scrollHeight;
+// };
 
 // Send message from a player in chat
-const onFormSubmitted = (e) => {
-    e.preventDefault();
-    const input = document.querySelector('#chat');
-    const text = input.value;
-    input.value = '';
-    console.log(text);
-    socket.emit('hint', text);
-};
+// const onFormSubmitted = (e) => {
+//     e.preventDefault();
+//     const input = document.querySelector('#chat');
+//     const text = input.value;
+//     input.value = '';
+//     console.log(text);
+//     socket.emit('hint', text);
+// };
 
 
 
@@ -218,9 +218,10 @@ document
         socket.emit('roll_dice');
     }, false);
 
-document
-    .querySelector('#chat-form')
-    .addEventListener('submit', onFormSubmitted);
+//  Chat
+// document
+//     .querySelector('#chat-form')
+//     .addEventListener('submit', onFormSubmitted);
 
 
 
@@ -245,7 +246,7 @@ socket.on('setFriendsLink', function(sharePage) {
 });
 
 socket.on('hideStartModal', hideStartModal);
-socket.on('hint', printHint);
+// socket.on('hint', printHint);
 
 // Render checkers
 socket.on('renderCheckers', renderCheckers);

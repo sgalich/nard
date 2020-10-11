@@ -264,29 +264,20 @@ checker[color='1']:hover {
     src: local('Open Sans'), local('OpenSans'), url('http://themes.googleusercontent.com/static/fonts/opensans/v5/cJZKeOuBrn4kERxqtaUH3T8E0i7KZn-EPnyo3HZu7kw.woff') format('woff');
   }
 #hint {
-    background-color: aqua;
-    border: 1px solid red;
+    /* border: 1px solid red; */
     position: absolute;
-    width: 35%;
-    height: 30%;
-    top: calc(50% - 18% / 2);
-    left: 10%;
-    font-family: 'open sans',arial,sans-serif;
-    font-size: small;
-    text-align: left;
-    color: gray;
-    /* overflow: scroll; */
-    /* white-space: nowrap;  */
-    overflow-y: scroll;
-    /* overflow: scroll;
-    text-overflow: scroll;
-    overflow: visible; */
-    z-index: 1000;
+    top: 50%;
+    left: 30%;
+    transform: translate(-75%, -50%);
+    width: 25%;
+    height: 8%;
+    font-weight:    150;
+    font-family: 'Sacramento';
+    color: #70797B;
+    font-size: 40px;
+    text-align: center;
     display: table-cell;
-    vertical-align: bottom;
-    text-align: bottom;
-    flex-direction: column;
-    /* visibility: hidden; */
+    vertical-align: middle;
 }
 #hint > p {
     margin: 0px;
