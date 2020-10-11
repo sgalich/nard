@@ -233,8 +233,14 @@ var rooms = {};
 
 
 var players = {}
-var rooms = []
-let waitingPlayer = null;
+var rooms = {
+    nard: [],
+    backgammon: []
+}
+let waitingRivals = {
+    nard: null,
+    backgammon: null
+};
 
 app.use(express.static(clientPath));
 io.on('reconnect', (socket) => {
@@ -290,28 +296,21 @@ io.on('connection', (socket) => {
         // Start the game with a random rival
         socket.on('play', () => {
             console.log('play', player.id);
-            console.log(socket);
-
-
-
-
-
-
-
-                // START A GAME WITH THE FIRST PEER
-            if (waitingPlayer) {
+            let waitingRival = waitingRivals[player.game];
+            if (waitingRival) {
                 // start a game
-                // [socket, waitingPlayer].forEach((player) => {player.emit('hint', 'Game is starting.')});
-                socket.emit('hint', 'GAme starts');
-                waitingPlayer.emit('hint', 'Game starts');
-                game = new Nard(waitingPlayer, socket);
-                waitingPlayer = null;
+                [waitingRival, socket].forEach((plr) => {
+                    plr.emit('gameStarts');
+                    plr.emit('hint', 'Game is started.')
+                });
+                console.log('game starts');
+                rooms[player.game].push(new Nard(waitingRival, socket));
+                waitingRivals[player.game] = null;
+                
             } else {
-                waitingPlayer = socket;
-                waitingPlayer.emit('hint', 'Waiting for a rival...');
+                waitingRivals[player.game] = socket;
             };
-
-
+            console.log('rooms:', rooms);
         });
 
 
@@ -319,7 +318,17 @@ io.on('connection', (socket) => {
 
 
 
+        // Chat
+        socket.on('hint', (text) => {             // RECIEVE
+            console.log('Someone send this: ', text);
+            io.emit('hint', text);                       // SEND TO ALL
+        });
 
+        // Roll dice
+        socket.on('roll_dice', (socket) => {
+            // game.rollDice();
+            // io.emit('dice_rolled', rollDice());
+        });
 
 
 
@@ -381,18 +390,7 @@ io.on('connection', (socket) => {
 
 
 
-    // START A GAME WITH THE FIRST PEER
-    if (waitingPlayer) {
-        // start a game
-        // [socket, waitingPlayer].forEach((player) => {player.emit('hint', 'Game is starting.')});
-        socket.emit('hint', 'GAme starts');
-        waitingPlayer.emit('hint', 'Game starts');
-        game = new Nard(waitingPlayer, socket);
-        waitingPlayer = null;
-    } else {
-        waitingPlayer = socket;
-        waitingPlayer.emit('hint', 'Waiting for a rival...');
-    };
+
 
 
 
@@ -412,17 +410,7 @@ io.on('connection', (socket) => {
     // socket.emit('hint', 'Hi, you are connected');    // SEND TO SINGLE CLIENT
     
     
-    // Chat
-    socket.on('hint', (text) => {             // RECIEVE
-        console.log('Someone send this: ', text);
-        io.emit('hint', text);                       // SEND TO ALL
-    });
 
-    // Roll dice
-    socket.on('roll_dice', (socket) => {
-        game.rollDice();
-        // io.emit('dice_rolled', rollDice());
-    });
 
 });
 

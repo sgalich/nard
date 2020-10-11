@@ -99,6 +99,11 @@ document.getElementById('copy-icon')
     };
 });
 
+// Hide a start modal
+function gameStarts() {
+    document.getElementById('start-wrapper').classList.add('hide');
+};
+
 
 // BOARD SCREEN
 
@@ -204,14 +209,13 @@ socket.on('setTabId', function (tabId) {
     sessionStorage.setItem('tabId', String(tabId));
 });
 
-
 // Set a friend's link
 socket.on('setFriendsLink', function(sharePage) {
     // document.getElementById('start-friends-link').innerHTML = sharePage;
     document.getElementById('start-friends-link').value = sharePage;
 });
 
-// socket.emit('start', startGame);
+socket.on('gameStarts', gameStarts);
 socket.on('hint', printHint);
 
 // Place checkers

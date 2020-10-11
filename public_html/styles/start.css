@@ -25,8 +25,10 @@ button:focus {
     padding: 0px;
     background: #2F3136;
     position:     absolute;
-    /* Add this declaration when the game starts */
-    /* display: none;  */
+    display:      block; 
+}
+#start-wrapper.hide {
+    display: none;
 }
     /* Take a template from jQuery ! */
     #start-modal {
