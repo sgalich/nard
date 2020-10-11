@@ -20,7 +20,18 @@ var domain = 'https://onlinenard.com/';    // Truly domain
 // var domain = clientPath;
  
 
+// UTILS FUNCTIONS
 
+        
+// Generate a new tabId
+function setNewPlayerId(socket) {
+    let tabId = uuid.v5(
+        uuid.v1(Date.now()),
+        uuid.v4()
+    );
+    socket.emit('setTabId', tabId);
+    return tabId;
+};
 
 // Generate a pseudo link to share with a friend
 function ganerateSharePage(length) {
@@ -36,9 +47,8 @@ function ganerateSharePage(length) {
 
 // Redirect to the page with the game
 var sharePage = ganerateSharePage(8);
-console.log(sharePage);
 app.get(`/${sharePage}`, function(req, res){
-    console.log('YES !!!!!!!1');
+    console.log('Redirected');
     res.redirect('/');
 });
 
@@ -58,10 +68,14 @@ app.get(`/${sharePage}`, function(req, res){
 // app.use(attach_cookie('/index.html', 'mycookie', 'value'));
 
 
+// const cookieParser = require('cookie-parser');
+// var session = require('cookie-session')({ secret: 'secret' });
+
+// app.use(cookieParser);
+// app.use(session);
 
 
 
-app.use(express.static(clientPath));
 
 
 
@@ -74,21 +88,9 @@ app.use(express.static(clientPath));
 // app.use(cookieParser());
 
 
-// // RETURN EMPTY PAGE
-// app.get('/', function (req, res) {
-//     res.cookie('myCookie', 'looks good');
-//     // var cookies = parseCookies(req);
-//     console.log('cook OK');
-//     res.end('HI! HUJ BLYAD');
-//     // return res.sendFile(clientPath);
-//     // next();
-// });
-// app.use(express.static(clientPath));
 
 
-
-
-// set a cookie
+// Set a cookie in order to identify a user
 // app.use(function (req, res, next) {
     
     
@@ -97,19 +99,22 @@ app.use(express.static(clientPath));
 
 
 //     // check if client sent cookie
-//     var cookie = req.cookies.cookieName;
-//     if (cookie === undefined) {
-//       // no: set a new cookie
-//       var randomNumber=Math.random().toString();
-//       randomNumber=randomNumber.substring(2,randomNumber.length);
-//       res.cookie('cookieName',randomNumber, { maxAge: 900000, httpOnly: true });
-//       console.log('cookie created successfully');
+//     if (req.cookies === undefined || req.cookies.cookieName === undefined) {
+//       tabId = uuid.v5(
+//             uuid.v1(Date.now()),
+//             uuid.v4()
+//         );
+//       res.cookie('tabId', tabId, { maxAge: 900000, httpOnly: false });
+//       console.log('cookie created successfully', tabId);
 //     } else {
 //       // yes, cookie was already present 
 //       console.log('cookie exists', cookie);
 //     } 
 //     next(); // <-- important!
 //   });
+
+
+
 
 
 //   app.get('/', (req,res)=>{
@@ -156,24 +161,223 @@ app.use(express.static(clientPath));
 
 
 
+
+
+
 const server = http.createServer(app);
 
 
 const io = socketio(server);
 var game;
-
+var rooms = {};
 // Match two players that are on site but do not play yet
+
+
+
+
+
+// Trying to get session for a socket
+
+
+
+
+
+// var sessionStore = new express.session.MemoryStore();
+// var SessionSockets = require('session.socket.io');
+// const cookieParser = require('cookie-parser');
+// app.use(cookieParser());
+// app.use(express.session({store: sessionStore, secret: "mysecret"}));
+// sessionSockets = new SessionSockets(io, sessionStore, cookieParser);
+// sessionSockets.on('connection', function (err, socket, session) {
+//     console.log(session);
+// });
+
+
+
+// var Session = require('express-session'),
+//     // SessionStore = require('session-file-store')(Session);
+//     session = Session({
+//     //   store: new SessionStore({ path: './tmp/sessions' }),
+//       secret: 'pass',
+//       resave: true,
+//       saveUninitialized: true
+//     });
+// io.use(function(socket, next) {
+//     // console.log(socket);
+//   session(socket.handshake, {}, next);
+// });
+
+
+
+
+// io.sockets.on('connection', function (socket) {
+//     let userId = socket.handshake;    
+//     console.log(userId);
+// });
+
+
+
+
+
+// SESSION WORKS FOR BROWSER, NOT FOR TABS
+// var session = require("express-session")({
+//     secret: "my-secret",
+//     resave: true,
+//     saveUninitialized: true
+// });
+// var sharedsession = require("express-socket.io-session");
+// app.use(session);
+// io.use(sharedsession(session, {
+//     autoSave:true
+// })); 
+
+
+var players = {}
+var rooms = []
 let waitingPlayer = null;
+
+app.use(express.static(clientPath));
+io.on('reconnect', (socket) => {
+    console.log('reconnected');
+});
+
+
 io.on('connection', (socket) => {
+    // socket.player = null;
+
+
+
+    // ?????
+    // New socket with an old player.id => WHAT SHOULD WE DO ???
+    // ?????
+
+
+    // Identify a client as a player
+    // Get tabId as in user ID as soon as this user connected
+    // Or set it manually if it is a new user without tabId yet
+    socket.on('connected', (player) => {
+        socket.player = player;
+
+        // If there is not player.id, so it is a new user
+        // We need to set a new tabId in his session storage
+        if (player.id === null) {
+            player.id = setNewPlayerId(socket);
+        };
+
+        // Player changes a game type: nard / backgammon
+        socket.on('changeGame', (game) => {
+            player.game = game;
+            console.log(`${player.id} wants to play ${player.game} with ${player.rival}`);
+            
+            // AND BLOCK A RIVAL FINDING ALGORITHM
+
+        });
+
+        // Player changes a rival type: random / friend
+        socket.on('changeRival', (rival) => {
+            player.rival = rival;
+            console.log(`${player.id} wants to play ${player.game} with ${player.rival}`);
+            
+            // AND BLOCK A RIVAL FINDING ALGORITHM
+
+        });
+
+
+
+
+
+
+        // Start the game with a random rival
+        socket.on('play', () => {
+            console.log('play', player.id);
+            console.log(socket);
+
+
+
+
+
+
+
+                // START A GAME WITH THE FIRST PEER
+            if (waitingPlayer) {
+                // start a game
+                // [socket, waitingPlayer].forEach((player) => {player.emit('hint', 'Game is starting.')});
+                socket.emit('hint', 'GAme starts');
+                waitingPlayer.emit('hint', 'Game starts');
+                game = new Nard(waitingPlayer, socket);
+                waitingPlayer = null;
+            } else {
+                waitingPlayer = socket;
+                waitingPlayer.emit('hint', 'Waiting for a rival...');
+            };
+
+
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        console.log(`${player.id} wants to play ${player.game} with ${player.rival}`);
+
+    });
+
+    // console.log(socket.player);
+
+
+
+
+    
+    // console.log(io.sockets.clients());
+
+
+
+
+    // console.log(socket.handshake.session);
+    
+    // console.log('0000', socket.handshake.headers.cookie);
+    // console.log('0000', socket.handshake.session);
+
+
+
+
+    // SESSION WORKS FOR BROWSER, NOT FOR TABS
+    // if (socket.handshake.session.userdata === undefined) {
+    //     socket.handshake.session.userdata = uuid.v5(
+    //         uuid.v1(Date.now()),
+    //         uuid.v4()
+    //     );
+    //     socket.handshake.session.save();
+    // };
+
+
+
+
+
+    // console.log('0000', session);
+    // console.log('1111', socket.handshake.session.userdata);
+    
     
 
 
 
+
+
+
+
+
+
+
     
-    // let static middleware do its job
-    app.use(express.static(clientPath));
-    // console.log(socket.client.conn.id);
-    // console.log(socket.username);
 
 
 
@@ -194,14 +398,7 @@ io.on('connection', (socket) => {
 
 
 
-    // Generate a new tabId
-    socket.on('newTabId', () => {
-        let tabId = uuid.v5(
-            uuid.v1(Date.now()),
-            uuid.v4()
-        );
-        socket.emit('setTabId', tabId);
-    });
+
 
     // Generate friend's link
     socket.on('generateFriendsLink', () => {

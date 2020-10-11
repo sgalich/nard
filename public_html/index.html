@@ -168,8 +168,18 @@
             <!-- START MODAL FOOTER-->
         <div class="start-modal-footer">
             
-            <button id="start-play-btn" class="start selected">play</button>
+            <!-- Shown by default -->
+            <button id="start-play-btn" class="start">play</button>
 
+            <!-- Hidden by default, shown by PLAY button click -->
+            <div id="start-await-random-rival">
+                <div class="start await">
+                    <span>Waiting for a rival...</span>
+                </div>
+                <p style="text-align: center;">The game will start as soon as a rival is found.</p>
+            </div>
+
+            <!-- Hidden by default, shown by FRIEND button click -->
             <div id="start-play-link">
                 <div class="start link">
                     <span>
@@ -180,6 +190,8 @@
                 </div>
                 <div>The game will start as soon as your friend visits this link.</div>
             </div>
+
+
             
             
 
@@ -215,7 +227,7 @@
     <!-- My scripts -->
     <script src="src/rolldice.js" defer></script>
     <script src="src/game.js" defer></script>
-    <script src="src/client.js" defer></script>
+    <script type="module" src="src/client.js" defer></script>
 
 
 </body>

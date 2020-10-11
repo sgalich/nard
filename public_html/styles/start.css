@@ -150,15 +150,42 @@ button:focus {
             #start-play-btn {
                 display: none;
             }
-            #start-play-link.selected {
+            #start-await-random-rival {
+                display: none;
+            }
+            #start-await-random-rival.show {
                 display: block;
             }
-            #start-play-btn.selected {
+            #start-play-link.show {
                 display: block;
+            }
+            #start-play-btn.show {
+                display: block;
+            }
+            div.start.await {
+                height:        40px;
+                width:         380px;
+                margin-top:    0;
+                margin-bottom: -6px;
+                padding-left:  0;
+                display:       table;
+                /* border:        1px solid red; */
+            }
+            div.start.await > span {
+                margin-top:    0;
+                margin-bottom: 0;
+                font-size:      15px;
+                text-indent:    10px;
+                font-weight:    600;
+                color:             #dcddde;
+                text-align:          center;
+                display:             table-cell;
+                vertical-align:      middle;
+                font-family:         "Lucida Sans Unicode", "Lucida Grande", sans-serif; 
             }
             div.start.link {
-                height:    40px;
-                width:     380px;
+                height:        40px;
+                width:         380px;
                 margin-top:    10px;
                 margin-bottom: 5px;
                 padding-left:  0;
@@ -169,16 +196,18 @@ button:focus {
                 border:        1px solid #232428;
             }
             div.start.link > span {
-                user-select:    all;
                 font-size:      15px;
                 text-indent:    10px;
                 font-weight:    600;
-                user-select:    all;
-                color:        #dcddde;
-                text-align:     left;
-                display:        table-cell;
-                vertical-align: middle;
-                font-family:    "Lucida Sans Unicode", "Lucida Grande", sans-serif; 
+                -webkit-user-select: all;
+                -moz-user-select:    all;
+                -ms-user-select:     all;
+                user-select:         all;
+                color:             #dcddde;
+                text-align:          left;
+                display:             table-cell;
+                vertical-align:      middle;
+                font-family:         "Lucida Sans Unicode", "Lucida Grande", sans-serif; 
             }
             #start-friends-link, #start-friends-link:hover, #start-friends-link:focus {
                 height:    40px;

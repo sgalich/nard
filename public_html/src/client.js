@@ -1,34 +1,89 @@
+const socket = io();
+var game = 'nard';
+var rival = 'random';
+var wait = false;
+
 // START SCREEN
+
+// Show play / await / link
+// for PLAY button / await a random rival / friend's link
+function showInStartFooter(el) {
+    if (el === 'play') {
+        document.getElementById('start-play-btn').classList.add('show');
+        document.getElementById('start-await-random-rival').classList.remove('show');
+        document.getElementById('start-play-link').classList.remove('show');
+    } else if (el === 'await') {
+        document.getElementById('start-await-random-rival').classList.add('show');
+        document.getElementById('start-play-btn').classList.remove('show');
+        document.getElementById('start-play-link').classList.remove('show');
+    } else if (el === 'link') {
+        document.getElementById('start-play-link').classList.add('show');
+        document.getElementById('start-await-random-rival').classList.remove('show');
+        document.getElementById('start-play-btn').classList.remove('show');
+    };
+};
 
 // Game - nard
 function gameIsNard() {
+    game = 'nard';
+    socket.emit('changeGame', game);
     // Highlight
     document.getElementById('game-backgammon').classList.remove('selected');
     document.getElementById('game-nard').classList.add('selected');
+    wait = false;
+    if (rival === 'random') {
+        showInStartFooter('play');    // show play button again
+    };
 };
 
 // Game - backgammon
 function gameIsBackgammon() {
+    game = 'backgammon';
+    socket.emit('changeGame', game);
     // Highlight
     document.getElementById('game-nard').classList.remove('selected');
     document.getElementById('game-backgammon').classList.add('selected');
+    wait = false;
+    if (rival === 'random') {
+        showInStartFooter('play');    // show play button again
+    };
 };
 
 // Rival - a friend
 function rivalIsFriend() {
+    // Do nothing if the button is already active
+    let friendButton = document.getElementById('rival-friend');
+    if (friendButton.classList.contains('selected')) {
+        return;
+    };
+    rival = 'friend';
+    socket.emit('changeRival', rival);
     document.getElementById('rival-random').classList.remove('selected');
-    document.getElementById('rival-friend').classList.add('selected');
+    friendButton.classList.add('selected');
     socket.emit('generateFriendsLink');    // Generate a friend's link
-    document.getElementById('start-play-btn').classList.remove('selected');
-    document.getElementById('start-play-link').classList.add('selected');
+    showInStartFooter('link');
+    wait = true;
 };
 
-// Rival - a friend
+// Rival - a rival guy
 function rivalIsRandom() {
+    // Do nothing if the button is already active
+    let randomButton = document.getElementById('rival-random');
+    if (randomButton.classList.contains('selected')) {
+        return;
+    };
+    rival = 'random';
+    socket.emit('changeRival', rival);
     document.getElementById('rival-friend').classList.remove('selected');
-    document.getElementById('rival-random').classList.add('selected');
-    document.getElementById('start-play-link').classList.remove('selected');
-    document.getElementById('start-play-btn').classList.add('selected');
+    randomButton.classList.add('selected');
+    showInStartFooter('play');
+};
+
+// PLAY button is clicked
+function pressPlayButton() {
+    showInStartFooter('await');
+    socket.emit('play');
+    wait = true;
 };
 
 // Copy friend's link to clipboard by clicking the copy-icon
@@ -38,7 +93,7 @@ document.getElementById('copy-icon')
         friendsLink.focus();
         friendsLink.select();
         try {
-            var successful = document.execCommand('copy');
+            document.execCommand('copy');
         } catch (err) {
             console.error('Failed to copy by the copy-icon', err);
     };
@@ -51,7 +106,7 @@ document.getElementById('copy-icon')
 function printHint(hint) {
     // document.getElementById('hint').innerHTML = null;    // clear
     // document.getElementById('hint').innerHTML = hint;    // write
-    time = new Date;
+    let time = new Date;
     hint = time.getHours() + ':' + time.getMinutes() + ' ' + hint;
     const parent = document.getElementById('hint');
     const el = document.createElement('p');
@@ -75,7 +130,6 @@ const onFormSubmitted = (e) => {
 
 
 
-const socket = io();
 
 
 
@@ -85,30 +139,42 @@ const socket = io();
 
 // ON THE PAGE
 
-// Choose: nard or backgammon
+// Set a tabId - session identificator
+
+// Choose a game: nard or backgammon
 document.getElementById('game-nard').onclick = gameIsNard;    // a nard
 document.getElementById('game-backgammon').onclick = gameIsBackgammon;    // a backgammon
 
-// Choose a rival
-document.getElementById('start-play-btn').classList.add('selected');    // By default the friend's link is invisible 
+// Choose a rival: random or friend
+document.getElementById('start-play-btn').classList.add('show');    // By default the friend's link is invisible 
 document.getElementById('rival-friend').onclick = rivalIsFriend;    // a friend
 document.getElementById('rival-random').onclick = rivalIsRandom;    // a random
 
 
 
+
 // TO THE SERVER
 
+// Send to the server an info about connection session (tabId)
+let player = {
+    id: sessionStorage.getItem('tabId'),
+    game: game,
+    rival: rival
+}
+console.log(player);
+socket.emit('connected', player);
+
+// Play button is pressed
+// document.getElementById('start-play-btn').onclick = () => {socket.emit('play')};
+// Press PLAY button
+document.getElementById('start-play-btn').onclick = pressPlayButton;
+
+
 // Get tabId in order to identify user
-var tabId= sessionStorage.getItem('tabId');
-// Generate a new tabId if there is not any tabId
-if (tabId === null) {
-    socket.emit('newTabId');
-};
-
-
-
-
-
+// var tabId= sessionStorage.getItem('tabId');
+// if (tabId === null) {
+//     socket.emit('newTabId');
+// };
 
 // Roll dice by click
 // Temp function REMOVE IT !
@@ -128,18 +194,22 @@ document
 
 // FROM THE SERVER
 
+// // Set a generated on the server tabId
+// socket.on('setTabId', function (tabId) {
+//     sessionStorage.setItem('tabId', String(tabId));
+// });
+
 // Set a generated on the server tabId
 socket.on('setTabId', function (tabId) {
     sessionStorage.setItem('tabId', String(tabId));
 });
+
 
 // Set a friend's link
 socket.on('setFriendsLink', function(sharePage) {
     // document.getElementById('start-friends-link').innerHTML = sharePage;
     document.getElementById('start-friends-link').value = sharePage;
 });
-
-
 
 // socket.emit('start', startGame);
 socket.on('hint', printHint);
