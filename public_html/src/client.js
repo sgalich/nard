@@ -100,12 +100,41 @@ document.getElementById('copy-icon')
 });
 
 // Hide a start modal
-function gameStarts() {
+function hideStartModal() {
     document.getElementById('start-wrapper').classList.add('hide');
 };
 
 
 // BOARD SCREEN
+
+// Place one checker at certain field by id
+function createChecker(id, color) {
+    let field = document.getElementById(id);
+    let checker = document.createElement('checker');   // Create a checker
+    checker.setAttribute('draggable', 'true');    // make it draggable
+    // checker.setAttribute('class', 'unselected');    // make it selectable
+    checker.classList.add('unselected');
+    // checker.classList.add('hvr-grow');    // hvr-ripple-out
+    checker.setAttribute('color', color);
+    checker.style.visibility = "visible"
+    let checkersInField = field.children.length;
+    if (field.classList.contains('top')) {
+        checker.setAttribute('style', `top: calc(${checkersInField} * ${CHECKEROVERLAP}%);`);
+    } else {
+        checker.setAttribute('style', `bottom: calc(${checkersInField} * ${CHECKEROVERLAP}%);`);
+    };
+    field.appendChild(checker);    // Place checker inside the field
+    board[id] += color;
+};
+
+// Render checkers
+function renderCheckers(board) {
+    Object.entries(board).forEach((field) => {
+        for (let i = 0; i < Math.abs(field[1]); i++) {
+            createChecker(field[0], Math.sign(field[1]));
+        };
+    });
+};
 
 // Print message in chat
 function printHint(hint) {
@@ -166,7 +195,6 @@ let player = {
     game: game,
     rival: rival
 }
-console.log(player);
 socket.emit('connected', player);
 
 // Play button is pressed
@@ -186,6 +214,7 @@ document.getElementById('start-play-btn').onclick = pressPlayButton;
 document
     .getElementsByClassName('diceBox')[0]
     .addEventListener('click', (e) => {
+        console.log('dice rolled!');
         socket.emit('roll_dice');
     }, false);
 
@@ -215,14 +244,14 @@ socket.on('setFriendsLink', function(sharePage) {
     document.getElementById('start-friends-link').value = sharePage;
 });
 
-socket.on('gameStarts', gameStarts);
+socket.on('hideStartModal', hideStartModal);
 socket.on('hint', printHint);
 
-// Place checkers
-socket.on('place_checkers', startGame);
+// Render checkers
+socket.on('renderCheckers', renderCheckers);
 
 // Render dice after them are rolled from the server
-socket.on('dice_rolled', renderDice);
+socket.on('renderDice', renderDice);
 
 // Reconnection
 socket.on('user-reconnected', function (username) {

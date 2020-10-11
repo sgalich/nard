@@ -15,8 +15,8 @@ const app = express();
 const clientPath = `${__dirname}/../public_html`;
 console.log(`serving static from ${clientPath}`);
 
-var domain = 'https://onlinenard.com/';    // Truly domain
-// var domain = 'localhost:8081';
+// var domain = 'https://onlinenard.com/';    // Truly domain
+var domain = 'localhost:8081/';
 // var domain = clientPath;
  
 
@@ -42,15 +42,8 @@ function ganerateSharePage(length) {
         let newChar = characters.charAt(Math.floor(Math.random() * charactersLength));
         sharePage += newChar;
     }
-    return domain + sharePage;
+    return sharePage;
 };
-
-// Redirect to the page with the game
-var sharePage = ganerateSharePage(8);
-app.get(`/${sharePage}`, function(req, res){
-    console.log('Redirected');
-    res.redirect('/');
-});
 
 
 
@@ -168,8 +161,7 @@ const server = http.createServer(app);
 
 
 const io = socketio(server);
-var game;
-var rooms = {};
+
 // Match two players that are on site but do not play yet
 
 
@@ -232,31 +224,26 @@ var rooms = {};
 // })); 
 
 
-var players = {}
 var rooms = {
     nard: [],
     backgammon: []
 }
-let waitingRivals = {
+var waitingRandoms = {
     nard: null,
     backgammon: null
 };
+var waitingFriends = {
+    nard: {},
+    backgammon: {}
+};
 
 app.use(express.static(clientPath));
-io.on('reconnect', (socket) => {
-    console.log('reconnected');
-});
+// io.on('reconnect', (socket) => {
+//     console.log('reconnected');
+// });
 
 
 io.on('connection', (socket) => {
-    // socket.player = null;
-
-
-
-    // ?????
-    // New socket with an old player.id => WHAT SHOULD WE DO ???
-    // ?????
-
 
     // Identify a client as a player
     // Get tabId as in user ID as soon as this user connected
@@ -268,6 +255,21 @@ io.on('connection', (socket) => {
         // We need to set a new tabId in his session storage
         if (player.id === null) {
             player.id = setNewPlayerId(socket);
+        } else {
+            // If a known user returns we put him back to his game if it exists
+            // Find a room for this player where he is from
+            console.log('WELCOME BACK TO: ', player.id);
+            rooms[player.game].forEach((gm) => {
+                if (gm.p1.player.id === player.id) {
+                    console.log('p1! The game is found!');
+                    gm.p1 = socket;    // replace a player with a new one with another socket
+                    gm.placeInTheGame(socket);
+                } else if (gm.p2.player.id === player.id) {
+                    console.log('p2! The room is found');
+                    gm.p2 = socket;    // replace a player with a new one with another socket
+                    gm.placeInTheGame(socket);
+                };
+            });
         };
 
         // Player changes a game type: nard / backgammon
@@ -288,34 +290,40 @@ io.on('connection', (socket) => {
 
         });
 
-
-
-
-
-
         // Start the game with a random rival
         socket.on('play', () => {
             console.log('play', player.id);
-            let waitingRival = waitingRivals[player.game];
+            let waitingRival = waitingRandoms[player.game];
             if (waitingRival) {
-                // start a game
-                [waitingRival, socket].forEach((plr) => {
-                    plr.emit('gameStarts');
-                    plr.emit('hint', 'Game is started.')
-                });
                 console.log('game starts');
                 rooms[player.game].push(new Nard(waitingRival, socket));
-                waitingRivals[player.game] = null;
+                waitingRandoms[player.game] = null;
                 
             } else {
-                waitingRivals[player.game] = socket;
+                waitingRandoms[player.game] = socket;
             };
-            console.log('rooms:', rooms);
         });
 
 
+        // Generate friend's link
+        socket.on('generateFriendsLink', () => {
+            var sharePage = ganerateSharePage(8);
+            socket.emit('setFriendsLink', domain + sharePage);
+            // Redirect a friend to the main page
+            app.get(`/${sharePage}`, function(req, res) {
+                console.log('Redirected');
+                res.redirect('/');
+            });
 
 
+
+
+
+            // MATCH FRIEND AND PLACE THEM IN THE GAME !!!
+
+
+
+        });
 
 
         // Chat
@@ -324,11 +332,7 @@ io.on('connection', (socket) => {
             io.emit('hint', text);                       // SEND TO ALL
         });
 
-        // Roll dice
-        socket.on('roll_dice', (socket) => {
-            // game.rollDice();
-            // io.emit('dice_rolled', rollDice());
-        });
+
 
 
 
@@ -398,11 +402,7 @@ io.on('connection', (socket) => {
 
 
 
-    // Generate friend's link
-    socket.on('generateFriendsLink', () => {
-        var sharePage = ganerateSharePage(8);
-        socket.emit('setFriendsLink', sharePage);
-    });
+
 
 
 

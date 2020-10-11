@@ -14,11 +14,6 @@ const board = {};
 // color = -1 / 1 for black / white
 
 
-// THE MAIN FUNCTION TO START A GAME
-var startGame = function () {
-    placeChackers();
-};
-
 
 
 
@@ -28,41 +23,7 @@ function nextRound() {
     printHint(`Black: ${die1}, White: ${die2}, ${turn} are first!`);
 }
 
-// Place one checker at certain field by id
-function createChecker(color, id) {
-    const field = document.getElementById(id);
-    let checker = document.createElement('checker');   // Create a checker
-    checker.setAttribute('draggable', 'true');    // make it draggable
-    // checker.setAttribute('class', 'unselected');    // make it selectable
-    checker.classList.add('unselected');
-    // checker.classList.add('hvr-grow');    // hvr-ripple-out
-    checker.setAttribute('color', color);
-    checker.style.visibility = "visible"
-    let checkersInField = field.children.length;
-    if (field.classList.contains('top')) {
-        checker.setAttribute('style', `top: calc(${checkersInField} * ${CHECKEROVERLAP}%);`);
-    } else {
-        checker.setAttribute('style', `bottom: calc(${checkersInField} * ${CHECKEROVERLAP}%);`);
-    };
-    field.appendChild(checker);    // Place checker inside the field
-    board[id] += color;
-};
 
-// 3.0 Place checkers
-function placeChackers() {
-    
-    // Fill the const board with zeroes
-    (function initBoard() {
-        for (let i = 1; i < 25; i++) {
-            board[i] = 0;
-        };
-    }());
-
-    for (let i = 0; i < 15; i++) {
-        createChecker(-1, 1);    // -1 - black
-        createChecker(1, 13);    // 1 - white
-    };
-};
 
 // 3. The Game functions
 function play() {
