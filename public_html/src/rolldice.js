@@ -13,6 +13,8 @@ function renderASingleDie(randomResult, dieId) {
     // Render new spots on the die 1
     let die = document.getElementById(`die${dieId}`);
     die.innerHTML = '';
+    console.log(randomResult)
+    if (randomResult === null) { return };
     whatToShowOnDie[randomResult].forEach(el => {
         let spot = document.createElement('spot');
         spot.setAttribute('id', `spot${el}`);

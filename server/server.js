@@ -228,7 +228,7 @@ var rooms = {
     nard: [],
     backgammon: []
 }
-var waitingRandoms = {
+var waitingRandom = {
     nard: null,
     backgammon: null
 };
@@ -270,37 +270,44 @@ io.on('connection', (socket) => {
                     gm.placeInTheGame(socket);
                 };
             });
+            
+            
+            // !!!!!!!!
+            // Or we put him in his line !!!!! and hide a play button, show 'await'
+            // !!!!!!!!
+
+
+
+
         };
 
         // Player changes a game type: nard / backgammon
         socket.on('changeGame', (game) => {
             player.game = game;
             console.log(`${player.id} wants to play ${player.game} with ${player.rival}`);
-            
-            // AND BLOCK A RIVAL FINDING ALGORITHM
-
+            // Remove the socket from the previous room
+            waitingRandom[player.game] = null;
         });
 
         // Player changes a rival type: random / friend
         socket.on('changeRival', (rival) => {
             player.rival = rival;
             console.log(`${player.id} wants to play ${player.game} with ${player.rival}`);
-            
-            // AND BLOCK A RIVAL FINDING ALGORITHM
-
+            // Remove the socket from the previous room
+            waitingRandom[player.game] = null;
         });
 
         // Start the game with a random rival
         socket.on('play', () => {
             console.log('play', player.id);
-            let waitingRival = waitingRandoms[player.game];
+            let waitingRival = waitingRandom[player.game];
             if (waitingRival) {
                 console.log('game starts');
                 rooms[player.game].push(new Nard(waitingRival, socket));
-                waitingRandoms[player.game] = null;
+                waitingRandom[player.game] = null;
                 
             } else {
-                waitingRandoms[player.game] = socket;
+                waitingRandom[player.game] = socket;
             };
         });
 
@@ -319,7 +326,7 @@ io.on('connection', (socket) => {
 
 
 
-            // MATCH FRIEND AND PLACE THEM IN THE GAME !!!
+            // MATCH FRIENDS AND PLACE THEM IN THE GAME !!!
 
 
 

@@ -101,7 +101,8 @@ document.getElementById('copy-icon')
 
 // Hide a start modal
 function hideStartModal() {
-    document.getElementById('start-wrapper').classList.add('hide');
+    document.getElementById('start-back').classList.add('hide');
+    document.getElementById('start-modal').classList.add('hide');
 };
 
 
