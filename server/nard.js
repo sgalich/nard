@@ -1,8 +1,9 @@
 class Nard {
 
-    constructor(p1, p2) {
+    constructor(p1, p2, game='nard') {
         this.p1 = p1;
         this.p2 = p2;
+        this.game = game;
         this.turns = [null, null];
         this.die1 = null;    // random result from die1
         this.die2 = null;    // random result from die2

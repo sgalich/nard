@@ -6,6 +6,8 @@ const socketio = require('socket.io');
 const Nard = require('./nard');
 
 const uuid = require('uuid');
+const { Console } = require('console');
+var cookie = require("cookies");
 
 // const randomColor = require('randomcolor');
 // const createBoard = require('./create-board');
@@ -19,9 +21,39 @@ console.log(`serving static from ${clientPath}`);
 var domain = 'localhost:8081/';
 // var domain = clientPath;
  
+// rooms = {
+//     nard: [Game(socket1, socket2), Game(socket1, socket2), ...],
+//     backgammon: [Game(socket1, socket2), Game(socket1, socket2), ...]
+// }
+var rooms = {
+    nard: [],
+    backgammon: []
+}
+
+// waitingRandom = {
+//     nard: socket,
+//     backgammon: socket
+// };
+var waitingRandom = {
+    nard: null,
+    backgammon: null
+};
+
+// waitingFriends = {
+//     'LWCqJTyv': {
+//          inviter: socket,
+//          invitee: null
+//      },
+//     'XUZFdcGH': {
+//          inviter: socket,
+//          invitee: null
+//      },
+//     ...
+// };
+var waitingFriends = {};
+
 
 // UTILS FUNCTIONS
-
         
 // Generate a new tabId
 function setNewPlayerId(socket) {
@@ -45,9 +77,44 @@ function ganerateSharePage(length) {
     return sharePage;
 };
 
+// Remove the socket from the previous room
+function removeFromWaitingRandom(socket, game=null) {
+    game = (game) ? game : socket.player.game;
+    if (
+        waitingRandom[game]
+        && waitingRandom[game].player.id === socket.player.id
+    ) {
+        waitingRandom[game] = null;
+    };
+};
 
+// Remove the entry from waitingFriends by sharePage
+function removeFromWaitingFriends(sharePage) {
+    delete waitingFriends[sharePage];
+};
 
+// Remove the entry from waitingFriends by Socket
+function removeFromWaitingFriends(playerId) {
+    // Object.entries(waitingFriends).forEach((item) => { console.log(item)    });
+    Object.entries(waitingFriends).forEach(([sharePage, friends]) => {
+        if (friends.inviter.player.id === playerId) {
+            delete waitingFriends[sharePage];
+            return;
+        }; 
+    });
+};
 
+// Get a cookie value by it's name
+function getCook(cookies, cookiename) {
+    cookies = cookies.split('; ');
+    for (cook of cookies) {
+        [name, value] = cook.split('=');
+        if (name === cookiename) {
+            return value;
+        };
+    };
+    return;
+};
 
 
 // function SharePage(url, cookie, value) {
@@ -84,13 +151,8 @@ function ganerateSharePage(length) {
 
 
 // Set a cookie in order to identify a user
-// app.use(function (req, res, next) {
-    
-    
+// app.use(function (req, res, next) { 
 //     console.log('09341ubg3r9ugb34!!!!');
-
-
-
 //     // check if client sent cookie
 //     if (req.cookies === undefined || req.cookies.cookieName === undefined) {
 //       tabId = uuid.v5(
@@ -224,18 +286,7 @@ const io = socketio(server);
 // })); 
 
 
-var rooms = {
-    nard: [],
-    backgammon: []
-}
-var waitingRandom = {
-    nard: null,
-    backgammon: null
-};
-var waitingFriends = {
-    nard: {},
-    backgammon: {}
-};
+
 
 app.use(express.static(clientPath));
 // io.on('reconnect', (socket) => {
@@ -251,10 +302,11 @@ io.on('connection', (socket) => {
     socket.on('connected', (player) => {
         socket.player = player;
 
+        // 1. Identify a user
         // If there is not player.id, so it is a new user
         // We need to set a new tabId in his session storage
-        if (player.id === null) {
-            player.id = setNewPlayerId(socket);
+        if (socket.player.id === null) {
+            socket.player.id = setNewPlayerId(socket);
         } else {
             // If a known user returns we put him back to his game if it exists
             // Find a room for this player where he is from
@@ -262,75 +314,116 @@ io.on('connection', (socket) => {
             rooms[player.game].forEach((gm) => {
                 if (gm.p1.player.id === player.id) {
                     console.log('p1! The game is found!');
+                    // inherit all the player instance from previous socket
+                    socket.player = gm.p1.player;
                     gm.p1 = socket;    // replace a player with a new one with another socket
                     gm.placeInTheGame(socket);
                 } else if (gm.p2.player.id === player.id) {
                     console.log('p2! The room is found');
+                    // inherit all the player instance from previous socket
+                    socket.player = gm.p2.player;
                     gm.p2 = socket;    // replace a player with a new one with another socket
                     gm.placeInTheGame(socket);
                 };
             });
-            
-            
-            // !!!!!!!!
-            // Or we put him in his line !!!!! and hide a play button, show 'await'
-            // !!!!!!!!
-
-
-
-
+            // If the socket is in a waitingRandom we hide a play button, show 'await'
+            if (waitingRandom[player.game] && waitingRandom[player.game].player.id === player.id) {
+                socket.emit('pressPlayButton');
+            };
+            // If socket is in waitingFriends - remove it from here
+            removeFromWaitingFriends(playerId)
         };
 
         // Player changes a game type: nard / backgammon
-        socket.on('changeGame', (game) => {
-            player.game = game;
+        socket.on('changeGame', (prevGame, currGame) => {
+            player.game = currGame;
             console.log(`${player.id} wants to play ${player.game} with ${player.rival}`);
-            // Remove the socket from the previous room
-            waitingRandom[player.game] = null;
+            removeFromWaitingRandom(socket, prevGame)
         });
 
         // Player changes a rival type: random / friend
         socket.on('changeRival', (rival) => {
-            player.rival = rival;
+            socket.player.rival = rival;
             console.log(`${player.id} wants to play ${player.game} with ${player.rival}`);
-            // Remove the socket from the previous room
-            waitingRandom[player.game] = null;
+            if (socket.player.rival === 'friend') {
+                removeFromWaitingRandom(socket);
+            } else if (socket.player.rival === 'random') {
+                // Remove the socket from the waitingFriends
+                removeFromWaitingFriends(socket.player.sharePage);
+            };
         });
 
         // Start the game with a random rival
         socket.on('play', () => {
             console.log('play', player.id);
             let waitingRival = waitingRandom[player.game];
-            if (waitingRival) {
+            if (waitingRival && waitingRival.player.id !== socket.player.id) {
                 console.log('game starts');
                 rooms[player.game].push(new Nard(waitingRival, socket));
-                waitingRandom[player.game] = null;
-                
+                waitingRandom[player.game] = null;     
             } else {
                 waitingRandom[player.game] = socket;
             };
         });
 
+        // Start the game with a friend. Socket = invitee
+        // I cannot access sharePage inside the socket,
+        // So I wrote it as a cookie and now I'm gonna check this cookie
+        // After matching the friends we need to clear this cookie
+        let sharePage = getCook(socket.request.headers.cookie, 'sharePage');
+        let inviter = waitingFriends[sharePage];
+        // Check for inviter existing in order not to clear that cookie
+        if (sharePage && inviter) {
+            rooms[player.game].push(
+                new Nard(
+                    waitingFriends[sharePage].inviter,
+                    socket,
+                    waitingFriends[sharePage].inviter.player.game
+                )
+            );
+            delete waitingFriends[sharePage];
+            removeFromWaitingFriends(sharePage);
+            console.log(`Successfully matched two friends from link ${sharePage}`);
+        };
+        if (waitingFriends[sharePage]) { console.log('FAILED TO MATCH FRIENDS !!!') };
 
         // Generate friend's link
         socket.on('generateFriendsLink', () => {
             var sharePage = ganerateSharePage(8);
             socket.emit('setFriendsLink', domain + sharePage);
-            // Redirect a friend to the main page
-            app.get(`/${sharePage}`, function(req, res) {
-                console.log('Redirected');
+            // Add the socket to the waitingFriends
+            waitingFriends[sharePage] = {
+                inviter: socket,
+                invitee: null,
+            };
+            // Redirect an invetee to the main page
+            app.get(`/${sharePage}`, function(req, res, next) {
+                res.cookie('sharePage', sharePage, { expires: false, httpOnly: false });
                 res.redirect('/');
             });
-
-
-
-
-
-            // MATCH FRIENDS AND PLACE THEM IN THE GAME !!!
-
-
-
         });
+
+        // Start the game with a friend
+
+
+
+        // // Remove both friends' sockets from the waitingFriends
+        // removeFromWaitingFriends(socket);
+
+
+
+        // MATCH FRIENDS AND PLACE THEM IN THE GAME !!!
+
+
+
+
+
+
+
+
+
+
+
 
 
         // Chat
@@ -344,10 +437,20 @@ io.on('connection', (socket) => {
 
 
 
+        // User is disconnected - remove the user from waitingRandom and from rooms (?)
+        socket.on('disconnect', function() {
+            // Remove disconnected socket from the waitingRandom
+            if (waitingRandom[player.game] && waitingRandom[player.game].player.id === player.id) {
+                waitingRandom[player.game] = null;
+            };
+            // Remove disconnected socket from all of his rooms after ??? time of disconnection
+            // Or do what?
+            // Show the rival info about his rival's disconnection and show him time.
+            // ???
+            // Send to his opponent a message about their rival disconnection
+            // ...
+        });
 
-
-
-        console.log(`${player.id} wants to play ${player.game} with ${player.rival}`);
 
     });
 

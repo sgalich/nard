@@ -35,4 +35,7 @@ BUGS:
 desynch, reconciliation, lag compensation
 
 - Make the board resizible ? - https://jqueryui.com/resizable/
-- Make beauty ...
+- Implement a database
+- Add score (& daily score) like in lichess
+- Make small & middle size versions
+- 

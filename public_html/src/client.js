@@ -1,4 +1,5 @@
 const socket = io();
+// console.log(8, socket.request.headers.referer);
 var game = 'nard';
 var rival = 'random';
 var wait = false;
@@ -26,7 +27,7 @@ function showInStartFooter(el) {
 // Game - nard
 function gameIsNard() {
     game = 'nard';
-    socket.emit('changeGame', game);
+    socket.emit('changeGame', 'backgammon', game);
     // Highlight
     document.getElementById('game-backgammon').classList.remove('selected');
     document.getElementById('game-nard').classList.add('selected');
@@ -39,7 +40,7 @@ function gameIsNard() {
 // Game - backgammon
 function gameIsBackgammon() {
     game = 'backgammon';
-    socket.emit('changeGame', game);
+    socket.emit('changeGame', 'nard', game);
     // Highlight
     document.getElementById('game-nard').classList.remove('selected');
     document.getElementById('game-backgammon').classList.add('selected');
@@ -191,11 +192,11 @@ document.getElementById('rival-random').onclick = rivalIsRandom;    // a random
 // TO THE SERVER
 
 // Send to the server an info about connection session (tabId)
-let player = {
+let player = socket.player || {
     id: sessionStorage.getItem('tabId'),
     game: game,
     rival: rival
-}
+};
 socket.emit('connected', player);
 
 // Play button is pressed
@@ -239,6 +240,9 @@ document
 socket.on('setTabId', function (tabId) {
     sessionStorage.setItem('tabId', String(tabId));
 });
+
+// Hide PLAY button
+socket.on('pressPlayButton', pressPlayButton);
 
 // Set a friend's link
 socket.on('setFriendsLink', function(sharePage) {
