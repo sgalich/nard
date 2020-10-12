@@ -4,7 +4,7 @@ class Nard {
         this.p1 = p1;
         this.p2 = p2;
         this.game = game;
-        this.turns = [null, null];
+        this.onTurn = null;
         this.die1 = null;    // random result from die1
         this.die2 = null;    // random result from die2
         this.turn = null;    // -1 or 1 (for 'black' or 'white') - who is moving checkers now
@@ -40,6 +40,7 @@ class Nard {
         };
         this.placeInTheGame(p1);
         this.placeInTheGame(p2);
+        this.chooseWhoIsFirst();
     };
 
     // Socket is in the game
@@ -63,6 +64,29 @@ class Nard {
         this.die2 = Math.floor(Math.random() * 6) + 1;
         this.p1.emit('renderDice', [this.die1, this.die2]);
         this.p2.emit('renderDice', [this.die1, this.die2]);
+    };
+
+    // Print hint
+    printHint(socket, hint) {
+        socket.emit('printHint', hint);
+    };
+
+    // Choose who's turn is first
+    chooseWhoIsFirst() {
+        this.rollDice();
+        // Roll dice till they show different results
+        while (this.die1 == this.die2) {
+            this.rollDice();
+        };
+        if (this.die1 > this.die2) {
+            this.onTurn = this.p1;
+            this.printHint(this.p1, 'your turn');
+            this.printHint(this.p1, 'rival\'s turn');
+        } else {
+            this.onTurn = this.p2;
+            this.printHint(this.p2, 'your turn');
+            this.printHint(this.p1, 'rival\'s turn');
+        };
     };
 
     // // 2. Choose who makes the first move

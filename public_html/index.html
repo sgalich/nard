@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
 
     <!-- Fonts -->
-    <link href='https://fonts.googleapis.com/css?family=Sacramento' rel='stylesheet'>
+    <link href='https://fonts.googleapis.com/css?family=Red Rose' rel='stylesheet'>
 
     <!-- Title -->
     <title>Play Nard Online</title>
@@ -26,126 +26,85 @@
  
 
 <body>
-    
-    <div class="navbar-brand back" href="#" style="border: 1px solid black; width: 100%;">Hi</div>
-    <div class="back" >
+    <div id="board">
 
-
-        <div id="board">
-
-            <div class="vertical">
-                <div class="field top" id="24"></div>
-                <div class="field bottom" id="1"></div>
-            </div>
-
-            <div class="vertical">
-                <div class="field top" id="23"></div>
-                <div class="field bottom" id="2"></div>
-            </div>
-
-            <div class="vertical">
-                <div class="field top" id="22"></div>
-                <div class="field bottom" id="3"></div>
-            </div>
-
-            <div class="vertical">
-                <div class="field top" id="21"></div>
-                <div class="field bottom" id="4"></div>
-            </div>
-
-            <div class="vertical">
-                <div class="field top" id="20"></div>
-                <div class="field bottom" id="5"></div>
-            </div>
-
-            <div class="vertical">
-                <div class="field top" id="19"></div>
-                <div class="field bottom" id="6"></div>
-            </div>
-
-            <div id="middle_side">
-                <div class="field middle" id="0"></div>
-            </div>
-
-            <div class="vertical">
-                <div class="field top" id="18"></div>
-                <div class="field bottom" id="7"></div>
-            </div>
-
-            <div class="vertical">
-                <div class="field top" id="17"></div>
-                <div class="field bottom" id="8"></div>
-            </div>
-
-            <div class="vertical">
-                <div class="field top" id="16"></div>
-                <div class="field bottom" id="9"></div>
-            </div>
-
-            <div class="vertical">
-                <div class="field top" id="15"></div>
-                <div class="field bottom" id="10"></div>
-            </div>
-
-            <div class="vertical">
-                <div class="field top" id="14"></div>
-                <div class="field bottom" id="11"></div>
-            </div>
-
-            <div class="vertical">
-                <div class="field top" id="13"></div>
-                <div class="field bottom" id="12"></div>
-            </div>        
-
-            <!-- Chat
-                <div class="chet" id="chet">
-                <form id="chat-form" style="bottom: 0px; position: absolute;">
-                    <input id="chat-input">
-                    <button id="chat-send">Send</button>
-                </form>
-            </div> -->
-
-            <div class="hint" id="hint">
-                your turn...
-            </div>
-               
-            <div class="diceBox">
-
-                <div class="die" id="die1">
-                    <div class="point" id="point1"></div>
-                    <div class="point" id="point2"></div>
-                    <div class="point" id="point3"></div>
-                    <div class="point" id="point4"></div>
-                    <div class="point" id="point5"></div>
-                    <div class="point" id="point6"></div>
-                    <div class="point" id="point7"></div>
-                    <div class="point" id="point8"></div>
-                    <div class="point" id="point9"></div>
-                </div>
-
-                <div class="die" id="die2">
-                    <div class="point" id="point1"></div>
-                    <div class="point" id="point2"></div>
-                    <div class="point" id="point3"></div>
-                    <div class="point" id="point4"></div>
-                    <div class="point" id="point5"></div>
-                    <div class="point" id="point6"></div>
-                    <div class="point" id="point7"></div>
-                    <div class="point" id="point8"></div>
-                    <div class="point" id="point9"></div>
-                </div>
-
-            </div>
+        <div class="vertical">
+            <div class="field top" id="24"></div>
+            <div class="field bottom" id="1"></div>
         </div>
+
+        <div class="vertical">
+            <div class="field top" id="23"></div>
+            <div class="field bottom" id="2"></div>
+        </div>
+
+        <div class="vertical">
+            <div class="field top" id="22"></div>
+            <div class="field bottom" id="3"></div>
+        </div>
+
+        <div class="vertical">
+            <div class="field top" id="21"></div>
+            <div class="field bottom" id="4"></div>
+        </div>
+
+        <div class="vertical">
+            <div class="field top" id="20"></div>
+            <div class="field bottom" id="5"></div>
+        </div>
+
+        <div class="vertical">
+            <div class="field top" id="19"></div>
+            <div class="field bottom" id="6"></div>
+        </div>
+
+        <div id="middle_side">
+            <div class="field middle" id="0"></div>
+        </div>
+
+        <div class="vertical">
+            <div class="field top" id="18"></div>
+            <div class="field bottom" id="7"></div>
+        </div>
+
+        <div class="vertical">
+            <div class="field top" id="17"></div>
+            <div class="field bottom" id="8"></div>
+        </div>
+
+        <div class="vertical">
+            <div class="field top" id="16"></div>
+            <div class="field bottom" id="9"></div>
+        </div>
+
+        <div class="vertical">
+            <div class="field top" id="15"></div>
+            <div class="field bottom" id="10"></div>
+        </div>
+
+        <div class="vertical">
+            <div class="field top" id="14"></div>
+            <div class="field bottom" id="11"></div>
+        </div>
+
+        <div class="vertical">
+            <div class="field top" id="13"></div>
+            <div class="field bottom" id="12"></div>
+        </div>        
+
+        <!-- Chat
+            <div class="chet" id="chet">
+            <form id="chat-form" style="bottom: 0px; position: absolute;">
+                <input id="chat-input">
+                <button id="chat-send">Send</button>
+            </form>
+        </div> -->
+
+        <div class="hint" id="hint"></div>           
+        <div id="diceBox"></div>
+    
     </div>
 
- 
-
-
-
-
-    </div>
-  </main>
 
 
 
@@ -221,7 +180,6 @@
     <script src="/socket.io/socket.io.js"></script>
     
     <!-- My scripts -->
-    <script src="src/rolldice.js" defer></script>
     <script src="src/game.js" defer></script>
     <script type="module" src="src/client.js" defer></script>
 

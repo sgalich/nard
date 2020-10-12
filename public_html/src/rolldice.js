@@ -23,7 +23,10 @@ function renderASingleDie(randomResult, dieId) {
 };
 
 // Render both dice results
-function renderDice([die1, die2]) {
-    renderASingleDie(die1, 1);
-    renderASingleDie(die2, 2);
-};
+// function renderDice([die1, die2]) {
+    
+
+
+//     renderASingleDie(die1, 1);
+//     renderASingleDie(die2, 2);
+// };

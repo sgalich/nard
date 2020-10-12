@@ -1,8 +1,9 @@
 :root {
     --scale-selected-checker: 1.025;
-    --checker-size: 7.5vw;
+    /* --checker-size: 7.5vw; */
+    --checker-size: 100%;
 }
-  body {
+body {
     width:  100%;
     height: 100%;
     margin: 0px;
@@ -18,7 +19,7 @@
 #board {
     /* TEST SETTINGS */
     /* background-color: gold; */
-    /* border: 1px solid grey; */
+    /* border: 5px solid black; */
     
     /* Background & border */
     background-image: url('../images/board.svg');
@@ -43,72 +44,109 @@
     flex-direction: row;
     box-sizing: content-box;
 }
-.vertical {
-    top: 0px;
-    left: 0px;
-    margin: 0px;
-    padding: 0px;
-    height: 100%;
-    width: 7.8125%;
-    display: flex;
-    flex-direction: column;
-}
-#middle_side {
-    top: 0px;
-    left: calc(50% - 6.25% / 2);
-    margin: 0px;
-    padding: 0px;
-    height: 100%;
-    width: 6.25%;
-    display: flex;
-    flex-direction: column;
-}
-.field {
-    /* border: 1px solid green; */
-    margin: 0px;
-    padding: 0px;
-    height: 50%;
-    z-index: 2;
-    position: relative;
-    display: flex;
-    flex-wrap: nowrap;
-    align-items: center;
-}
-.top {
-    flex-direction: column;
-}
-.bottom {
-    flex-direction: column-reverse;
-}
-.field.middle {
-    height: 100%;
-}
-/* .field.marked {
-    border: 1px solid red;
-} */
-.top.marked {
-    flex-direction: column;
-    border-top: 4px solid green;
-}
-.bottom.marked {
-    flex-direction: column-reverse;
-    border-bottom: 4px solid green;
-}
+    .vertical {
+        top: 0px;
+        left: 0px;
+        margin: 0px;
+        padding: 0px;
+        height: 100%;
+        width: 7.8125%;
+        display: flex;
+        flex-direction: column;
+    }
+        #middle_side {
+            top: 0px;
+            left: calc(50% - 6.25% / 2);
+            margin: 0px;
+            padding: 0px;
+            height: 100%;
+            width: 6.25%;
+            display: flex;
+            flex-direction: column;
+        }
+        .field {
+            /* border: 1px solid green; */
+            margin: 0px;
+            padding: 0px;
+            height: 50%;
+            z-index: 2;
+            position: relative;
+            display: flex;
+            flex-wrap: nowrap;
+            align-items: center;
+        }
+       
+       
+         
+        /* .field.bottom {
+            background-image: url('../images/triangleBottom.svg');
+            background-repeat: no-repeat;
+            background-size: 300px 100px;;
+        } */
+        .field.top.allowed {
+            /* border: 2px dashed red; */
+            background-image: url('../images/triangleTop.svg');
+            background-repeat: no-repeat;
+            background-position: top;
+            background-size: 100%;
+        }
+        .field.bottom.allowed {
+            /* border: 2px dashed red; */
+            background-image: url('../images/triangleBottom.svg');
+            background-repeat: no-repeat;
+            background-position: bottom;
+            background-size: 100%;
+        }
+
+
+
+        .field.top {
+            flex-direction: column;
+        }
+        .field.bottom {
+            flex-direction: column-reverse;
+        }
+        .field.middle {
+            height: 100%;
+        }
+        /* .field.marked {
+            border: 1px solid red;
+        } */
+        .field.top.marked {
+            flex-direction: column;
+            border-top: 4px solid green;
+        }
+        .field.bottom.marked {
+            flex-direction: column-reverse;
+            border-bottom: 4px solid green;
+        }
 
 
 /* CHECKERS */
 
 checker {
-    background-size: cover;
+    /* border: 1px dashed green; */
+
+    background-size: var(--checker-size), var(--checker-size);
+    background-repeat: no-repeat;
+    background-position: bottom;
+    margin: auto;
+    margin-top: 2%;
+    margin-bottom: 2%;
+
+
+
     will-change: transform;
     padding: 0px;
-    margin: 0px;
+    /* padding-bottom: -5px; */
+    
+
     z-index: 300;
     /* TODO: fix a little slicing in different positions & while dragging. */
-    width: var(--checker-size);
-    height: var(--checker-size);
-    max-height: 12.8889vh;
-    max-width: 12.8889vh;
+    width: 100%;
+    height: 100%;
+    max-height: 11vh;
+    max-width: 11vh;
     position: absolute;
     z-index: 3;
     --webkit-user-drag: element;
@@ -126,6 +164,8 @@ checker[color='-1'].selected {
 checker[color='1'].selected {
     background-image: url('../images/whiteSelected.svg');
 }
+
+
 checker.selected {
     display: inline-block;
     vertical-align: middle;
@@ -153,7 +193,7 @@ checker[color='1']:hover {
 
 /* SHARE MODAL WINDOW */
 
-#share-overlay {
+/* #share-overlay {
     z-index: 100;
     justify-content: center;
     display: flex;
@@ -247,34 +287,23 @@ checker[color='1']:hover {
     border-color: #cdd;
     -webkit-transform: scale(1.01);
     transform: scale(1.01);
-  }
+  } */
 
 
+/* HINT */
 
-
-
-
-
-/* MISC */
-
-@font-face {
-    font-family: 'Open Sans';
-    font-style: normal;
-    font-weight: 400;
-    src: local('Open Sans'), local('OpenSans'), url('http://themes.googleusercontent.com/static/fonts/opensans/v5/cJZKeOuBrn4kERxqtaUH3T8E0i7KZn-EPnyo3HZu7kw.woff') format('woff');
-  }
 #hint {
-    /* border: 1px solid red; */
+    /* border: 1px dashed red; */
     position: absolute;
     top: 50%;
     left: 30%;
     transform: translate(-75%, -50%);
     width: 25%;
     height: 8%;
-    font-weight:    150;
-    font-family: 'Sacramento';
+    font-weight:    90;
+    font-family: 'Red Rose';
     color: #70797B;
-    font-size: 40px;
+    font-size: 200%;
     text-align: center;
     display: table-cell;
     vertical-align: middle;
@@ -283,101 +312,49 @@ checker[color='1']:hover {
     margin: 0px;
     padding: 0px;
 }
-.diceBox {
+
+
+/* DICE */
+
+#diceBox {
     /* background-color: gold; */
     position: absolute;
     width: 15%;
     height: 11%;
     top: calc(50% - 11% / 2);
     right: 16.5%;
-}
-.die {
-    background-image: url('../images/die.svg');
-    position: absolute;
-    width: 40%;
-    height: 100%;
-    /* background: linear-gradient(45deg, rgba(117, 71, 74, 0) 97.4%, rgba(117, 71, 74, 0) 100%); */
-    /* border-width: 10%; */
-    /* border-style: solid; */
-    /* border-color: #372526; */
-    /* box-sizing: border-box; */
-    /* border-radius: 25%; */
-    z-index: 2;
-}
-#die1 {
-    left: 0px;
-}
-#die2 {
-    right: 0px;
-}
-spot {
-    height: 20%;
-    width: 20%;
-    background-color: #000000;
-    border-radius: 60%;
-    /* display: contents; */
-    position: absolute;
+    display: flex;
+    flex-direction: row;
+    /* border: 1px dashed yellow; */
+    justify-content: space-around;
+    align-content: center;
     z-index: 3;
 }
-#spot1 {
-    top: 10%;
-    left: 10%;
-}
-#point2 {
-    top: 10%;
-    left: 40%;
-}
-#spot3 {
-    top: 10%;
-    left: 70%;
-}
-#spot4 {
-    top: 40%;
-    left: 10%;
-}
-#spot5 {
-    top: 40%;
-    left: 40%;
-}
-#spot6 {
-    top: 40%;
-    left: 70%;
-}
-#spot7 {
-    top: 70%;
-    left: 10%;
-}
-#spot8 {
-    top: 70%;
-    left: 40%;
-}
-#spot9 {
-    top: 70%;
-    left: 70%;
-}
-
-
-.test {
-    width: 200px;
-    height: 200px;
-    background-color: aqua;
-    border: 1px solid black;
-    position: fixed;
-    top: 0px;
-    left: 0px;
-    z-index: 2;
-
-    
-    display: block;
-
-    /* height: 2525px;
-    line-height: 20px;
-    min-height: 100%;
-    width: 1406px; */
-
-    overflow: hidden;
-    /* -webkit-overflow-scrolling: touch; */
-    /* vertical-align: baseline; */
-    box-sizing: border-box;
+die {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    max-height: 9vh;
+    max-width: 9vh;
+    /* border: 1px dashed red; */
+    background-size: cover;
+    flex-grow: 2;
 
 }
+die[result='1'] {
+    background-image: url('../images/die1.svg');
+}
+die[result='2'] {
+    background-image: url('../images/die2.svg');
+}
+die[result='3'] {
+    background-image: url('../images/die3.svg');
+}
+die[result='4'] {
+    background-image: url('../images/die4.svg');
+}
+die[result='5'] {
+    background-image: url('../images/die5.svg');
+}
+die[result='6'] {
+    background-image: url('../images/die6.svg');

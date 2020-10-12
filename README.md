@@ -38,4 +38,5 @@ desynch, reconciliation, lag compensation
 - Implement a database
 - Add score (& daily score) like in lichess
 - Make small & middle size versions
+- Add different languages
 - 

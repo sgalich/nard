@@ -17,13 +17,13 @@ button:focus {
     max-height: 100%;
     min-width:  100%;
     max-width:  100%;
-    top:     0px;
-    right:   0px;
-    bottom:  0px;
-    left:    0px;
-    margin:  0px;
-    padding: 0px;
-    opacity: 0.75;
+    top:        0px;
+    right:      0px;
+    bottom:     0px;
+    left:       0px;
+    margin:     0px;
+    padding:    0px;
+    opacity:    0.75;
     position:     absolute;
     display:      block;
     background: #2F3136;    
@@ -42,20 +42,21 @@ button:focus {
     max-width:   490px;
     font-size:   24px;
     line-height: 30px;
-    top:     50%;
-    left:    50%;
-    margin:  0;
-    padding: 0;
-    display:        flex;
-    flex-direction: column;
+    top:         50%;
+    left:        50%;
+    margin:      0;
+    padding:     0;
     transform:      translate(-50%, -50%);
     border-radius:  7px;
+    border:         2px solid #2A2C31;
+    box-shadow:     0px 0px 10px #2A2C31;
+    display:        flex;
+    flex-direction: column;
     text-align:     center;
     color:        #ffffff;
     background:   #37393F;
     position:       fixed;
-    border:         2px solid #2A2C31;
-    box-shadow:     0px 0px 10px #2A2C31;
+
 }
 #start-modal.hide {
     display: none;
@@ -64,13 +65,13 @@ button:focus {
     /* START MODAL HEADER */
     
     #start-header {
-        font-weight: 600;
+        font-weight:   600;
         margin-bottom: 25px;
         /* border:      1px dashed yellow; */
     }
         #greeting-small {
             font-size:   16px;
-            margin-top: -10px;
+            margin-top:  -10px;
             font-weight: 100;
             color:     #b9bbbe;
         }
@@ -78,16 +79,16 @@ button:focus {
     /* START MODAL ROWS */
     
     .start-modal-row {
-        margin: 0;
-        padding: 0;
+        margin:      0;
+        padding:     0;
         flex-grow:   2;
         font-size:   12px;
         line-height: 16px;
         font-weight: 600;
         /* border:      1px dashed yellow; */
-        display:     flex;
-        flex-wrap:   wrap;
-        color:     #8e9297;
+        display:         flex;
+        flex-wrap:       wrap;
+        color:         #8e9297;
         flex-direction:  row;
         justify-content: center;
     }
@@ -95,14 +96,14 @@ button:focus {
         /* START MODAL BUTTONS */
 
         button.start {
-            margin-top:    15px;
-            margin-left:    20px;
+            margin-top:      15px;
+            margin-left:     20px;
             margin-right:    20px;
-            margin-bottom:    15px;
-            padding:   0;
-            height:    40px;
-            width:     170px;
-            font-size: 16px;
+            margin-bottom:   15px;
+            padding:         0;
+            height:          40px;
+            width:           170px;
+            font-size:       16px;
             line-height:     24px;
             border-radius:   3px;
             background:    #313339;
@@ -178,8 +179,8 @@ button:focus {
             /* border:        1px solid red; */
         }
         div.start.await > span {
-            margin-top:    0;
-            margin-bottom: 0;
+            margin-top:     0;
+            margin-bottom:  0;
             font-size:      15px;
             text-indent:    10px;
             font-weight:    600;
@@ -205,10 +206,6 @@ button:focus {
             font-size:      15px;
             text-indent:    10px;
             font-weight:    600;
-            -webkit-user-select: all;
-            -moz-user-select:    all;
-            -ms-user-select:     all;
-            user-select:         all;
             color:             #dcddde;
             text-align:          left;
             display:             table-cell;
@@ -216,36 +213,35 @@ button:focus {
             font-family:         "Lucida Sans Unicode", "Lucida Grande", sans-serif; 
         }
         #start-friends-link, #start-friends-link:hover, #start-friends-link:focus {
-            height:    40px;
-            width:     340px;
+            font-size:     20px;
+            line-height:   20px;
+            font-weight:   500;
+            height:        40px;
+            width:         340px;
             margin-top:    0;
             margin-bottom: 0;
             padding-left:  0;
             border-radius: 3px;
-            display:       table;
-            background:  #313339; 
-            cursor:        text;
-            border:        1px solid #232428;
-            font-size:   20px;
-            line-height: 20px;
-            font-weight: 500;
-            color: #8e9297;
-            text-indent: 10px;
+            text-indent:   10px;
             outline-width: 0;
-            border: none;
-            background: inherit;
             -webkit-user-select: all;
-            -moz-user-select: all;
-            -ms-user-select: all;
-            user-select: all;
+            -moz-user-select:    all;
+            -ms-user-select:     all;
+            user-select:         all;
+            display:             table;
+            background:        #313339; 
+            cursor:              text;
+            border:              1px solid #232428;
+            color:             #8e9297;
+            border:              none;
+            background:          inherit;
         }
         #copy-icon {
-            /* border: 1px solid red; */
-            width: 27px;
-            height: 27px;
-            display: block;
-            right: 10px;
-            margin-top: 7px;
-            cursor: pointer;
+            width:        27px;
+            height:       27px;
+            right:        10px;
+            margin-top:   7px;
             margin-right: 10px;
+            display:      block;
+            cursor:       pointer;
         }

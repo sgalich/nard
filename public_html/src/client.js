@@ -1,5 +1,4 @@
 const socket = io();
-// console.log(8, socket.request.headers.referer);
 var game = 'nard';
 var rival = 'random';
 var wait = false;
@@ -138,6 +137,26 @@ function renderCheckers(board) {
     });
 };
 
+// Render dice
+function renderDice([dieRes1, dieREs2]) {
+    let diceBox = document.getElementById('diceBox');
+    diceBox.innerHTML = '';    // Clear all previous dice
+    let die1 = document.createElement('die');   // Create a die
+    let die2 = document.createElement('die');   // Create a die
+    die1.setAttribute('result', dieRes1);
+    die2.setAttribute('result', dieREs2);
+    diceBox.appendChild(die1);
+    diceBox.appendChild(die2);
+};
+
+// Render dice
+function printHint(hint) {
+    let diceBox = document.getElementById('hint');
+    diceBox.innerHTML = '';    // Clear the previous hint
+    diceBox.innerHTML = hint;
+};
+socket.on('printHint', printHint);
+
 // Print message in chat
 // function printHint(hint) {
 //     // document.getElementById('hint').innerHTML = null;    // clear
@@ -162,20 +181,7 @@ function renderCheckers(board) {
 // };
 
 
-
-
-
-
-
-
-
-
-
-
-
 // ON THE PAGE
-
-// Set a tabId - session identificator
 
 // Choose a game: nard or backgammon
 document.getElementById('game-nard').onclick = gameIsNard;    // a nard
@@ -185,8 +191,6 @@ document.getElementById('game-backgammon').onclick = gameIsBackgammon;    // a b
 document.getElementById('start-play-btn').classList.add('show');    // By default the friend's link is invisible 
 document.getElementById('rival-friend').onclick = rivalIsFriend;    // a friend
 document.getElementById('rival-random').onclick = rivalIsRandom;    // a random
-
-
 
 
 // TO THE SERVER
@@ -200,25 +204,14 @@ let player = socket.player || {
 socket.emit('connected', player);
 
 // Play button is pressed
-// document.getElementById('start-play-btn').onclick = () => {socket.emit('play')};
-// Press PLAY button
 document.getElementById('start-play-btn').onclick = pressPlayButton;
-
-
-// Get tabId in order to identify user
-// var tabId= sessionStorage.getItem('tabId');
-// if (tabId === null) {
-//     socket.emit('newTabId');
-// };
 
 // Roll dice by click
 // Temp function REMOVE IT !
-document
-    .getElementsByClassName('diceBox')[0]
-    .addEventListener('click', (e) => {
-        console.log('dice rolled!');
-        socket.emit('roll_dice');
-    }, false);
+document.getElementById('diceBox').addEventListener('click', (e) => {
+    console.log('dice rolled!');
+    socket.emit('roll_dice');
+}, false);
 
 //  Chat
 // document
@@ -226,15 +219,7 @@ document
 //     .addEventListener('submit', onFormSubmitted);
 
 
-
-
-
 // FROM THE SERVER
-
-// // Set a generated on the server tabId
-// socket.on('setTabId', function (tabId) {
-//     sessionStorage.setItem('tabId', String(tabId));
-// });
 
 // Set a generated on the server tabId
 socket.on('setTabId', function (tabId) {
@@ -251,51 +236,14 @@ socket.on('setFriendsLink', function(sharePage) {
 });
 
 socket.on('hideStartModal', hideStartModal);
-// socket.on('hint', printHint);
 
 // Render checkers
 socket.on('renderCheckers', renderCheckers);
 
-// Render dice after them are rolled from the server
+// Render dice after they are rolled on the server
 socket.on('renderDice', renderDice);
 
 // Reconnection
 socket.on('user-reconnected', function (username) {
     console.log(username + ' just reconnected');
 });
-
-
-
-
-
-// socket.on('start', startGame);
-// // socket.on('start', startGame);
-
-// var peer = new Peer();
-
-
-// var id1;
-// console.log(peer)
-// peer.on('open', function(id) {
-//     console.log('My peer ID is: ' + id);
-//     id1 = id;
-// });
-// peer.on('connection', function(conn) {
-//     console.log(conn);
-// });
-
-
-
-
-// var conn = peer.connect(id1);
-// conn.on('open', function() {
-//     // Receive messages
-//     conn.on('data', function(data) {
-//         console.log('Received', data);
-//     });
-
-//     // Send messages
-//     conn.send('Hello!');
-// });
-
-

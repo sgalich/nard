@@ -16,6 +16,8 @@ var cookie = require("cookies");
 const app = express();
 const clientPath = `${__dirname}/../public_html`;
 console.log(`serving static from ${clientPath}`);
+const server = http.createServer(app);
+const io = socketio(server);
 
 // var domain = 'https://onlinenard.com/';    // Truly domain
 var domain = 'localhost:8081/';
@@ -94,7 +96,7 @@ function removeFromWaitingFriends(sharePage) {
 };
 
 // Remove the entry from waitingFriends by Socket
-function removeFromWaitingFriends(playerId) {
+function removeFromWaitingFriendsBySocket(playerId) {
     // Object.entries(waitingFriends).forEach((item) => { console.log(item)    });
     Object.entries(waitingFriends).forEach(([sharePage, friends]) => {
         if (friends.inviter.player.id === playerId) {
@@ -117,182 +119,11 @@ function getCook(cookies, cookiename) {
 };
 
 
-// function SharePage(url, cookie, value) {
-//     return function(req, res, next) {
-//       if (req.url == url) {
-//         res.cookie(cookie, value);
-//       }
-//       next();
-//     }
-//   }
-// app.use(attach_cookie('/index.html', 'mycookie', 'value'));
-
-
-// const cookieParser = require('cookie-parser');
-// var session = require('cookie-session')({ secret: 'secret' });
-
-// app.use(cookieParser);
-// app.use(session);
-
-
-
-
-
-
-
-
-
-
-
-// const cookieParser = require('cookie-parser');
-// app.use(cookieParser());
-
-
-
-
-// Set a cookie in order to identify a user
-// app.use(function (req, res, next) { 
-//     console.log('09341ubg3r9ugb34!!!!');
-//     // check if client sent cookie
-//     if (req.cookies === undefined || req.cookies.cookieName === undefined) {
-//       tabId = uuid.v5(
-//             uuid.v1(Date.now()),
-//             uuid.v4()
-//         );
-//       res.cookie('tabId', tabId, { maxAge: 900000, httpOnly: false });
-//       console.log('cookie created successfully', tabId);
-//     } else {
-//       // yes, cookie was already present 
-//       console.log('cookie exists', cookie);
-//     } 
-//     next(); // <-- important!
-//   });
-
-
-
-
-
-//   app.get('/', (req,res)=>{
-//     console.log('09341ubg3r9ugb34!!!!');
-//     // read cookies
-//     console.log(req.cookies) 
-
-//     let options = {
-//         maxAge: 1000 * 60 * 15, // would expire after 15 minutes
-//         httpOnly: true, // The cookie only accessible by the web server
-//         signed: true // Indicates if the cookie should be signed
-//     }
-
-//     // Set cookie
-//     res.cookie('cookieName', 'cookieValue', options) // options is optional
-//     res.send('')
-
-// });
-
-
-
-
-
-
-
-
-// app.get('/', (req,res)=>{
-//     console.log('09341ubg3r9ugb34!!!!');
-//     // read cookies
-//     console.log(req.cookies) 
-
-//     let options = {
-//         maxAge: 1000 * 60 * 15, // would expire after 15 minutes
-//         httpOnly: true, // The cookie only accessible by the web server
-//         signed: true // Indicates if the cookie should be signed
-//     }
-
-//     // Set cookie
-//     res.cookie('cookieName', 'cookieValue', options) // options is optional
-//     res.send('')
-
-// });
-
-
-
-
-
-
-
-const server = http.createServer(app);
-
-
-const io = socketio(server);
-
-// Match two players that are on site but do not play yet
-
-
-
-
-
-// Trying to get session for a socket
-
-
-
-
-
-// var sessionStore = new express.session.MemoryStore();
-// var SessionSockets = require('session.socket.io');
-// const cookieParser = require('cookie-parser');
-// app.use(cookieParser());
-// app.use(express.session({store: sessionStore, secret: "mysecret"}));
-// sessionSockets = new SessionSockets(io, sessionStore, cookieParser);
-// sessionSockets.on('connection', function (err, socket, session) {
-//     console.log(session);
-// });
-
-
-
-// var Session = require('express-session'),
-//     // SessionStore = require('session-file-store')(Session);
-//     session = Session({
-//     //   store: new SessionStore({ path: './tmp/sessions' }),
-//       secret: 'pass',
-//       resave: true,
-//       saveUninitialized: true
-//     });
-// io.use(function(socket, next) {
-//     // console.log(socket);
-//   session(socket.handshake, {}, next);
-// });
-
-
-
-
-// io.sockets.on('connection', function (socket) {
-//     let userId = socket.handshake;    
-//     console.log(userId);
-// });
-
-
-
-
-
-// SESSION WORKS FOR BROWSER, NOT FOR TABS
-// var session = require("express-session")({
-//     secret: "my-secret",
-//     resave: true,
-//     saveUninitialized: true
-// });
-// var sharedsession = require("express-socket.io-session");
-// app.use(session);
-// io.use(sharedsession(session, {
-//     autoSave:true
-// })); 
-
-
-
-
 app.use(express.static(clientPath));
-// io.on('reconnect', (socket) => {
-//     console.log('reconnected');
-// });
 
+io.on('reconnect', (socket) => {
+    console.log('reconnected');
+});
 
 io.on('connection', (socket) => {
 
@@ -331,7 +162,7 @@ io.on('connection', (socket) => {
                 socket.emit('pressPlayButton');
             };
             // If socket is in waitingFriends - remove it from here
-            removeFromWaitingFriends(playerId)
+            removeFromWaitingFriendsBySocket(player.id);
         };
 
         // Player changes a game type: nard / backgammon
@@ -403,38 +234,12 @@ io.on('connection', (socket) => {
             });
         });
 
-        // Start the game with a friend
-
-
-
-        // // Remove both friends' sockets from the waitingFriends
-        // removeFromWaitingFriends(socket);
-
-
-
-        // MATCH FRIENDS AND PLACE THEM IN THE GAME !!!
-
-
-
-
-
-
-
-
-
-
-
-
 
         // Chat
         // socket.on('hint', (text) => {             // RECIEVE
         //     console.log('Someone send this: ', text);
         //     io.emit('hint', text);                       // SEND TO ALL
         // });
-
-
-
-
 
 
         // User is disconnected - remove the user from waitingRandom and from rooms (?)
@@ -450,115 +255,8 @@ io.on('connection', (socket) => {
             // Send to his opponent a message about their rival disconnection
             // ...
         });
-
-
     });
-
-    // console.log(socket.player);
-
-
-
-
-    
-    // console.log(io.sockets.clients());
-
-
-
-
-    // console.log(socket.handshake.session);
-    
-    // console.log('0000', socket.handshake.headers.cookie);
-    // console.log('0000', socket.handshake.session);
-
-
-
-
-    // SESSION WORKS FOR BROWSER, NOT FOR TABS
-    // if (socket.handshake.session.userdata === undefined) {
-    //     socket.handshake.session.userdata = uuid.v5(
-    //         uuid.v1(Date.now()),
-    //         uuid.v4()
-    //     );
-    //     socket.handshake.session.save();
-    // };
-
-
-
-
-
-    // console.log('0000', session);
-    // console.log('1111', socket.handshake.session.userdata);
-    
-    
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // socket.emit('hint', 'Hi, you are connected');    // SEND TO SINGLE CLIENT
-    
-    
-
-
 });
-
-
-
-
-
-
-
-// socket.on('message', 'Hi, you are connected');
-//   const color = randomColor();
-
-//   // increase number to have cooldown between turns
-//   const cooldown = createCooldown(10);
-
-//   const onTurn = ({ x, y }) => {
-//     if (cooldown()) {
-//       io.emit('turn', { x, y, color });
-//       const playerWin = makeTurn(x, y, color);
-
-//       if (playerWin) {
-//         sock.emit('message', 'YOU WIN');
-//         io.emit('message', 'new round');
-//         clear();
-//         io.emit('board');
-//       }
-//     }
-//   };
-
-//   // Disabled, until the client side is injection-proof
-//     sock.on('message', (text) => io.emit('message', text));
-//   sock.on('turn', onTurn);
-
-//   sock.emit('board', getBoard());
-
-
-
-
 
 server.on('error', (err) => {
   console.error('Server error:', err);
