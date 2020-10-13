@@ -107,7 +107,8 @@ function removeFromWaitingFriendsBySocket(playerId) {
 };
 
 // Get a cookie value by it's name
-function getCook(cookies, cookiename) {
+function getCookVal(cookies, cookiename) {
+    if (typeof cookies !== String) { return };
     cookies = cookies.split('; ');
     for (cook of cookies) {
         [name, value] = cook.split('=');
@@ -143,18 +144,18 @@ io.on('connection', (socket) => {
             // Find a room for this player where he is from
             console.log('WELCOME BACK TO: ', player.id);
             rooms[player.game].forEach((gm) => {
-                if (gm.p1.player.id === player.id) {
-                    console.log('p1! The game is found!');
+                if (gm.players[0].player.id === player.id) {
+                    console.log('p0! The game is found!');
                     // inherit all the player instance from previous socket
-                    socket.player = gm.p1.player;
-                    gm.p1 = socket;    // replace a player with a new one with another socket
-                    gm.placeInTheGame(socket);
-                } else if (gm.p2.player.id === player.id) {
-                    console.log('p2! The room is found');
+                    socket.player = gm.players[0].player;
+                    gm.players[0] = socket;    // replace a player with a new one with another socket
+                    gm.placeInTheGame(0);
+                } else if (gm.players[1].player.id === player.id) {
+                    console.log('p1! The room is found');
                     // inherit all the player instance from previous socket
-                    socket.player = gm.p2.player;
-                    gm.p2 = socket;    // replace a player with a new one with another socket
-                    gm.placeInTheGame(socket);
+                    socket.player = gm.players[1].player;
+                    gm.players[1] = socket;    // replace a player with a new one with another socket
+                    gm.placeInTheGame(1);
                 };
             });
             // If the socket is in a waitingRandom we hide a play button, show 'await'
@@ -201,7 +202,7 @@ io.on('connection', (socket) => {
         // I cannot access sharePage inside the socket,
         // So I wrote it as a cookie and now I'm gonna check this cookie
         // After matching the friends we need to clear this cookie
-        let sharePage = getCook(socket.request.headers.cookie, 'sharePage');
+        let sharePage = getCookVal(socket.request.headers.cookie, 'sharePage');
         let inviter = waitingFriends[sharePage];
         // Check for inviter existing in order not to clear that cookie
         if (sharePage && inviter) {

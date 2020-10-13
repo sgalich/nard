@@ -1,15 +1,14 @@
 class Nard {
 
-    constructor(p1, p2, game='nard') {
-        this.p1 = p1;
-        this.p2 = p2;
+    constructor(p0, p1, game='nard') {
+        this.players = [p0, p1];
         this.game = game;
-        this.onTurn = null;
+        this.turn = null;    // 0 / 1 - index of the player who's turn
         this.die1 = null;    // random result from die1
         this.die2 = null;    // random result from die2
         this.turn = null;    // -1 or 1 (for 'black' or 'white') - who is moving checkers now
         this.wait = null;    // 1 or -1 (for 'white' or 'black') - who is awaiting now
-        this.turn4User = null;    // turn for user as black/white or yellow/blue, etc.
+        this.movesCount = 0;    // moves counter
         this.winner = null;
         this.chat = [];
         this.board = {    // the board with a starting position
@@ -38,38 +37,67 @@ class Nard {
             23: 0,
             24: 0
         };
-        this.placeInTheGame(p1);
-        this.placeInTheGame(p2);
+        this.placeInTheGame(0);
+        this.placeInTheGame(1);
         this.chooseWhoIsFirst();
+        this.makeTurn();
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+
+
     };
 
     // Socket is in the game
-    placeInTheGame(socket) {
-        this.renderBoard(socket);
+    placeInTheGame(ind) {
+        let socket = this.players[ind];
+        this.renderBoard(ind);
         // socket.emit('hint', `Welcome to the ${socket.player.game} game!`);
         socket.on('roll_dice', () => { this.rollDice() });
-        socket.on('turn', () => { this._onTurn(idx, turn) });
+        // socket.on('turn', () => { this._onTurn(idx, turn) });
     };
 
     // Render the whole page
-    renderBoard(socket) {
+    renderBoard(ind) {
+        let socket = this.players[ind];
         socket.emit('hideStartModal');
-        socket.emit('renderCheckers', this.board);
-        socket.emit('renderDice', [this.die1, this.die2]);
+        let invert = (ind === 0) ? 1 : -1;
+        socket.emit('renderCheckers', this.board, invert);
+        if (invert === 1) {
+            socket.emit('renderDice', [this.die1, this.die2]); 
+        } else {
+            socket.emit('renderDice', [this.die2, this.die1]);
+        };
     };
 
     // Main function to roll dice
     rollDice() {
         this.die1 = Math.floor(Math.random() * 6) + 1;
         this.die2 = Math.floor(Math.random() * 6) + 1;
-        this.p1.emit('renderDice', [this.die1, this.die2]);
-        this.p2.emit('renderDice', [this.die1, this.die2]);
+        this.players[0].emit('renderDice', [this.die1, this.die2]);
+        this.players[1].emit('renderDice', [this.die2, this.die1]);
     };
 
     // Print hint
     printHint(socket, hint) {
         socket.emit('printHint', hint);
     };
+    
+
 
     // Choose who's turn is first
     chooseWhoIsFirst() {
@@ -78,16 +106,45 @@ class Nard {
         while (this.die1 == this.die2) {
             this.rollDice();
         };
-        if (this.die1 > this.die2) {
-            this.onTurn = this.p1;
-            this.printHint(this.p1, 'your turn');
-            this.printHint(this.p1, 'rival\'s turn');
-        } else {
-            this.onTurn = this.p2;
-            this.printHint(this.p2, 'your turn');
-            this.printHint(this.p1, 'rival\'s turn');
-        };
+        this.turn = (this.die1 < this.die2) ? 0 : 1;
+        // Send hints
+        this.printHint(this.players[0], 'your turn');
+        this.printHint(this.players[1], 'rival\'s turn');
     };
+
+
+    makeTurn() {
+        if (this.winner) { return };
+
+        // 1. Turn off cliking and dragging in checkers' properties for the awaiting player
+        // 2. Count allowed moves for the player who's turn
+        // 3. Highlight recommend moves
+        // 4. Block moves that are not allowed
+        // 5. Await till he makes right moves
+        // 6. Check if the player won the game => end turns return;
+        // 7. Switch turn & run this function recursively
+
+        this.rollDice();
+        // 1. 
+
+        // this.turn[1].emit('printHint', 'Looser!!');
+        
+    };
+
+
+
+
+    // theGame() {
+    //     while (this.winner === null) {
+
+    //     };
+    // };
+
+
+
+
+
+
 
     // // 2. Choose who makes the first move
     // whoIsFirst() {

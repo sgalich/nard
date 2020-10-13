@@ -9,6 +9,8 @@
 
     <!-- Fonts -->
     <link href='https://fonts.googleapis.com/css?family=Red Rose' rel='stylesheet'>
+    <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
+    <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
 
     <!-- Title -->
     <title>Play Nard Online</title>
@@ -91,15 +93,7 @@
         <div class="vertical">
             <div class="field top" id="13"></div>
             <div class="field bottom" id="12"></div>
-        </div>        
-
-        <!-- Chat
-            <div class="chet" id="chet">
-            <form id="chat-form" style="bottom: 0px; position: absolute;">
-                <input id="chat-input">
-                <button id="chat-send">Send</button>
-            </form>
-        </div> -->
+        </div>
 
         <div class="hint" id="hint">your turn</div>
             
@@ -110,6 +104,19 @@
         </div>
     </div>
 
+
+
+    <!--
+        
+        Chat
+        
+        <div class="chet" id="chet">
+            <form id="chat-form" style="bottom: 0px; position: absolute;">
+                <input id="chat-input">
+                <button id="chat-send">Send</button>
+            </form>
+        </div>
+    -->
 
 
 
@@ -128,28 +135,30 @@
 
     <!-- Socket.io -->
     <!-- <script src="/socket.io/socket.io.js"></script> -->
+
+    <!-- Drag'n'drop. See: https://github.com/Bernardo-Castilho/dragdroptouch -->
+    <script src="src/DragDropTouch.js"></script>
     
     <!-- My scripts -->
-    <script src="src/game.js" defer></script>
+    <script src="src/moving.js" defer></script>
     <!-- <script type="module" src="src/client.js" defer></script> -->
     <script>
-        CHECKEROVERLAP = 4.5
+        let CHECKEROVERLAP2 = 4.5
 
         // Place one checker at certain field by id
         function createChecker(id, color) {
             let field = document.getElementById(id);
             let checker = document.createElement('checker');   // Create a checker
             checker.setAttribute('draggable', 'true');    // make it draggable
-            // checker.setAttribute('class', 'unselected');    // make it selectable
-            checker.classList.add('unselected');
+            checker.classList.add('draggable');
             // checker.classList.add('hvr-grow');    // hvr-ripple-out
             checker.setAttribute('color', color);
-            checker.style.visibility = "visible"
+            // checker.style.visibility = "visible"
             let checkersInField = field.children.length;
             if (field.classList.contains('top')) {
-                checker.setAttribute('style', `top: calc(${checkersInField} * ${CHECKEROVERLAP}%);`);
+                checker.setAttribute('style', `top: calc(${checkersInField} * ${CHECKEROVERLAP2}%);`);
             } else {
-                checker.setAttribute('style', `bottom: calc(${checkersInField} * ${CHECKEROVERLAP}%);`);
+                checker.setAttribute('style', `bottom: calc(${checkersInField} * ${CHECKEROVERLAP2}%);`);
             };
             field.appendChild(checker);    // Place checker inside the field
             board[id] += color;
@@ -165,7 +174,9 @@
         };
         renderCheckers({
             1: 15,
-            13: -15
+            12: 1,
+            13: -15,
+            23: -1
         })
     </script>
 

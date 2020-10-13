@@ -1,13 +1,7 @@
 <svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect x="3" y="3" width="121.507" height="121.507" rx="15" fill="white" stroke="black" stroke-width="6"/>
-<circle cx="33.5" cy="29.5" r="17.5" fill="black"/>
-<circle cx="33.5" cy="29.5" r="17.5" stroke="black"/>
-<circle cx="96.5" cy="29.5" r="17.5" fill="black"/>
-<circle cx="96.5" cy="29.5" r="17.5" stroke="black"/>
-<circle cx="63.5" cy="63.5" r="17.5" fill="black"/>
-<circle cx="63.5" cy="63.5" r="17.5" stroke="black"/>
-<circle cx="96.5" cy="98.5" r="17.5" fill="black"/>
-<circle cx="96.5" cy="98.5" r="17.5" stroke="black"/>
-<circle cx="33.5" cy="98.5" r="17.5" fill="black"/>
-<circle cx="33.5" cy="98.5" r="17.5" stroke="black"/>
+<circle cx="34" cy="33" r="10" fill="black"/>
+<circle cx="89" cy="33" r="10" fill="black"/>
+<circle cx="64" cy="64" r="10" fill="black"/>
+<circle cx="89" cy="93" r="10" fill="black"/>
+<circle cx="34" cy="93" r="10" fill="black"/>
 </svg>

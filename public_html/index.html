@@ -9,6 +9,8 @@
 
     <!-- Fonts -->
     <link href='https://fonts.googleapis.com/css?family=Red Rose' rel='stylesheet'>
+    <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
+    <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
 
     <!-- Title -->
     <title>Play Nard Online</title>
@@ -17,10 +19,16 @@
     <link rel="stylesheet" href="styles/start.css">
     <link rel="stylesheet" href="styles/game.css">
     
+    <!-- Drag'n'drop. See: https://github.com/Bernardo-Castilho/dragdroptouch -->
+    <script src="src/DragDropTouch.js"></script>
+
     <!-- Bootstrap-->
     <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous"> -->
 
+    <!-- Mobile drag'n'drop -->
+    <!-- <link rel="stylesheet" href="libs/mobile-drag-drop/release/default.css"> -->
+    <!-- <script src="libs/mobile-drag-drop/release/index.min.js"></script> -->
 
 </head>
  
@@ -179,9 +187,12 @@
     <!-- Socket.io -->
     <script src="/socket.io/socket.io.js"></script>
     
+
+
     <!-- My scripts -->
-    <script src="src/game.js" defer></script>
+    <script src="src/moving.js" defer></script>
     <script type="module" src="src/client.js" defer></script>
+    
 
 
 </body>

@@ -39,4 +39,5 @@ desynch, reconciliation, lag compensation
 - Add score (& daily score) like in lichess
 - Make small & middle size versions
 - Add different languages
+- Decide about start window BEFORE the loading page !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 - 

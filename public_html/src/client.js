@@ -3,6 +3,18 @@ var game = 'nard';
 var rival = 'random';
 var wait = false;
 
+
+
+// System.import("mobile-drag-drop");
+// // import css if using system-js css loader plugin 
+// System.import("mobile-drag-drop/default.css!");
+
+// window.addEventListener( 'touchmove', function() {});
+
+
+
+
+
 // START SCREEN
 
 // Show play / await / link
@@ -103,21 +115,34 @@ document.getElementById('copy-icon')
 function hideStartModal() {
     document.getElementById('start-back').classList.add('hide');
     document.getElementById('start-modal').classList.add('hide');
+    
+    
+    console.log(document.getElementsByClassName('selected'));
+    
+    
+    [].forEach.call(document.getElementsByClassName('selected'), (el) => {
+        el.classList.remove('selected');
+    });
+    console.log('hided start modal and deleted all selected');
+
+    console.log(document.getElementsByClassName('selected'));
+
 };
 
 
 // BOARD SCREEN
+
+// const CHECKEROVERLAP = 5.5
 
 // Place one checker at certain field by id
 function createChecker(id, color) {
     let field = document.getElementById(id);
     let checker = document.createElement('checker');   // Create a checker
     checker.setAttribute('draggable', 'true');    // make it draggable
-    // checker.setAttribute('class', 'unselected');    // make it selectable
-    checker.classList.add('unselected');
+    checker.classList.add('draggable');
     // checker.classList.add('hvr-grow');    // hvr-ripple-out
     checker.setAttribute('color', color);
-    checker.style.visibility = "visible"
+    // checker.style.visibility = "visible"
     let checkersInField = field.children.length;
     if (field.classList.contains('top')) {
         checker.setAttribute('style', `top: calc(${checkersInField} * ${CHECKEROVERLAP}%);`);
@@ -129,22 +154,25 @@ function createChecker(id, color) {
 };
 
 // Render checkers
-function renderCheckers(board) {
+function renderCheckers(board, invert=1) {
     Object.entries(board).forEach((field) => {
         for (let i = 0; i < Math.abs(field[1]); i++) {
-            createChecker(field[0], Math.sign(field[1]));
+            createChecker(field[0], invert * Math.sign(field[1]));
         };
     });
 };
 
 // Render dice
-function renderDice([dieRes1, dieREs2]) {
+function renderDice([dieRes1, dieRes2]) {
+    
+    console.log([dieRes1, dieRes2]);
+
     let diceBox = document.getElementById('diceBox');
     diceBox.innerHTML = '';    // Clear all previous dice
     let die1 = document.createElement('die');   // Create a die
     let die2 = document.createElement('die');   // Create a die
     die1.setAttribute('result', dieRes1);
-    die2.setAttribute('result', dieREs2);
+    die2.setAttribute('result', dieRes2);
     diceBox.appendChild(die1);
     diceBox.appendChild(die2);
 };

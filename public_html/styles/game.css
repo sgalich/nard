@@ -9,6 +9,7 @@ body {
     margin: 0px;
     padding: 0px;
     font-family: 'Noto Sans', Sans-Serif;
+    user-select: none;
 }
 .hidden {
     display: none;
@@ -65,7 +66,10 @@ body {
             flex-direction: column;
         }
         .field {
-            /* border: 1px solid green; */
+            
+            /* border: 1px dashed green; */
+
+
             margin: 0px;
             padding: 0px;
             height: 50%;
@@ -133,16 +137,9 @@ checker {
     margin: auto;
     margin-top: 2%;
     margin-bottom: 2%;
-
-
-
     will-change: transform;
     padding: 0px;
-    /* padding-bottom: -5px; */
-    
-
     z-index: 300;
-    /* TODO: fix a little slicing in different positions & while dragging. */
     width: 100%;
     height: 100%;
     max-height: 11vh;
@@ -158,14 +155,20 @@ checker {
 [color='1'] {
     background-image: url('../images/white.svg');
 }
+
+
+checker.hovered {
+    -webkit-transform: scale(var(--scale-selected-checker));
+    transform: scale(var(--scale-selected-checker));
+}
+
+
 checker[color='-1'].selected {
     background-image: url('../images/blackSelected.svg');
 }
 checker[color='1'].selected {
     background-image: url('../images/whiteSelected.svg');
 }
-
-
 checker.selected {
     display: inline-block;
     vertical-align: middle;
@@ -179,115 +182,54 @@ checker.selected {
     -webkit-transform: scale(var(--scale-selected-checker));
     transform: scale(var(--scale-selected-checker));
 }
-checker[color='-1']:hover {
-    background-image: url('../images/blackSelected.svg');
-    -webkit-transform: scale(var(--scale-selected-checker));
-    transform: scale(var(--scale-selected-checker));
-}
-checker[color='1']:hover {
-    background-image: url('../images/whiteSelected.svg');
-    -webkit-transform: scale(var(--scale-selected-checker));
-    transform: scale(var(--scale-selected-checker));
+
+
+[draggable] {
+    user-select: none;
 }
 
-
-/* SHARE MODAL WINDOW */
-
-/* #share-overlay {
-    z-index: 100;
-    justify-content: center;
-    display: flex;
-    flex-flow: row wrap;
-    align-items: center;
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    background: rgba(0,0,0,0.6);
+/* .column {
+    height: 150px;
+    width: 150px;
+    display: inline-block;
+    border: 2px solid #666666;
+    background-color: #ccc;
+    margin-right: 5px;
+    border-radius: 10px;
+    box-shadow: inset 0 0 3px #000;
     text-align: center;
-    margin: 0;
-    padding: 0;
+    cursor: move;
 }
-#share-modal {
-    width: 95%;
-    height: 30%;
-    max-width: 500px;
-    box-shadow: 0 8px 16px rgba(0,0,0,.15);
-    padding: 20px;
-    border-radius: 4px;
-    background-color: #ffffff;
-    z-index: 100;
-}
-#share-url {
-    font-size: 1.2em;
-    vertical-align: middle;
-    font-family: 'lichess';
-    font-style: normal;
-    font-weight: normal;
-    text-transform: none;
-    content: attr(data-icon);
-    opacity: 0.9;
-    width: 60%;
+    .column header {
+        color: #fff;
+        background: radial-gradient(ellipse at center, #000000 0%,#7c7c7c 100%);
+        text-shadow: #000 0 1px;
+        box-shadow: 5px;
+        padding: 5px;
+        border-bottom: 1px solid #ddd;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        pointer-events: none;
+    }
+    .column.over {
+        border: 2px dashed #000;
+    } */
+
+
+
+/* div.checker {
+    background-image: url('../images/black.svg');
+    background-size: var(--checker-size), var(--checker-size);
+    background-repeat: no-repeat;
+    background-position: bottom;
+    width: 100%;
     height: 100%;
-}
-#share-svg {
-    width: 20px;
-    height: 20px;
-    margin-right: 7px;
-}
-#share-links {
-    display: grid;
-    grid-template-rows: 1fr 1fr;
-    grid-template-columns: 1fr 1fr;
-    grid-gap: 20px;
-    margin-bottom: 20px;
-  }
-  #share-link-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
-    border-radius: 4px;
-    background-color: #eeeeee;
-  }
-  #share-link {
-    margin-right: 15px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    padding-left: 30px;
-    padding-right: 30px;
-  }
-  #share-copy-nutton {
-    padding-left: 30px;
-    padding-right: 30px;
-  }
- .share-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    height: auto;
-    padding-top: 8px;
-    padding-bottom: 8px;
-    color: #777;
-    text-align: center;
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 1.1;
-    letter-spacing: 2px;
-    text-transform: capitalize;
-    text-decoration: none;
-    white-space: nowrap;
-    border-radius: 4px;
-    border: 1px solid #ddd;
-    cursor: pointer;
-  }
-.share-button:hover {
-    border-color: #cdd;
-    -webkit-transform: scale(1.01);
-    transform: scale(1.01);
-  } */
+} */
+/* checker.over {
+    border: 2px dashed #000;
+} */
+
+
 
 
 /* HINT */
@@ -301,7 +243,12 @@ checker[color='1']:hover {
     width: 25%;
     height: 8%;
     font-weight:    90;
-    font-family: 'Red Rose';
+    
+    /* font-family: 'Red Rose'; */
+    font-family: 'Montserrat';
+    /* font-family: 'Source Sans Pro'; */
+    
+    
     color: #70797B;
     font-size: 200%;
     text-align: center;
@@ -317,7 +264,9 @@ checker[color='1']:hover {
 /* DICE */
 
 #diceBox {
-    /* background-color: gold; */
+    
+    /* border: 1px dashed red; */
+
     position: absolute;
     width: 15%;
     height: 11%;
@@ -325,36 +274,41 @@ checker[color='1']:hover {
     right: 16.5%;
     display: flex;
     flex-direction: row;
-    /* border: 1px dashed yellow; */
+
     justify-content: space-around;
     align-content: center;
     z-index: 3;
 }
-die {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    max-height: 9vh;
-    max-width: 9vh;
-    /* border: 1px dashed red; */
-    background-size: cover;
-    flex-grow: 2;
+    die {
+        /* width: 15%; */
+        height: 100%;
 
-}
-die[result='1'] {
-    background-image: url('../images/die1.svg');
-}
-die[result='2'] {
-    background-image: url('../images/die2.svg');
-}
-die[result='3'] {
-    background-image: url('../images/die3.svg');
-}
-die[result='4'] {
-    background-image: url('../images/die4.svg');
-}
-die[result='5'] {
-    background-image: url('../images/die5.svg');
-}
-die[result='6'] {
-    background-image: url('../images/die6.svg');
+
+
+        /* height: 100%; */
+        margin: 10px;
+        padding: 0;
+        /* max-height: 9vh; */
+        /* max-width: 9vh; */
+        /* border: 1px dashed red; */
+        background-size: cover;
+        flex-grow: 2;
+
+    }
+    die[result='1'] {
+        background-image: url('../images/die1.svg');
+    }
+    die[result='2'] {
+        background-image: url('../images/die2.svg');
+    }
+    die[result='3'] {
+        background-image: url('../images/die3.svg');
+    }
+    die[result='4'] {
+        background-image: url('../images/die4.svg');
+    }
+    die[result='5'] {
+        background-image: url('../images/die5.svg');
+    }
+    die[result='6'] {
+        background-image: url('../images/die6.svg');
