@@ -47,100 +47,89 @@ function placeChecker(checker, newField) {
 //     };
 // };
 
-function allowMovingCheckers(color) {
-    // EVENTS
 
-    // HOVER => highlight the last checker if it exists
-    function fieldHover(e) {
-        // Check if it is allowed for player to make moves
-        // Cancel the previous hover
-        let hoveredChecker = document.getElementsByClassName('hovered')
-        for (checker of hoveredChecker) {
-            checker.classList.remove('hovered');
-        };
-        // Set a new hover
-        let checkerToHover = this.lastChild;
-        if (checkerToHover) {
-            checkerToHover.classList.add('hovered')
-        };
+
+
+// HOVER => highlight the last checker if it exists
+function fieldHover(e) {
+    // Check if it is allowed for player to make moves
+    // Cancel the previous hover
+    let hoveredChecker = document.getElementsByClassName('hovered')
+    for (checker of hoveredChecker) {
+        checker.classList.remove('hovered');
     };
-
-    // CLICK => move selected checker or select the field's last checker
-    function fieldClick(e) {
-        let selectedChecker = document.querySelector('checker.selected');
-        if (selectedChecker) {
-            placeChecker(selectedChecker, this);
-        } else {selectChecker(this)};
+    // Set a new hover
+    let checkerToHover = this.lastChild;
+    if (checkerToHover) {
+        checkerToHover.classList.add('hovered')
     };
+};
 
-    // Call all this functions above
-    var fields = document.getElementsByClassName('field');
-    for (field of fields) {
-        field.addEventListener('mouseover', fieldHover);
-        field.addEventListener('mousedown', fieldClick);
+// CLICK => move selected checker or select the field's last checker
+function fieldClick(e) {
+    let selectedChecker = document.querySelector('checker.selected');
+    if (selectedChecker) {
+        placeChecker(selectedChecker, this);
+    } else {selectChecker(this)};
+};
+
+
+
+// DRAG
+
+// WORKING DRAG: MOBILE + WEB !!!
+// TODO: show a ghost correctly on WEb
+
+// For each checker...
+// let checkers = document.getElementsByTagName('checker');
+// [].forEach.call(checkers, (checker) => {
+// });
+
+var draggingChecker = null;
+
+// Dragstart
+function dragstart(e) {
+    e.dataTransfer.setData('text/plain',null);
+    e.target.style.opacity = .75;
+    unselectAllCheckers();
+    draggingChecker = e.target.parentNode.lastChild;
+    selectChecker(e.target.parentNode);
+    e.dataTransfer.dropEffect = "copy";
+};
+
+// Dragover
+function dragover(e) {
+    if(draggingChecker) {
+        e.preventDefault();
     };
+};
 
 
-    // DRAG
+// Drop
+function drop(e) {
+    e.preventDefault();
+    let newField = null;
+    if (e.target.classList.contains('field')) {
+        newField = e.target;
+    } else if (e.target.tagName === 'CHECKER') {
+        newField = e.target.parentNode;
+    } else {
+        return;
+    };
+    // Reject operation if the field contains checkers w/ the opposite color
+    let checkerColor = draggingChecker.getAttribute('color')
+    if (newField.lastChild && newField.lastChild.getAttribute('color') != checkerColor) {
+        return;
+    }; 
+    placeChecker(draggingChecker, newField);
+};
 
-    // WORKING DRAG: MOBILE + WEB !!!
-    // TODO: show a ghost correctly on WEb
-    // let checkers = document.getElementsByTagName('checker');
-    // [].forEach.call(checkers, (checker) => {
-    // });
 
+// Dragend
+function dragend(e) {
+    draggingChecker = null;
+};
 
-
-
-
-
-
-    // var draggingChecker = null;
-
-    // // Dragstart
-    // function dragstart(e) {
-    //     e.dataTransfer.setData('text/plain',null);
-    //     e.target.style.opacity = .75;
-    //     unselectAllCheckers();
-    //     draggingChecker = e.target.parentNode.lastChild;
-    //     selectChecker(e.target.parentNode);
-    //     e.dataTransfer.dropEffect = "copy";
-    // };
-    // document.addEventListener('dragstart', dragstart);
-
-    // // Dragover
-    // function dragover(e) {
-    //     if(draggingChecker) {
-    //         e.preventDefault();
-    //     };
-    // };
-    // document.addEventListener('dragover', dragover);
-
-    // // Drop
-    // function drop(e) {
-    //     e.preventDefault();
-    //     let newField = null;
-    //     if (e.target.classList.contains('field')) {
-    //         newField = e.target;
-    //     } else if (e.target.tagName === 'CHECKER') {
-    //         newField = e.target.parentNode;
-    //     } else {
-    //         return;
-    //     };
-    //     // Reject operation if the field contains checkers w/ the opposite color
-    //     let checkerColor = draggingChecker.getAttribute('color')
-    //     if (newField.lastChild && newField.lastChild.getAttribute('color') != checkerColor) {
-    //         return;
-    //     }; 
-    //     placeChecker(draggingChecker, newField);
-    // };
-    // document.addEventListener('drop', drop);
-
-    // // Dragend
-    // function dragend(e) {
-    //     draggingChecker = null;
-    // };
-    // document.addEventListener('dragend', dragend);
 
 
 
@@ -226,16 +215,62 @@ function allowMovingCheckers(color) {
     // "dragstart"
     // "dragenter"
     // "dragleave"
+
+// Get the color of checkers on the field => -1 / 0 / 1 (blue, none, red)
+function getFieldColor(field) {
+    let checker = field.lastChild;
+    if (checker) return Number(checker.getAttribute('color'));
+    return 0;
 };
 
-function restrictMovingCheckers() {
+// Allow a player with color <color> to move his checkers
+var allowMovingCheckers = function(color) {
+
+    var fields = document.getElementsByClassName('field');
+    for (field of fields) {
+        let fieldColor = getFieldColor(field);
+        // If it is rival's field => make all checker's here undraggable
+        if (fieldColor === -1 * color) {
+            rivalsCheckers = field.children;
+            [].forEach.call(rivalsCheckers, (checker) => {
+                checker.setAttribute('draggable', 'false');
+            });
+        } else {
+            field.addEventListener('mouseover', fieldHover);
+            field.addEventListener('mousedown', fieldClick);
+        };
+    };
+    document.addEventListener('dragstart', dragstart);
+    document.addEventListener('dragover', dragover);
+    document.addEventListener('drop', drop);
+    document.addEventListener('dragend', dragend);
+};
+
+// Restrict a player moving checkers
+var restrictMovingCheckers = function() {
+    
+    // Call all this functions above
+    var fields = document.getElementsByClassName('field');
+    for (field of fields) {
+        field.removeEventListener('mouseover', fieldHover);
+        field.removeEventListener('mousedown', fieldClick);
+    };
+
+    document.removeEventListener('dragstart', dragstart);
+    document.removeEventListener('dragover', dragover);
+    document.removeEventListener('drop', drop);
+    document.removeEventListener('dragend', dragend);
+
 };
 
 
-allowMovingCheckers('-1');
 
+// allowMovingCheckers(1);
 
-
+// setTimeout(
+//     restrictMovingCheckers(),
+//     10000
+// );
 
 
 

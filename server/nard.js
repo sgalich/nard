@@ -1,12 +1,12 @@
 class Nard {
 
     constructor(p0, p1, game='nard') {
+        [p0.player.color, p1.player.color] = [1, -1];
         this.players = [p0, p1];
         this.game = game;
         this.turn = null;    // 0 / 1 - index of the player who's turn
         this.die1 = null;    // random result from die1
         this.die2 = null;    // random result from die2
-        this.turn = null;    // -1 or 1 (for 'black' or 'white') - who is moving checkers now
         this.wait = null;    // 1 or -1 (for 'white' or 'black') - who is awaiting now
         this.movesCount = 0;    // moves counter
         this.winner = null;
@@ -68,7 +68,6 @@ class Nard {
         this.renderBoard(ind);
         // socket.emit('hint', `Welcome to the ${socket.player.game} game!`);
         socket.on('roll_dice', () => {this.rollDice()});
-        // socket.on('turn', () => { this._onTurn(idx, turn) });
     };
 
     // Render the whole page
@@ -106,8 +105,9 @@ class Nard {
         while (this.die1 == this.die2) this.rollDice();
         this.turn = (this.die1 > this.die2) ? 0 : 1;
         // Send hints
-        this.printHint(this.players[0], 'your turn');
-        this.printHint(this.players[1], 'rival\'s turn');
+        this.printHint(this.players[this.turn], 'your turn');
+        this.printHint(this.players[Math.abs(this.turn - 1)], 'rival\'s turn');
+        // setTimeout(() => {}, 4000);
     };
 
 
@@ -123,7 +123,18 @@ class Nard {
         // 7. Switch turn & run this function recursively
 
         this.rollDice();
+        
         // 1. Turn off cliking and dragging in checkers' properties for the awaiting player
+        this.players[this.turn].emit('allowMovingCheckers', this.players[this.turn].player.color);
+        this.players[Math.abs(this.turn - 1)].emit('restrictMovingCheckers');
+        
+        // 2. Count allowed moves for the player who's turn
+
+        
+        // dice
+        // ? first move and dice === 3-3, 4-4, 6-6
+        // double? => 4 moves
+        // ...
 
 
         

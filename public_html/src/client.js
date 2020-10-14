@@ -161,6 +161,13 @@ function renderCheckers(board, invert=1) {
         };
     });
 };
+socket.on('renderCheckers', renderCheckers);
+
+// allowMovingCheckers is from moving.js
+socket.on('allowMovingCheckers', allowMovingCheckers);
+
+// restrictMovingCheckers is from moving.js
+socket.on('restrictMovingCheckers', restrictMovingCheckers);
 
 // Render dice
 function renderDice([dieRes1, dieRes2]) {
@@ -265,8 +272,7 @@ socket.on('setFriendsLink', function(sharePage) {
 
 socket.on('hideStartModal', hideStartModal);
 
-// Render checkers
-socket.on('renderCheckers', renderCheckers);
+
 
 // Render dice after they are rolled on the server
 socket.on('renderDice', renderDice);
