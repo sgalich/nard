@@ -40,4 +40,5 @@ desynch, reconciliation, lag compensation
 - Make small & middle size versions
 - Add different languages
 - Decide about start window BEFORE the loading page !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+- TODO: show a ghost correctly when dragging a checker
 - 

@@ -67,7 +67,7 @@ class Nard {
         let socket = this.players[ind];
         this.renderBoard(ind);
         // socket.emit('hint', `Welcome to the ${socket.player.game} game!`);
-        socket.on('roll_dice', () => { this.rollDice() });
+        socket.on('roll_dice', () => {this.rollDice()});
         // socket.on('turn', () => { this._onTurn(idx, turn) });
     };
 
@@ -103,10 +103,8 @@ class Nard {
     chooseWhoIsFirst() {
         this.rollDice();
         // Roll dice till they show different results
-        while (this.die1 == this.die2) {
-            this.rollDice();
-        };
-        this.turn = (this.die1 < this.die2) ? 0 : 1;
+        while (this.die1 == this.die2) this.rollDice();
+        this.turn = (this.die1 > this.die2) ? 0 : 1;
         // Send hints
         this.printHint(this.players[0], 'your turn');
         this.printHint(this.players[1], 'rival\'s turn');
@@ -114,7 +112,7 @@ class Nard {
 
 
     makeTurn() {
-        if (this.winner) { return };
+        if (this.winner) return;
 
         // 1. Turn off cliking and dragging in checkers' properties for the awaiting player
         // 2. Count allowed moves for the player who's turn
@@ -125,8 +123,10 @@ class Nard {
         // 7. Switch turn & run this function recursively
 
         this.rollDice();
-        // 1. 
+        // 1. Turn off cliking and dragging in checkers' properties for the awaiting player
 
+
+        
         // this.turn[1].emit('printHint', 'Looser!!');
         
     };
