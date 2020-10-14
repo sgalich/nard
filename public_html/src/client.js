@@ -184,7 +184,7 @@ function renderDice([dieRes1, dieRes2]) {
     diceBox.appendChild(die2);
 };
 
-// Render dice
+// Print a hint
 function printHint(hint) {
     let diceBox = document.getElementById('hint');
     diceBox.innerHTML = '';    // Clear the previous hint

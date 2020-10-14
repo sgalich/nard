@@ -2,7 +2,7 @@
 
 // Define dragability for the checkers
 // TODO: Make it optionable - turn on / turn off (for turn / awaiting rival's turn)
-
+var allowedMoves;
 const CHECKEROVERLAP = 4.5;
 
 // UTILS
@@ -21,8 +21,38 @@ function selectChecker(field) {
     if (movingChecker) {movingChecker.classList.add('selected')};
 };
 
+
+
+// TEST ONLY
+allowedMoves = [
+    [
+        {1: 4}
+    ],
+    [
+        {1: 2}, {12: 15}
+    ],
+];
+
+
+
+
 // Place a checker into a new field
 function placeChecker(checker, newField) {
+
+
+
+
+    let fromFieldId = Number(checker.parentNode.getAttribute('id'));
+    let toFieldId = Number(newField.getAttribute('id'));
+    console.log(toFieldId, fromFieldId);
+
+    socket.emit('isThisOKMove', [fromFieldId, toFieldId]);
+
+
+
+
+
+
     // Place the checker correctly inside the target
     let checkersInNewField = newField.children.length;
     // If the checker goes back to it's field, then move it under the new place
@@ -120,7 +150,7 @@ function drop(e) {
     let checkerColor = draggingChecker.getAttribute('color')
     if (newField.lastChild && newField.lastChild.getAttribute('color') != checkerColor) {
         return;
-    }; 
+    };
     placeChecker(draggingChecker, newField);
 };
 
@@ -265,7 +295,7 @@ var restrictMovingCheckers = function() {
 
 
 
-// allowMovingCheckers(1);
+allowMovingCheckers(1);
 
 // setTimeout(
 //     restrictMovingCheckers(),

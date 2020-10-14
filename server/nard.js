@@ -68,6 +68,7 @@ class Nard {
         this.renderBoard(ind);
         // socket.emit('hint', `Welcome to the ${socket.player.game} game!`);
         socket.on('roll_dice', () => {this.rollDice()});
+        socket.on('isThisOKMove', this.isThisOKMove);
     };
 
     // Render the whole page
@@ -108,39 +109,137 @@ class Nard {
         this.printHint(this.players[this.turn], 'your turn');
         this.printHint(this.players[Math.abs(this.turn - 1)], 'rival\'s turn');
         // setTimeout(() => {}, 4000);
+        this.rollDice();
     };
-
 
     makeTurn() {
         if (this.winner) return;
 
         // 1. Turn off cliking and dragging in checkers' properties for the awaiting player
         // 2. Count allowed moves for the player who's turn
-        // 3. Highlight recommend moves
+        // 3. Highlight recommend moves when hover above a field
         // 4. Block moves that are not allowed
         // 5. Await till he makes right moves
         // 6. Check if the player won the game => end turns return;
         // 7. Switch turn & run this function recursively
 
-        this.rollDice();
+        
         
         // 1. Turn off cliking and dragging in checkers' properties for the awaiting player
-        this.players[this.turn].emit('allowMovingCheckers', this.players[this.turn].player.color);
+        let color = this.players[this.turn].player.color;
+        this.players[this.turn].emit('allowMovingCheckers', color);
         this.players[Math.abs(this.turn - 1)].emit('restrictMovingCheckers');
-        
+        this.countSteps(color);
+
         // 2. Count allowed moves for the player who's turn
 
-        
-        // dice
-        // ? first move and dice === 3-3, 4-4, 6-6
-        // double? => 4 moves
-        // ...
+        // 2.1 Count all steps in move
 
 
+
+
+
         
-        // this.turn[1].emit('printHint', 'Looser!!');
-        
+        this.movesCount += 1;
+        // this.rollDice();
     };
+
+
+
+
+    
+    // isThisOKMove([fromFieldId, toFieldId]) {
+    //     let move = fromFieldId - toFieldId;
+    //     move = (move < 0) ? 24 + move : move;
+    //     if (move === this.die1 || move === this.die2 || move === this.die1 + this.die2) {
+    //         this.players[this.turn].emit('');
+    //     };
+    //     this.players[this.turn].emit('');
+    // };
+
+
+
+
+
+
+    countSteps(color) {
+        // Exception for the 1st move when dice = 3-3, 4-4 or 6-6
+        // При этом с головы всегда можно брать только одну шашку.
+        // Исключение составляет только первый бросок в партии.
+        // Если одна шашка, которую можно снять с головы, проходит, то можно снять вторую.
+        // Таких камней для первого игрока всего три: шесть-шесть, четыре-четыре и три-три 
+        // (мешают шашки противника, стоящие на голове). Если выпадает один из этих камней,
+        // игрок снимает с головы две шашки. Для второго игрока количество камней, 
+        // при которых с головы можно снять две шашки, увеличивается,
+        // так как мешает пройти первому камню, имеет право не только голова, но и камень, 
+        // снятый противником. Если противник первым броском кинул: 
+        // два-один, шесть-два или пять-пять, то второй игрок 
+        // может снять вторую шашку также при бросках пять-пять и шесть-два 
+        // (кроме: шесть-шесть, четыре-четыре и три-три, которые тоже не идут напрямую).
+        // if (this.movesCount <= 1) {
+        //     if (this.die1 === this.die2) {
+
+        //     };
+        // };
+        
+        // Check whether the field is rival's or not
+        function isMyField(fieldVal, color) {
+            if (fieldVal === 0) {
+                return true;
+            } else if (Math.sign(fieldVal) === Math.sign(color)) return true;
+            return false;
+        };
+
+        // Choose how many moves to make
+        let steps = (this.die1 !== this.die2) ?
+            [this.die1, this.die2] : [this.die1, this.die1, this.die1, this.die1];
+        
+        // Set all variants to move a single checker
+        let variants = (this.die1 !== this.die2) ?
+            [this.die1, this.die2, (this.die1 + this.die2)] : 
+            [this.die1, this.die1, this.die1, this.die1];
+
+        // // Gather all possible steps
+        // let moves = [];
+        // [].forEach.call(Object.entries(this.board), ([fromFieldId, fromFieldVal]) => {
+        //     if (isMyField(fromFieldVal, color) && fromFieldVal) {
+        //         steps.forEach((d) => {
+
+        //             console.log('fromFieldId, d: ', fromFieldId, d);
+
+        //             let toFieldId = String((fromFieldId + d) % 24);
+                    
+        //             console.log('toFieldId: ', toFieldId);
+
+        //             if (isMyField(this.board[toFieldId], color)) {
+        //                 let move = {};
+        //                 move[fromFieldId] = -color;
+        //                 move[toFieldId] = color;
+
+        //                 console.log(move);
+
+        //                 moves.push(move);
+        //             };
+        //         });
+        //     };
+            
+        // });
+
+
+
+
+
+        console.log(moves);
+
+
+
+
+
+
+    };
+
+
+
 
 
 
