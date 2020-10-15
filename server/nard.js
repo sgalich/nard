@@ -117,6 +117,8 @@ class Nard {
 
         // 1. Turn off cliking and dragging in checkers' properties for the awaiting player
         // 2. Count allowed moves for the player who's turn
+        // 2.1 Allow to make allowed moves
+
         // 3. Highlight recommend moves when hover above a field
         // 4. Block moves that are not allowed
         // 5. Await till he makes right moves
@@ -147,7 +149,7 @@ class Nard {
 
 
 
-    
+
     // isThisOKMove([fromFieldId, toFieldId]) {
     //     let move = fromFieldId - toFieldId;
     //     move = (move < 0) ? 24 + move : move;

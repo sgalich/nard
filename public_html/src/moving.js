@@ -24,29 +24,195 @@ function selectChecker(field) {
 
 
 // TEST ONLY
+// let's dice are 3-1
+// allowedMoves = [
+//     [
+//         {1: 5}
+//     ],
+//     [
+//         {1: 2}, {12: 15}
+//     ],
+// ];
+let move_1 = new Map();
+let move_2 = new Map();
+let move_3 = new Map();
+move_1.set(1, 5);
+move_2.set(1, 2);
+move_3.set(12, 15);
 allowedMoves = [
-    [
-        {1: 4}
-    ],
-    [
-        {1: 2}, {12: 15}
-    ],
+    [move_1],
+    [move_2, move_3],
 ];
+// > [
+//      [ Map { 1 => 5 } ],
+//      [ Map { 1 => 2 }, Map { 12 => 15 } ]
+//   ]
 
+
+// let a user to make only allowed moves and cancel his' move
+//
+// This must be copied when a player makes his moves !!!
+// how to copy in js - Object.assign([], allowedMoves[i])
+// Say after a player has made a move 1:2, the only 12:15 move is remained
+// So for now a player has only 12:15 move to make
+// or he can cancel his move 1:2 - make 2:1 move
+playersMoves = [
+    [
+        {12: 15}
+    ],
+    [
+        {2: 1}
+    ]
+]
+
+
+
+
+
+// Unmark selected fields
+// function unmarkMarkedFields() {
+//     let markedFields = document.getElementsByClassName('marked');
+//     while (markedFields.length != 0) {
+//         markedFields[0].classList.remove('marked');
+//     };
+// };
+
+
+
+// This function transforms allowedMoves to allowedFields
+// [ [ Map { 1 => 5 } ], [ Map { 1 => 2 }, Map { 12 => 15 } ] ]
+// This transforms into this object for highlighting allowed fields
+// let allowedFields = {
+//     '1': ['2', '5'],
+//     '12': ['15']
+// };
+// NB: allowedMoves has Numbers as ids, allowedFields has Strings as ids !
+function allowedMovesToAllowedFields() {
+    let allowedFields = new Map;
+    allowedMoves.forEach((move) => {
+        move.forEach((step) => {
+            step = step.entries().next().value;
+            let idFrom = String(step[0]);
+            let idTo = String(step[1]);
+            if (allowedFields.has(idFrom)) {
+                allowedFields.get(idFrom).push(idTo);
+            } else {
+                allowedFields.set(idFrom, [idTo]);
+            };
+        });
+    });
+    return allowedFields;
+};
+var allowedFields = allowedMovesToAllowedFields();
+
+
+
+
+// Make fields highlighted after HOVER
+// we have allowedMoves:
+// let's dice are 3-1
+// allowedMoves = [
+// > [ [ Map { 1 => 5 } ], [ Map { 1 => 2 }, Map { 12 => 15 } ] ]
+
+// var fieldTo;    // recommended field for being highlighted
+
+// Mouse enters the field
+// var mouseenterField;
+// var mouseleaveField;
+
+
+
+
+
+
+
+// HOVER
+
+
+
+// Mouse enters the field
+function mouseentersField(e) {
+    let idFrom = this.getAttribute('id');
+    allowedFields.get(idFrom).forEach((allowedId) => {
+        document.getElementById(allowedId).classList.add('allowed');
+    });
+    // Highlight the upper checker
+    let checkerToHover = this.lastChild;
+    if (checkerToHover) checkerToHover.classList.add('hovered');
+};
+
+// Mouse leaves the field
+function mouseleavesField(e) {
+    let idFrom = this.getAttribute('id');
+    let selectedChecker = document.getElementsByClassName('selected')[0];
+    if (!selectedChecker) {
+        allowedFields.get(idFrom).forEach((allowedId) => {
+            document.getElementById(allowedId).classList.remove('allowed');
+        });
+    };
+    // Remove the upper checker's highlight 
+    let checkerToHover = this.lastChild;
+    if (checkerToHover) checkerToHover.classList.remove('hovered');
+};
+
+// Add events to highlight allowed steps
+function addAllowedFields() {
+    for (item of allowedFields.entries()) {
+        let idFrom = String(item[0]);
+        let fieldFrom = document.getElementById(idFrom);
+        fieldFrom.addEventListener('mouseenter', mouseentersField);
+        fieldFrom.addEventListener('mouseleave', mouseleavesField);
+    };
+};
+
+// Remove events to highlight allowed steps
+function removeAllowedFields() {
+    for (item of allowedFields.entries()) {
+        let idFrom = String(item[0]);
+        let fieldFrom = document.getElementById(idFrom);
+        fieldFrom.removeEventListener('mouseenter', mouseentersField);
+        fieldFrom.removeEventListener('mouseleave', mouseleavesField);
+    };
+};
+
+
+
+
+
+addAllowedFields();
 
 
 
 // Place a checker into a new field
 function placeChecker(checker, newField) {
 
+    // Restrict steps that not allowed
+    let fromId = checker.parentNode.getAttribute('id');
+    let toId = newField.getAttribute('id');
+    if (!allowedFields.get(fromId).includes(toId)) return;
 
 
 
-    let fromFieldId = Number(checker.parentNode.getAttribute('id'));
-    let toFieldId = Number(newField.getAttribute('id'));
-    console.log(toFieldId, fromFieldId);
+   
+    
 
-    socket.emit('isThisOKMove', [fromFieldId, toFieldId]);
+    let move_1 = new Map();
+    move_1.set(1, 6);
+    allowedMoves = [
+        [move_1]
+    ];
+    // removeAllowedFields();
+
+    
+    // console.log(toFieldId, fromFieldId);
+
+
+
+    // Check whether this move is from allowedMoves or not
+
+
+
+    // socket.emit('isThisOKMove', [fromFieldId, toFieldId]);
 
 
 
@@ -69,39 +235,66 @@ function placeChecker(checker, newField) {
     unselectAllCheckers();
 };
 
-// Unmark selected fields
-// function unmarkMarkedFields() {
-//     let markedFields = document.getElementsByClassName('marked');
-//     while (markedFields.length != 0) {
-//         markedFields[0].classList.remove('marked');
+
+
+
+
+
+// DOES NOT USE
+// HOVER => highlight the last checker if it exists
+// function fieldHover(e) {
+//     // Check if it is allowed for player to make moves
+//     // Cancel the previous hover
+//     let hoveredChecker = document.getElementsByClassName('hovered')
+//     for (checker of hoveredChecker) {
+//         checker.classList.remove('hovered');
+//     };
+//     // Set a new hover
+//     let checkerToHover = this.lastChild;
+//     if (checkerToHover) {
+//         checkerToHover.classList.add('hovered')
 //     };
 // };
 
-
-
-
-// HOVER => highlight the last checker if it exists
-function fieldHover(e) {
-    // Check if it is allowed for player to make moves
-    // Cancel the previous hover
-    let hoveredChecker = document.getElementsByClassName('hovered')
-    for (checker of hoveredChecker) {
-        checker.classList.remove('hovered');
-    };
-    // Set a new hover
-    let checkerToHover = this.lastChild;
-    if (checkerToHover) {
-        checkerToHover.classList.add('hovered')
-    };
-};
-
 // CLICK => move selected checker or select the field's last checker
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/// !!!!!!!!!1
+// REMAKE IT WITH ALLOWEDFIELDS
+// you cannot select a checker if you cannot make a step from this field...
+// !!!!
 function fieldClick(e) {
     let selectedChecker = document.querySelector('checker.selected');
     if (selectedChecker) {
         placeChecker(selectedChecker, this);
     } else {selectChecker(this)};
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -266,7 +459,7 @@ var allowMovingCheckers = function(color) {
                 checker.setAttribute('draggable', 'false');
             });
         } else {
-            field.addEventListener('mouseover', fieldHover);
+            // field.addEventListener('mouseover', fieldHover);
             field.addEventListener('mousedown', fieldClick);
         };
     };
