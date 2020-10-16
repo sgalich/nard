@@ -87,19 +87,19 @@ body {
             background-repeat: no-repeat;
             background-size: 300px 100px;;
         } */
+        .field.allowed {
+            background-repeat: no-repeat;
+            background-size: 100%;
+        }
         .field.top.allowed {
             /* border: 2px dashed red; */
             background-image: url('../images/triangleTop.svg');
-            background-repeat: no-repeat;
             background-position: top;
-            background-size: 100%;
         }
         .field.bottom.allowed {
             /* border: 2px dashed red; */
             background-image: url('../images/triangleBottom.svg');
-            background-repeat: no-repeat;
             background-position: bottom;
-            background-size: 100%;
         }
 
 

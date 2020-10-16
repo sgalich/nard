@@ -7,19 +7,9 @@ const CHECKEROVERLAP = 4.5;
 
 // UTILS
 
-// Unselect all the selected checkers if they exist
-function unselectAllCheckers() {
-    [].forEach.call(document.getElementsByClassName('selected'), (el) => {
-        el.classList.remove('selected');
-    });
-};
 
-// Select the last checker if it exists
-function selectChecker(field) {
-    unselectAllCheckers();
-    let movingChecker = field.lastChild;
-    if (movingChecker) {movingChecker.classList.add('selected')};
-};
+
+
 
 
 
@@ -83,8 +73,8 @@ playersMoves = [
 // [ [ Map { 1 => 5 } ], [ Map { 1 => 2 }, Map { 12 => 15 } ] ]
 // This transforms into this object for highlighting allowed fields
 // let allowedFields = {
-//     '1': ['2', '5'],
-//     '12': ['15']
+//     '1' => ['2', '5'],
+//     '12' => ['15']
 // };
 // NB: allowedMoves has Numbers as ids, allowedFields has Strings as ids !
 function allowedMovesToAllowedFields() {
@@ -124,6 +114,44 @@ var allowedFields = allowedMovesToAllowedFields();
 
 
 
+// UTILS
+
+// Highlight allowed fields
+function highlightAllowedFields(fieldFrom) {
+    removeHighlightFromAllFields();
+    let idFrom = fieldFrom.getAttribute('id');
+    allowedFields.get(idFrom).forEach((allowedId) => {
+        document.getElementById(allowedId).classList.add('allowed');
+    });
+};
+
+// Remove a highlight from all of the fields
+function removeHighlightFromAllFields() {
+    let effect = 'allowed';
+    let highlightedFields = document.getElementsByClassName(effect);
+    while (highlightedFields.length) highlightedFields[0].classList.remove(effect);
+};
+
+// Hover/Select the upper checker at the field
+function makeCheckerAt(field, effect) {
+    unmakeAllCheckers(effect);    // Remove this effect from any other checkers
+    let choosenChecker = field.lastChild;
+    if (choosenChecker) choosenChecker.classList.add(effect);
+};
+
+// Unhover/Unselect the upper checker at the field
+function unmakeAllCheckers(effect) {
+    let checkersEffected = document.getElementsByClassName(effect);
+    while (checkersEffected.length) checkersEffected[0].classList.remove(effect);
+};
+
+
+
+
+
+//////////////////////
+// EVENT FUNCTIONNS //
+//////////////////////
 
 
 // HOVER
@@ -131,18 +159,13 @@ var allowedFields = allowedMovesToAllowedFields();
 
 
 // Mouse enters the field
-function mouseentersField(e) {
-    let idFrom = this.getAttribute('id');
-    allowedFields.get(idFrom).forEach((allowedId) => {
-        document.getElementById(allowedId).classList.add('allowed');
-    });
-    // Highlight the upper checker
-    let checkerToHover = this.lastChild;
-    if (checkerToHover) checkerToHover.classList.add('hovered');
+function mouseEntersField(e) {
+    highlightAllowedFields(this);
+    makeCheckerAt(this, 'hovered');
 };
 
 // Mouse leaves the field
-function mouseleavesField(e) {
+function mouseLeavesField(e) {
     let idFrom = this.getAttribute('id');
     let selectedChecker = document.getElementsByClassName('selected')[0];
     if (!selectedChecker) {
@@ -155,32 +178,100 @@ function mouseleavesField(e) {
     if (checkerToHover) checkerToHover.classList.remove('hovered');
 };
 
+
+
+
+
+// CLICK
+var idFrom = null;
+
+// Select a checker from field we allowed to make a step
+function mouseClicksFieldFrom(e) {
+    removeHoverEffectAtAllowedFields();
+    highlightAllowedFields(this);
+    makeCheckerAt(this, 'selected');
+    // Add events for clicking other fields
+    idFrom = this.getAttribute('id');
+    allowedFields.get(idFrom).forEach((allowedId) => {
+        document.getElementById(allowedId).addEventListener('click', mouseClicksFieldTo);
+    });
+};
+
+// Select a checker from a field we allowed to make a step
+function mouseClicksFieldTo(e) {
+    // Check if it is allowed field or not
+    let allowedIds = allowedFields.get(idFrom);
+    let thisId = this.getAttribute('id');
+    if (!allowedIds.includes(thisId)) return;
+    // Place checker
+    let selectedChecker = document.getElementsByClassName('selected')[0];
+    placeChecker(selectedChecker, this);
+    // Remove this listener from the allowed fields
+    allowedFields.get(idFrom).forEach((allowedId) => {
+        document.getElementById(allowedId).removeEventListener('click', mouseClicksFieldTo);
+    });
+    unmakeAllCheckers('selected');
+    idFrom = null;
+};
+
+
+
+/// !!!!!!!!!1
+// REMAKE IT WITH ALLOWEDFIELDS
+// you cannot select a checker if you cannot make a step from this field...
+// !!!!
+
+// function fieldClick(e) {
+//     let idFrom = this.getAttribute('id');
+//     if ([...allowedFields.keys()].includes(idFrom)) {
+//         selectCheckerOnThe(this);
+//     };
+
+    // let selectedChecker = document.querySelector('checker.selected');
+    // if (selectedChecker) {
+    //     placeChecker(selectedChecker, this);
+    // } else {
+    //     let idFrom = this.getAttribute('id');
+    //     if ([...allowedFields.keys()].includes(idFrom)) {
+    //         selectCheckerOnThe(this);
+    //     };
+    // };
+// };
+
+
+
+
+
+
+
+
+
+
 // Add events to highlight allowed steps
 function addAllowedFields() {
     for (item of allowedFields.entries()) {
         let idFrom = String(item[0]);
         let fieldFrom = document.getElementById(idFrom);
-        fieldFrom.addEventListener('mouseenter', mouseentersField);
-        fieldFrom.addEventListener('mouseleave', mouseleavesField);
+        fieldFrom.addEventListener('mouseenter', mouseEntersField);
+        fieldFrom.addEventListener('mouseleave', mouseLeavesField);
+        fieldFrom.addEventListener('click', mouseClicksFieldFrom);
     };
 };
 
 // Remove events to highlight allowed steps
-function removeAllowedFields() {
+function removeHoverEffectAtAllowedFields() {
     for (item of allowedFields.entries()) {
         let idFrom = String(item[0]);
         let fieldFrom = document.getElementById(idFrom);
-        fieldFrom.removeEventListener('mouseenter', mouseentersField);
-        fieldFrom.removeEventListener('mouseleave', mouseleavesField);
+        fieldFrom.removeEventListener('mouseenter', mouseEntersField);
+        fieldFrom.removeEventListener('mouseleave', mouseLeavesField);
+        // fieldFrom.removeEventListener('click', mouseClicksField);
     };
 };
 
 
-
-
-
 addAllowedFields();
-
+// removeAllowedFields()
 
 
 // Place a checker into a new field
@@ -193,26 +284,18 @@ function placeChecker(checker, newField) {
 
 
 
-   
-    
+    // Change allowedFields here !!!!
+    removeHoverEffectAtAllowedFields()
+
+
+
 
     let move_1 = new Map();
     move_1.set(1, 6);
     allowedMoves = [
         [move_1]
     ];
-    // removeAllowedFields();
-
     
-    // console.log(toFieldId, fromFieldId);
-
-
-
-    // Check whether this move is from allowedMoves or not
-
-
-
-    // socket.emit('isThisOKMove', [fromFieldId, toFieldId]);
 
 
 
@@ -232,7 +315,7 @@ function placeChecker(checker, newField) {
         checker.setAttribute('style', `bottom: calc(${checkersInNewField} * ${CHECKEROVERLAP}%);`);
     };
     newField.appendChild(checker);
-    unselectAllCheckers();
+    unmakeAllCheckers('selected');
 };
 
 
@@ -271,19 +354,6 @@ function placeChecker(checker, newField) {
 
 
 
-/// !!!!!!!!!1
-// REMAKE IT WITH ALLOWEDFIELDS
-// you cannot select a checker if you cannot make a step from this field...
-// !!!!
-function fieldClick(e) {
-    let selectedChecker = document.querySelector('checker.selected');
-    if (selectedChecker) {
-        placeChecker(selectedChecker, this);
-    } else {selectChecker(this)};
-};
-
-
-
 
 
 
@@ -309,6 +379,13 @@ function fieldClick(e) {
 // });
 
 var draggingChecker = null;
+
+// Select the last checker if it exists
+function selectChecker(field) {
+    unselectAllCheckers();
+    let movingChecker = field.lastChild;
+    if (movingChecker) {movingChecker.classList.add('selected')};
+};
 
 // Dragstart
 function dragstart(e) {
@@ -460,7 +537,7 @@ var allowMovingCheckers = function(color) {
             });
         } else {
             // field.addEventListener('mouseover', fieldHover);
-            field.addEventListener('mousedown', fieldClick);
+            // field.addEventListener('mousedown', fieldClick);
         };
     };
     document.addEventListener('dragstart', dragstart);
@@ -475,8 +552,8 @@ var restrictMovingCheckers = function() {
     // Call all this functions above
     var fields = document.getElementsByClassName('field');
     for (field of fields) {
-        field.removeEventListener('mouseover', fieldHover);
-        field.removeEventListener('mousedown', fieldClick);
+        // field.removeEventListener('mouseover', fieldHover);
+        // field.removeEventListener('mousedown', fieldClick);
     };
 
     document.removeEventListener('dragstart', dragstart);
