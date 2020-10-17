@@ -171,21 +171,24 @@ function itIsAllowedStep(idFrom, toId) {
 
 // Mouse enters the field
 function mouseEntersField(e) {
-    highlightAllowedFields(this);
-    makeCheckerAt(this, 'hovered');
+    let selectedChecker = document.getElementsByClassName('selected')[0];
+    if (!selectedChecker) {
+        highlightAllowedFields(this);
+        makeCheckerAt(this, 'hovered');
+    };
 };
 
 // Mouse leaves the field
 function mouseLeavesField(e) {
-    removeHighlightFromAllFields();
-    unmakeAllCheckers('hovered');
+    let selectedChecker = document.getElementsByClassName('selected')[0];
+    if (!selectedChecker) {
+        removeHighlightFromAllFields();
+        unmakeAllCheckers('hovered');
+    };
 };
 
 
 // CLICK
-
-
-
 
 // Select a checker from a field we allowed to make a step
 function mouseClicksField(e) {
@@ -228,22 +231,16 @@ function mouseClicksField(e) {
 
 
 
+/////////////////////////////////////
+// ACTIVATING THE EVENT FUNCTIONNS //
+/////////////////////////////////////
 
-
-
-
-// Add events to highlight allowed steps
-function addHoverNClickEvents() {
-    for (field of document.getElementsByClassName('field')) { 
-        if (!field.lastChild || field.lastChild.getAttribute('color') !== color) continue;
-        field.addEventListener('mouseenter', mouseEntersField);
-        field.addEventListener('mouseleave', mouseLeavesField);
-    };
-};
 
 // Add events to highlight allowed steps
 function addHoverNClickEvents() {
     for (field of fields) {
+        field.addEventListener('mouseenter', mouseEntersField);
+        field.addEventListener('mouseleave', mouseLeavesField);
         field.addEventListener('click', mouseClicksField);
     };
 };
@@ -251,19 +248,12 @@ function addHoverNClickEvents() {
 // Remove events to highlight allowed steps
 function removeHoverNClickEvents() {
     for (field of fields) {
+        field.removeEventListener('mouseenter', mouseEntersField);
+        field.removeEventListener('mouseleave', mouseLeavesField);
         field.removeEventListener('click', mouseClicksField);
     };
 };
 
-// Remove events to highlight allowed steps
-function removeHoverEffectAtAllowedFields() {
-    for (item of allowedFields.entries()) {
-        let idFrom = String(item[0]);
-        let fieldFrom = document.getElementById(idFrom);
-        // fieldFrom.removeEventListener('mouseenter', mouseEntersField);
-        // fieldFrom.removeEventListener('mouseleave', mouseLeavesField);
-    };
-};
 
 addHoverNClickEvents();
 
@@ -273,40 +263,6 @@ addHoverNClickEvents();
 
 
 
-
-
-
-// // Add events to highlight allowed steps
-// function addAllowedFields() {
-
-
-
-//     /// TODO: MAKE IT for all my fields !
-
-
-//     for (item of allowedFields.entries()) {
-//         let idFrom = String(item[0]);
-//         let fieldFrom = document.getElementById(idFrom);
-//         fieldFrom.addEventListener('mouseenter', mouseEntersField);
-//         fieldFrom.addEventListener('mouseleave', mouseLeavesField);
-//         fieldFrom.addEventListener('click', mouseClicksFieldFrom);
-//     };
-// };
-
-// // Remove events to highlight allowed steps
-// function removeHoverEffectAtAllowedFields() {
-//     for (item of allowedFields.entries()) {
-//         let idFrom = String(item[0]);
-//         let fieldFrom = document.getElementById(idFrom);
-//         fieldFrom.removeEventListener('mouseenter', mouseEntersField);
-//         fieldFrom.removeEventListener('mouseleave', mouseLeavesField);
-//         // fieldFrom.removeEventListener('click', mouseClicksField);
-//     };
-// };
-
-
-// addAllowedFields();
-// removeAllowedFields()
 
 
 // Place a checker into a new field
@@ -320,7 +276,6 @@ function placeChecker(checker, newField) {
 
 
     // TODO: Change allowedFields here !!!!
-    removeHoverEffectAtAllowedFields();
     removeHoverNClickEvents();
 
 
@@ -419,7 +374,7 @@ var draggingChecker = null;
 
 // Select the last checker if it exists
 function selectChecker(field) {
-    unselectAllCheckers();
+    unmakeAllCheckers('selected');
     let movingChecker = field.lastChild;
     if (movingChecker) {movingChecker.classList.add('selected')};
 };
