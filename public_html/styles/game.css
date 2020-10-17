@@ -1,7 +1,11 @@
 :root {
-    --scale-selected-checker: 1.025;
+    --scale-hovered-checker: 1.025;
+    --scale-selected-checker: 1.05;
     /* --checker-size: 7.5vw; */
     --checker-size: 100%;
+}
+* {
+    user-select: none;
 }
 body {
     width:  100%;
@@ -78,6 +82,7 @@ body {
             display: flex;
             flex-wrap: nowrap;
             align-items: center;
+            user-select: none;
         }
        
        
@@ -158,8 +163,8 @@ checker {
 
 
 checker.hovered {
-    -webkit-transform: scale(var(--scale-selected-checker));
-    transform: scale(var(--scale-selected-checker));
+    -webkit-transform: scale(var(--scale-hovered-checker));
+    transform: scale(var(--scale-hovered-checker));
 }
 
 
