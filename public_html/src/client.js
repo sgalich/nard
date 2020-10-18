@@ -164,10 +164,10 @@ function renderCheckers(board, invert=1) {
 socket.on('renderCheckers', renderCheckers);
 
 // allowMovingCheckers is from moving.js
-socket.on('allowMovingCheckers', allowMovingCheckers);
+// socket.on('allowMovingCheckers', allowMovingCheckers);
 
 // restrictMovingCheckers is from moving.js
-socket.on('restrictMovingCheckers', restrictMovingCheckers);
+// socket.on('restrictMovingCheckers', restrictMovingCheckers);
 
 // Render dice
 function renderDice([dieRes1, dieRes2]) {

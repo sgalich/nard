@@ -24,25 +24,27 @@ body {
 #board {
     /* TEST SETTINGS */
     /* background-color: gold; */
-    /* border: 5px solid black; */
+    /* border: 6px solid black; */
     
     /* Background & border */
     background-image: url('../images/board.svg');
+    background-repeat: no-repeat;
     background-size: 100%;
     /* Center horizontally & vertically*/
     overflow: hidden;
     overflow-y: auto;
     margin: 0px;
     padding: 0px;
+    padding-left: 0.375%;
     position: fixed;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
     /* Set a size */
-    width: 100vw;
-    height: 56.25vw;
-    max-height: 100vh;
-    max-width: 177.7778vh;
+    width: 99vw;
+    height: 55.6875vw;
+    max-height: 99vh;
+    max-width: 176vh;
     /* Settings for children */ 
     z-index: 1;
     display: flex;
@@ -55,7 +57,7 @@ body {
         margin: 0px;
         padding: 0px;
         height: 100%;
-        width: 7.8125%;
+        width: 7.75%;
         display: flex;
         flex-direction: column;
     }
@@ -71,7 +73,7 @@ body {
         }
         .field {
             
-            /* border: 1px dashed green; */
+            border: 1px dashed green;
 
 
             margin: 0px;
@@ -150,9 +152,16 @@ checker {
     max-height: 11vh;
     max-width: 11vh;
     position: absolute;
+
     z-index: 3;
-    --webkit-user-drag: element;
+    /* --webkit-user-drag: element; */
     overflow: visible;
+
+
+    /* position: relative; */
+    /* display: block; */
+
+
 }
 [color='-1'] {
     background-image: url('../images/black.svg');
