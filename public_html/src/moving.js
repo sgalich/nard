@@ -1,79 +1,26 @@
 // Game physics - Checkers moving algorithms
 
-// Define dragability for the checkers
-// TODO: Make it optionable - turn on / turn off (for turn / awaiting rival's turn)
+// TODO: Make dragability optionable - ???
 
 // TESTS:
 // TODO: TEST: cursor: grab on field/checker when click/drag - ???
 
 var allowedMoves;
+var allowedFields;
 const CHECKEROVERLAP = 4.5;
 const color = '1';
 const fields = document.getElementsByClassName('field');
 const checkers = document.getElementsByTagName('checker');
-// UTILS
+// This is for clicking and dragging
+var mouseDownCoordinates = [];
+var isCheckerSelectedAtFirst = true;
+var shift = checkers[0].getBoundingClientRect().width / 2;
+var draggingChecker = null;
 
 
-
-
-
-
-
-// TEST ONLY
-// let's dice are 3-1
-// allowedMoves = [
-//     [
-//         {1: 5}
-//     ],
-//     [
-//         {1: 2}, {12: 15}
-//     ],
-// ];
-let move_1 = new Map();
-let move_2 = new Map();
-let move_3 = new Map();
-move_1.set(1, 5);
-move_2.set(1, 2);
-move_3.set(12, 15);
-allowedMoves = [
-    [move_1],
-    [move_2, move_3],
-];
-// > [
-//      [ Map { 1 => 5 } ],
-//      [ Map { 1 => 2 }, Map { 12 => 15 } ]
-//   ]
-
-
-// let a user to make only allowed moves and cancel his' move
-//
-// This must be copied when a player makes his moves !!!
-// how to copy in js - Object.assign([], allowedMoves[i])
-// Say after a player has made a move 1:2, the only 12:15 move is remained
-// So for now a player has only 12:15 move to make
-// or he can cancel his move 1:2 - make 2:1 move
-playersMoves = [
-    [
-        {12: 15}
-    ],
-    [
-        {2: 1}
-    ]
-]
-
-
-
-
-
-// Unmark selected fields
-// function unmarkMarkedFields() {
-//     let markedFields = document.getElementsByClassName('marked');
-//     while (markedFields.length != 0) {
-//         markedFields[0].classList.remove('marked');
-//     };
-// };
-
-
+///////////
+// UTILS //
+///////////
 
 // This function transforms allowedMoves to allowedFields
 // [ [ Map { 1 => 5 } ], [ Map { 1 => 2 }, Map { 12 => 15 } ] ]
@@ -99,31 +46,18 @@ function allowedMovesToAllowedFields() {
     });
     return allowedFields;
 };
-var allowedFields = allowedMovesToAllowedFields();
 
-
-
-
-// Make fields highlighted after HOVER
-// we have allowedMoves:
-// let's dice are 3-1
-// allowedMoves = [
-// > [ [ Map { 1 => 5 } ], [ Map { 1 => 2 }, Map { 12 => 15 } ] ]
-
-// var fieldTo;    // recommended field for being highlighted
-
-// Mouse enters the field
-// var mouseenterField;
-// var mouseleaveField;
-
-
-
-
-
-// UTILS
-
-// Create a ghost checker for dragging
-
+// Create a dragging checker
+function createADraggingChecker() {
+    draggingChecker = document.createElement('checker');   // Create a checker
+    draggingChecker.setAttribute('color', color);
+    draggingChecker.classList.add('dragging');
+    draggingChecker.style.left = `${x - shift}px`;
+    draggingChecker.style.top = `${y - shift}px`;
+    draggingChecker.classList.add('selected');
+    document.body.appendChild(draggingChecker);    // Place checker inside the field
+    console.log(draggingChecker);
+};
 
 // Checks whether a node is a field (returns this node) or not (returns null)
 function getFieldClicked(node) {
@@ -171,28 +105,8 @@ function isItAllowedStep(idFrom, idTo) {
 function placeChecker(idFrom, idTo) {
     let checker = document.getElementById(idFrom).lastChild;
     let newField = document.getElementById(idTo);
-    
-    
-    // Restrict steps that not allowed
+    // Restrict steps that are not allowed
     if (!isItAllowedStep(idFrom, idTo)) return;
-
-
-
-    // TODO: Change allowedFields here !!!!
-    removeHoverNClickEvents();
-
-
-
-
-    let move_1 = new Map();
-    move_1.set(1, 6);
-    allowedMoves = [
-        [move_1]
-    ];
-    
-
-
-
     // Place the checker correctly inside the target
     let checkersInNewField = newField.children.length;
     // If the checker goes back to it's field, then move it under the new place
@@ -206,10 +120,7 @@ function placeChecker(idFrom, idTo) {
         checker.setAttribute('style', `bottom: calc(${checkersInNewField} * ${CHECKEROVERLAP}%);`);
     };
     newField.appendChild(checker);
-    // Remove any highlights
-
 };
-
 
 // Highlight allowed fields
 function highlightAllowedFields(fieldFrom) {
@@ -243,13 +154,9 @@ function unmakeAllCheckers(effect) {
 };
 
 
-
-
-
 /////////////////////
 // EVENT FUNCTIONS //
 /////////////////////
-
 
 // HOVER
 
@@ -279,24 +186,12 @@ function mouseLeavesField(e) {
 
 // CLICK & DRAG
 
-var mouseDownCoordinates = [];
-var isCheckerSelectedAtFirst = true;
-var shift = checkers[0].getBoundingClientRect().width / 2;
-var movingChecker = null;
-
-// Util adds a new ghost checker which actually players drag
+// Util adds a new ghost checker which actually player drags
 function addDragEventListeners(checker, x, y) {
-    // Create a moving checker
-    movingChecker = document.createElement('checker');   // Create a checker
-    movingChecker.setAttribute('color', color);
-    movingChecker.classList.add('dragging');
-    movingChecker.style.left = `${x - shift}px`;
-    movingChecker.style.top = `${y - shift}px`;
-    movingChecker.classList.add('selected');
-    document.body.appendChild(movingChecker);    // Place checker inside the field
+    createADraggingChecker();
 
-    // Make a ghost from the selected checker
-    checker.classList.add('ghost');
+    // Make the selected checker transparent
+    checker.classList.add('transparent');
 
     // Listen to the mouse moves
     document.addEventListener('mousemove', mouseMovesWhenClicked);
@@ -357,8 +252,8 @@ function mouseClicksField(e) {
 // Mouse moves when clicked
 function mouseMovesWhenClicked(e) {
     function moveChecker(pageX, pageY) {
-        movingChecker.setAttribute('style', `transform: translate(${pageX - shift}px, ${pageY - shift}px);`);
-        movingChecker.setAttribute('style', `-webkit-transform: translate(${pageX - shift}px, ${pageY - shift}px);`);
+        draggingChecker.setAttribute('style', `transform: translate(${pageX - shift}px, ${pageY - shift}px);`);
+        draggingChecker.setAttribute('style', `-webkit-transform: translate(${pageX - shift}px, ${pageY - shift}px);`);
     };
     e.preventDefault();
     // TODO: disable page scroll when dragging a checker
@@ -368,13 +263,11 @@ function mouseMovesWhenClicked(e) {
 // Mouse up
 function mouseUp(e) {
     e.preventDefault();
-    
-    // Put the checker back from a ghost
-    let ghost = document.getElementsByClassName('ghost')[0];
-    if (ghost) ghost.classList.remove('ghost');
-
+    // Remove transparency from the transparent checker
+    let transparentChecker = document.getElementsByClassName('transparent')[0];
+    if (transparentChecker) transparentChecker.classList.remove('transparent');
     // Remove a dragging ghost checker from the board
-    if (movingChecker) movingChecker.remove();
+    if (draggingChecker) draggingChecker.remove();
     // movingChecker = null;
     let fieldTo = getFieldClicked(document.elementFromPoint(e.pageX, e.pageY));
     // Out of any field => unselect
@@ -385,10 +278,6 @@ function mouseUp(e) {
     };
     let idFrom = findIdFrom();
     let idTo = fieldTo.getAttribute('id');
-
-    // Return an opacity to the checker on the field from
-    // document.getElementById(idFrom).lastChild.style.removeProperty('opacity');
-
     // If not a valid step
     if (!isItAllowedStep(idFrom, idTo)) {
         // If checker the same 
@@ -446,4 +335,92 @@ function removeHoverNClickEvents() {
 };
 
 
-addHoverNClickEvents();
+///////////////////
+// PLAYER'S TURN //
+///////////////////
+
+// The main function that let player to make a move
+function letPlayerToMakeHisTurn() {
+    addHoverNClickEvents();
+
+
+
+    // // Restrict any other steps when the move is done
+    // removeHoverNClickEvents();
+};
+
+
+///////////////
+// TEST ONLY //
+///////////////
+
+// THIS OBJECT WILL GET HERE FROM THE SERVER
+// let's dice are 3-1
+// let move_1 = new Map();
+// let move_2 = new Map();
+// let move_3 = new Map();
+// move_1.set(1, 5);
+// move_2.set(1, 2);
+// move_3.set(12, 15);
+// allowedMoves = [
+//     [move_1],
+//     [move_2, move_3],
+// ];
+// let's dice are 5-5
+let step_1 = new Map();
+let step_2 = new Map();
+let step_3 = new Map();
+let step_4 = new Map();
+let step_5 = new Map();
+let step_6 = new Map();
+// step_1.set(1, 6);
+// step_2.set(6, 11);
+// step_3.set(11, 16);
+// step_4.set(16, 21);
+// step_5.set(12, 17);
+// step_6.set(17, 22);
+step_1.set(1, 21);    // 5 * 4 (idFrom = 1)
+step_2.set(1, 16);    // 5 * 3 (idFrom = 1)
+step_3.set(1, 11);    // 5 * 2 (idFrom = 1)
+step_4.set(12, 17);   // 5 * 2 (idFrom = 12)
+step_5.set(12, 22);   // 5 * 1 (idFrom = 12)
+// Сначала ищем все steps, затем объединяем их. Ищем сначала -
+// какие фишки могут походить разом весь move
+// затем перебираем варианты, когда часть хода одна фишка, часть - другая...
+allowedMoves = [
+    [step_1],            // 5 * 4
+    [step_2, step_4],    // 5 * 3 + 5 * 1
+    [step_3, step_5]     // 5 * 2 + 5 * 2
+];
+// allowedMoves = [
+//     [ Map { 1 => 5 } ],
+//     [ Map { 1 => 2 }, Map { 12 => 15 } ]
+// ]
+
+
+
+// let a user to make only allowed moves and cancel his' move
+//
+// This must be copied when a player makes his moves !!!
+// how to copy in js - Object.assign([], allowedMoves[i])
+// Say after a player has made a move 1:2, the only 12:15 move is remained
+// So for now a player has only 12:15 move to make
+// or he can cancel his move 1:2 - make 2:1 move
+playersMoves = [
+    [
+        {12: 15}
+    ],
+    [
+        {2: 1}
+    ]
+]
+
+
+
+allowedFields = allowedMovesToAllowedFields();
+
+
+
+letPlayerToMakeHisTurn();
+
+

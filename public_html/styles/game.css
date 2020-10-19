@@ -120,17 +120,6 @@ body {
         .field.middle {
             height: 100%;
         }
-        /* .field.marked {
-            border: 1px solid red;
-        } */
-        .field.top.marked {
-            flex-direction: column;
-            border-top: 4px solid green;
-        }
-        .field.bottom.marked {
-            flex-direction: column-reverse;
-            border-bottom: 4px solid green;
-        }
 
 
 /* CHECKERS */
@@ -169,15 +158,11 @@ checker {
 [color='1'] {
     background-image: url('../images/white.svg');
 }
-
-
 checker.hovered {
     -webkit-transform: scale(var(--scale-hovered-checker));
     transform: scale(var(--scale-hovered-checker));
     /* cursor: grab; */
 }
-
-
 checker[color='-1'].selected {
     background-image: url('../images/blackSelected.svg');
 }
@@ -201,12 +186,12 @@ checker.selected {
 }
 checker.dragging {
     position: absolute;
-    /* border: 1px dashed red; */
+    border: 1px dashed red;
     padding: 0;
     margin: 0;
     overflow: visible;
 }
-checker.ghost {
+checker.transparent {
     opacity: 0.25;
 }
 
