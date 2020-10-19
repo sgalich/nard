@@ -351,7 +351,7 @@ document.ondragstart = function() {
     return false;
 };
 
-// TODO: Remove of change right mouse click!!!
+// TODO: HIGH: Remove of change right mouse click!!!
 
 // Add events to highlight allowed steps
 function addHoverNClickEvents() {
@@ -509,4 +509,5 @@ allowedSteps.forEach((step) => {
 
 letPlayerToMakeHisTurn();
 
-// TODO: Make a step cancellation abiility!
+// TODO: HIGH: Make a step cancellation abiility!
+// TODO: MEDIUM: Add some animation to a checkers moving
