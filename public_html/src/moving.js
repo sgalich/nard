@@ -2,10 +2,15 @@
 
 // Define dragability for the checkers
 // TODO: Make it optionable - turn on / turn off (for turn / awaiting rival's turn)
+
+// TESTS:
+// TODO: TEST: cursor: grab on field/checker when click/drag - ???
+
 var allowedMoves;
 const CHECKEROVERLAP = 4.5;
 const color = '1';
 const fields = document.getElementsByClassName('field');
+const checkers = document.getElementsByTagName('checker');
 // UTILS
 
 
@@ -117,13 +122,16 @@ var allowedFields = allowedMovesToAllowedFields();
 
 // UTILS
 
+// Create a ghost checker for dragging
+
+
 // Checks whether a node is a field (returns this node) or not (returns null)
 function getFieldClicked(node) {
     if (node.nodeName === 'CHECKER') {
         return node.parentNode;
     } else if (node.classList.contains('field')) {
         return node;
-    }
+    };
     return;
 };
 
@@ -161,9 +169,11 @@ function isItAllowedStep(idFrom, idTo) {
 
 // Place a checker into a new field
 function placeChecker(idFrom, idTo) {
-
+    let checker = document.getElementById(idFrom).lastChild;
+    let newField = document.getElementById(idTo);
+    
+    
     // Restrict steps that not allowed
-    let allowedIdsTo = allowedFields.get(idFrom);
     if (!isItAllowedStep(idFrom, idTo)) return;
 
 
@@ -181,8 +191,7 @@ function placeChecker(idFrom, idTo) {
     ];
     
 
-    let checker = document.getElementById(idFrom).lastChild;
-    let newField = document.getElementById(idTo);
+
 
     // Place the checker correctly inside the target
     let checkersInNewField = newField.children.length;
@@ -237,9 +246,9 @@ function unmakeAllCheckers(effect) {
 
 
 
-//////////////////////
-// EVENT FUNCTIONNS //
-//////////////////////
+/////////////////////
+// EVENT FUNCTIONS //
+/////////////////////
 
 
 // HOVER
@@ -251,6 +260,7 @@ function mouseEntersField(e) {
         if (isMyField(this)) {
             highlightAllowedFields(this);
             makeCheckerAt(this, 'hovered');
+            // this.style.cursor = 'grab';
         };
     };
 };
@@ -271,21 +281,32 @@ function mouseLeavesField(e) {
 
 var mouseDownCoordinates = [];
 var isCheckerSelectedAtFirst = true;
-var shiftX = null;
-var shiftY = null;
+var shift = checkers[0].getBoundingClientRect().width / 2;
+var movingChecker = null;
 
-// Util
-function addDragEventListeners(checker) {
-    // checker.setAttribute('style', 'opacity: 0.75;');
-    shiftX = checker.getBoundingClientRect().x + checker.getBoundingClientRect().width / 2;
-    shiftY = checker.getBoundingClientRect().y + checker.getBoundingClientRect().height / 2;
+// Util adds a new ghost checker which actually players drag
+function addDragEventListeners(checker, x, y) {
+    // Create a moving checker
+    movingChecker = document.createElement('checker');   // Create a checker
+    movingChecker.setAttribute('color', color);
+    movingChecker.classList.add('dragging');
+    movingChecker.style.left = `${x - shift}px`;
+    movingChecker.style.top = `${y - shift}px`;
+    movingChecker.classList.add('selected');
+    document.body.appendChild(movingChecker);    // Place checker inside the field
+
+    // Make a ghost from the selected checker
+    checker.classList.add('ghost');
+
+    // Listen to the mouse moves
     document.addEventListener('mousemove', mouseMovesWhenClicked);
-    document.addEventListener("touchmove", mouseMovesWhenClicked);
+    document.addEventListener('touchmove', mouseMovesWhenClicked);
 };
 
 // Mouse down
 // Select a checker from a field we allowed to make a step
 function mouseClicksField(e) {
+    e.preventDefault();
     // Save mouse click coordinates
     mouseDownCoordinates.push({x: e.pageX, y: e.pageY});
     // Check whether the event was on a field or not
@@ -298,7 +319,7 @@ function mouseClicksField(e) {
             // removeHoverEffectAtAllowedFields();    // TODO: test - do we need it?
             makeCheckerAt(field, 'selected');
             highlightAllowedFields(field);
-            addDragEventListeners(field.lastChild);
+            addDragEventListeners(field.lastChild, e.pageX, e.pageY);
         };
     // Trying to make a step or select another checker
     } else if (selectedChecker) {
@@ -318,13 +339,13 @@ function mouseClicksField(e) {
                 // Check is it an another attempt to drag => make drag, then unselect
                 // or it is an unchecking click => unselect the checker
                 isCheckerSelectedAtFirst = false;
-                addDragEventListeners(field.lastChild);
+                addDragEventListeners(field.lastChild, e.pageX, e.pageY);
             // Select another checker
             } else if (isMyField(field)) {
                 unmakeAllCheckers('selected');
                 highlightAllowedFields(field);
                 makeCheckerAt(field, 'selected');
-                addDragEventListeners(field.lastChild);
+                addDragEventListeners(field.lastChild, e.pageX, e.pageY);
             };
         // An empty field
         } else {
@@ -333,59 +354,41 @@ function mouseClicksField(e) {
     };
 };
 
-
-
-
 // Mouse moves when clicked
 function mouseMovesWhenClicked(e) {
-    // show a ghost
-    // change original checker's opacity - ???
-    function moveSelectedCheckerAt(pageX, pageY) {
-        let selectedChecker = document.getElementsByClassName('selected')[0];
-        
-        // selectedChecker.style.transform = `translate(${shiftX-pageX}, ${shiftY-pageY});`;
-        // selectedChecker.setAttribute('style', `transform: translate(${shiftX-pageX}, ${shiftY-pageY});`);
-
-
-
-
-        // TODO: create a new ghost checker and show it with mouse move.
-
-
-
-
-
-        // works but do not places checker at a field
-        // selectedChecker.style.left = pageX - shiftX + 'px';
-        // selectedChecker.style.top = pageY - shiftY + 'px';
+    function moveChecker(pageX, pageY) {
+        movingChecker.setAttribute('style', `transform: translate(${pageX - shift}px, ${pageY - shift}px);`);
+        movingChecker.setAttribute('style', `-webkit-transform: translate(${pageX - shift}px, ${pageY - shift}px);`);
     };
-
-
-    
-
-    // console.log(shiftX, shiftY);
-    // console.log(e.pageX, e.pageY);
-
-
-
-
-    // moveSelectedCheckerAt(e.pageX, e.pageY);
-
-
-
+    e.preventDefault();
+    // TODO: disable page scroll when dragging a checker
+    moveChecker(e.pageX, e.pageY);
 };
 
 // Mouse up
 function mouseUp(e) {
-    let field = getFieldClicked(e.target);
+    e.preventDefault();
+    
+    // Put the checker back from a ghost
+    let ghost = document.getElementsByClassName('ghost')[0];
+    if (ghost) ghost.classList.remove('ghost');
+
+    // Remove a dragging ghost checker from the board
+    if (movingChecker) movingChecker.remove();
+    // movingChecker = null;
+    let fieldTo = getFieldClicked(document.elementFromPoint(e.pageX, e.pageY));
     // Out of any field => unselect
-    if (!field) {
+    if (!fieldTo) {
         unmakeAllCheckers('selected');
         removeHighlightFromAllFields();
         return;
     };
     let idFrom = findIdFrom();
-    let idTo = field.getAttribute('id');
+    let idTo = fieldTo.getAttribute('id');
+
+    // Return an opacity to the checker on the field from
+    // document.getElementById(idFrom).lastChild.style.removeProperty('opacity');
+
     // If not a valid step
     if (!isItAllowedStep(idFrom, idTo)) {
         // If checker the same 
@@ -405,426 +408,42 @@ function mouseUp(e) {
 };
 
 
-
-
-document.addEventListener('mousedown', mouseClicksField);
-document.addEventListener('mouseup', mouseUp);
-
-
-document.addEventListener("touchstart", mouseClicksField);
-
-document.addEventListener("touchend", mouseUp);
-
-document.ondragstart = function() {
-    return false;
-};
-
-
-
-
-
-
-// element.addEventListener('mousemove', moveListener)
-// element.addEventListener('mouseup', upListener)
-
-
-function eventFire(el, etype){
-    if (el.fireEvent) {
-      el.fireEvent('on' + etype);
-    } else {
-      var evObj = document.createEvent('Events');
-      evObj.initEvent(etype, true, false);
-      el.dispatchEvent(evObj);
-    }
-  }
-//   eventFire(document.getElementsByTagName('body')[0], 'click');
-
-
-
-
-// DRAG
-
-// // WORKING DRAG: MOBILE + WEB !!!
-// // TODO: show a ghost correctly on WEb
-
-// // For each checker...
-// // let checkers = document.getElementsByTagName('checker');
-// // [].forEach.call(checkers, (checker) => {
-// // });
-
-// var draggingChecker = null;
-
-// // Select the last checker if it exists
-// function selectChecker(field) {
-//     unmakeAllCheckers('selected');
-//     let movingChecker = field.lastChild;
-//     if (movingChecker) {movingChecker.classList.add('selected')};
-// };
-
-// // Dragstart
-// function dragstart(e) {
-//     e.dataTransfer.setData('text/plain',null);
-//     e.target.style.opacity = .75;
-//     unmakeAllCheckers('selected');
-//     draggingChecker = e.target.parentNode.lastChild;
-//     selectChecker(e.target.parentNode);
-//     e.dataTransfer.dropEffect = "copy";
-// };
-
-// // Dragover
-// function dragover(e) {
-//     if(draggingChecker) {
-//         e.preventDefault();
-//     };
-// };
-
-// // Drop
-// function drop(e) {
-//     e.preventDefault();
-//     let newField = null;
-//     if (e.target.classList.contains('field')) {
-//         newField = e.target;
-//     } else if (e.target.tagName === 'CHECKER') {
-//         newField = e.target.parentNode;
-//     } else {
-//         return;
-//     };
-//     // Reject operation if the field contains checkers w/ the opposite color
-//     let checkerColor = draggingChecker.getAttribute('color')
-//     if (newField.lastChild && newField.lastChild.getAttribute('color') != checkerColor) {
-//         return;
-//     };
-//     placeChecker(draggingChecker, newField);
-// };
-
-// // Dragend
-// function dragend(e) {
-//     draggingChecker = null;
-// };
-
-
-
-// or drag by mouse events
-// document.body.appendChild(element)
-// let moved
-// let downListener = () => {
-//     moved = false
-// }
-// element.addEventListener('mousedown', downListener)
-// let moveListener = () => {
-//     moved = true
-// }
-// element.addEventListener('mousemove', moveListener)
-// let upListener = () => {
-//     if (moved) {
-//         console.log('moved')
-//     } else {
-//         console.log('not moved')
-//     }
-// }
-// element.addEventListener('mouseup', upListener)
-
-
-// // release memory
-// element.removeEventListener('mousedown', downListener)
-// element.removeEventListener('mousemove', moveListener)
-// element.removeEventListener('mouseup', upListener)
-
-
-
-
-
-// possible replacements for cellphones & etc.
-// document.addEventListener("mousedown", onDocumentMouseDown, false);
-// document.addEventListener("mousemove", onDocumentMouseMove, false);
-// document.addEventListener("mouseup", onDocumentMouseUp, false);
-
-// document.addEventListener("touchstart", onDocumentMouseDown, false);
-// document.addEventListener("touchmove", onDocumentMouseMove, false);
-// document.addEventListener("touchend", onDocumentMouseUp, false);
-
-
-
-
-
-
-
-
-
 /////////////////////////////////////
 // ACTIVATING THE EVENT FUNCTIONNS //
 /////////////////////////////////////
 
+// Prevent some default page behavior
+document.ondragstart = function() {
+    return false;
+};
 
 // Add events to highlight allowed steps
 function addHoverNClickEvents() {
+    // Hover events
     for (field of fields) {
         field.addEventListener('mouseenter', mouseEntersField);
         field.addEventListener('mouseleave', mouseLeavesField);
-        // field.addEventListener('mousedown', mouseClicksField);
-        // field.addEventListener('mousemove', mouseClicksField);
-        // field.addEventListener('mouseup', mouseClicksField);
     };
+    // Call click / drag & drop events
+    document.addEventListener('mousedown', mouseClicksField);
+    document.addEventListener('mouseup', mouseUp);
+    document.addEventListener("touchstart", mouseClicksField);
+    document.addEventListener("touchend", mouseUp);
 };
 
 // Remove events to highlight allowed steps
 function removeHoverNClickEvents() {
+    // Hover events
     for (field of fields) {
         field.removeEventListener('mouseenter', mouseEntersField);
         field.removeEventListener('mouseleave', mouseLeavesField);
-        // field.removeEventListener('mousedown', mouseClicksField);
-        // field.removeEventListener('mousemove', mouseClicksField);
-        // field.removeEventListener('mouseup', mouseClicksField);
     };
+    // Call click / drag & drop events
+    document.removeEventListener('mousedown', mouseClicksField);
+    document.removeEventListener('mouseup', mouseUp);
+    document.removeEventListener("touchstart", mouseClicksField);
+    document.removeEventListener("touchend", mouseUp);
 };
 
 
 addHoverNClickEvents();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// // WORKING DRAG: MOBILE + WEB !!!
-// // TODO: show a ghost correctly on WEb
-
-// // For each checker...
-// // let checkers = document.getElementsByTagName('checker');
-// // [].forEach.call(checkers, (checker) => {
-// // });
-
-// var draggingChecker = null;
-
-// // Select the last checker if it exists
-// function selectChecker(field) {
-//     unmakeAllCheckers('selected');
-//     let movingChecker = field.lastChild;
-//     if (movingChecker) {movingChecker.classList.add('selected')};
-// };
-
-// // Dragstart
-// function dragstart(e) {
-//     e.dataTransfer.setData('text/plain',null);
-//     e.target.style.opacity = .75;
-//     unmakeAllCheckers('selected');
-//     draggingChecker = e.target.parentNode.lastChild;
-//     selectChecker(e.target.parentNode);
-//     e.dataTransfer.dropEffect = "copy";
-// };
-
-// // Dragover
-// function dragover(e) {
-//     if(draggingChecker) {
-//         e.preventDefault();
-//     };
-// };
-
-
-// // Drop
-// function drop(e) {
-//     e.preventDefault();
-//     let newField = null;
-//     if (e.target.classList.contains('field')) {
-//         newField = e.target;
-//     } else if (e.target.tagName === 'CHECKER') {
-//         newField = e.target.parentNode;
-//     } else {
-//         return;
-//     };
-//     // Reject operation if the field contains checkers w/ the opposite color
-//     let checkerColor = draggingChecker.getAttribute('color')
-//     if (newField.lastChild && newField.lastChild.getAttribute('color') != checkerColor) {
-//         return;
-//     };
-//     placeChecker(draggingChecker, newField);
-// };
-
-
-// // Dragend
-// function dragend(e) {
-//     draggingChecker = null;
-// };
-
-
-
-
-
-
-
-
-    // TOUCH
-    // ... 
-
-
-
-
-    // SWIPE
-
-    // Working swipe
-    // function detectswipe(el,func) {
-    //     swipe_det = new Object();
-    //     swipe_det.sX = 0; swipe_det.sY = 0; swipe_det.eX = 0; swipe_det.eY = 0;
-    //     var min_x = 30;  //min x swipe for horizontal swipe
-    //     var max_x = 30;  //max x difference for vertical swipe
-    //     var min_y = 50;  //min y swipe for vertical swipe
-    //     var max_y = 60;  //max y difference for horizontal swipe
-    //     var direc = "";
-    //     let checkers = document.getElementsByTagName('checker');
-    //     for (ele of checkers) {
-    //         ele.addEventListener('touchstart',function(e){
-    //             var t = e.touches[0];
-    //             swipe_det.sX = t.screenX; 
-    //             swipe_det.sY = t.screenY;
-    //         },false);
-    //         ele.addEventListener('touchmove',function(e){
-    //             e.preventDefault();
-    //             var t = e.touches[0];
-    //             swipe_det.eX = t.screenX; 
-    //             swipe_det.eY = t.screenY;    
-    //         },false);
-    //         ele.addEventListener('touchend',function(e){
-    //             //horizontal detection
-    //             if ((((swipe_det.eX - min_x > swipe_det.sX) || (swipe_det.eX + min_x < swipe_det.sX)) && ((swipe_det.eY < swipe_det.sY + max_y) && (swipe_det.sY > swipe_det.eY - max_y) && (swipe_det.eX > 0)))) {
-    //             if(swipe_det.eX > swipe_det.sX) direc = "r";
-    //             else direc = "l";
-    //             }
-    //             //vertical detection
-    //             else if ((((swipe_det.eY - min_y > swipe_det.sY) || (swipe_det.eY + min_y < swipe_det.sY)) && ((swipe_det.eX < swipe_det.sX + max_x) && (swipe_det.sX > swipe_det.eX - max_x) && (swipe_det.eY > 0)))) {
-    //             if(swipe_det.eY > swipe_det.sY) direc = "d";
-    //             else direc = "u";
-    //             }
-            
-    //             if (direc != "") {
-    //             if(typeof func == 'function') func(el,direc);
-    //             }
-    //             direc = "";
-    //             swipe_det.sX = 0; swipe_det.sY = 0; swipe_det.eX = 0; swipe_det.eY = 0;
-    //         },false);  
-    //         };
-    //     };
-    // function myfunction(el,d) {
-    //     alert("you swiped on element with id '"+el+"' to "+d+" direction");
-    // };
-    // detectswipe('an_element_id',myfunction);
-
-
-
-
-
-
-
-
-
-    // These are universal:
-    // 'touchstart'
-    // "touchmove"
-    // "touchend"
-    // "touchcancel"
-
-    // https://github.com/Bernardo-Castilho/dragdroptouch
-    // https://github.com/timruffles/mobile-drag-drop
-    // drag = https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer/dropEffect
-
-
-    // These are bad:
-    // "dragstart"
-    // "dragenter"
-    // "dragleave"
-
-// Get the color of checkers on the field => -1 / 0 / 1 (blue, none, red)
-function getFieldColor(field) {
-    let checker = field.lastChild;
-    if (checker) return Number(checker.getAttribute('color'));
-    return 0;
-};
-
-// // Allow a player with color <color> to move his checkers
-// var allowMovingCheckers = function(color) {
-
-//     var fields = document.getElementsByClassName('field');
-//     for (field of fields) {
-//         let fieldColor = getFieldColor(field);
-//         // If it is rival's field => make all checker's here undraggable
-//         if (fieldColor === -1 * color) {
-//             rivalsCheckers = field.children;
-//             [].forEach.call(rivalsCheckers, (checker) => {
-//                 checker.setAttribute('draggable', 'false');
-//             });
-//         } else {
-//             // field.addEventListener('mouseover', fieldHover);
-//             // field.addEventListener('mousedown', fieldClick);
-//         };
-//     };
-//     document.addEventListener('dragstart', dragstart);
-//     document.addEventListener('dragover', dragover);
-//     document.addEventListener('drop', drop);
-//     document.addEventListener('dragend', dragend);
-// };
-
-// Restrict a player moving checkers
-// var restrictMovingCheckers = function() {
-    
-//     // Call all this functions above
-//     var fields = document.getElementsByClassName('field');
-//     for (field of fields) {
-//         // field.removeEventListener('mouseover', fieldHover);
-//         // field.removeEventListener('mousedown', fieldClick);
-//     };
-
-//     document.removeEventListener('dragstart', dragstart);
-//     document.removeEventListener('dragover', dragover);
-//     document.removeEventListener('drop', drop);
-//     document.removeEventListener('dragend', dragend);
-
-// };
-
-
-
-// allowMovingCheckers(1);
-
-// setTimeout(
-//     restrictMovingCheckers(),
-//     10000
-// );
-
-
-
-
-
-
-
-// module.exports.startGame = startGame;
-// startGame();

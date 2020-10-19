@@ -134,24 +134,24 @@ function hideStartModal() {
 
 // const CHECKEROVERLAP = 5.5
 
-// Place one checker at certain field by id
-function createChecker(id, color) {
-    let field = document.getElementById(id);
-    let checker = document.createElement('checker');   // Create a checker
-    checker.setAttribute('draggable', 'true');    // make it draggable
-    checker.classList.add('draggable');
-    // checker.classList.add('hvr-grow');    // hvr-ripple-out
-    checker.setAttribute('color', color);
-    // checker.style.visibility = "visible"
-    let checkersInField = field.children.length;
-    if (field.classList.contains('top')) {
-        checker.setAttribute('style', `top: calc(${checkersInField} * ${CHECKEROVERLAP}%);`);
-    } else {
-        checker.setAttribute('style', `bottom: calc(${checkersInField} * ${CHECKEROVERLAP}%);`);
-    };
-    field.appendChild(checker);    // Place checker inside the field
-    board[id] += color;
-};
+// // Place one checker at certain field by id
+// function createChecker(id, color) {
+//     let field = document.getElementById(id);
+//     let checker = document.createElement('checker');   // Create a checker
+//     // checker.setAttribute('draggable', 'true');    // make it draggable
+//     // checker.classList.add('draggable');
+//     // checker.classList.add('hvr-grow');    // hvr-ripple-out
+//     checker.setAttribute('color', color);
+//     // checker.style.visibility = "visible"
+//     let checkersInField = field.children.length;
+//     if (field.classList.contains('top')) {
+//         checker.setAttribute('style', `top: calc(${checkersInField} * ${CHECKEROVERLAP}%);`);
+//     } else {
+//         checker.setAttribute('style', `bottom: calc(${checkersInField} * ${CHECKEROVERLAP}%);`);
+//     };
+//     field.appendChild(checker);    // Place checker inside the field
+//     board[id] += color;
+// };
 
 // Render checkers
 function renderCheckers(board, invert=1) {
