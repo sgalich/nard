@@ -1,7 +1,5 @@
 // Game physics - Checkers moving algorithms
 
-// TODO: Make dragability optionable - ???
-
 // TESTS:
 // TODO: TEST: cursor: grab on field/checker when click/drag - ???
 
@@ -133,10 +131,6 @@ function isItAllowedStep(idFrom, idTo) {
     } else if (!allowedIds.includes(idTo)) {
         return false;
     };
-
-    // TODO: Make a step cancellation !
-
-
     return true
 };
 
@@ -246,7 +240,6 @@ function mouseClicksField(e) {
     // Just selected a new field to start a step
     if (!selectedChecker) {
         if (isMyField(field)) {
-            // removeHoverEffectAtAllowedFields();    // TODO: test - do we need it?
             makeCheckerAt(field, 'selected');
             highlightAllowedFields(field);
             addDragEventListeners(field.lastChild, e.pageX, e.pageY);
@@ -263,7 +256,6 @@ function mouseClicksField(e) {
         // Select a checker again
         } else if (field.lastChild) {
             // Select the same checker
-            // TODO: test - SElect the same checker => selection removes or not?? Do we need it?
             // Now: unselect current checker
             if (selectedChecker === field.lastChild) {
                 // Check is it an another attempt to drag => make drag, then unselect
@@ -291,7 +283,7 @@ function mouseMovesWhenClicked(e) {
         draggingChecker.setAttribute('style', `-webkit-transform: translate(${pageX - shift}px, ${pageY - shift}px);`);
     };
     e.preventDefault();
-    // TODO: disable page scroll when dragging a checker
+    // TODO: MEDIUM: disable page scroll when dragging a checker
     moveChecker(e.pageX, e.pageY);
 };
 
@@ -328,7 +320,7 @@ function mouseUp(e) {
 
     // Place the checker to the field
     let idTo = fieldTo.getAttribute('id');
-    // TODO: Make this if's chain easier !
+    // TODO: LOW: Make this if's chain easier !
     // If not a valid step
     if (!isItAllowedStep(idFrom, idTo)) {
         // If checker the same 
@@ -358,6 +350,8 @@ function mouseUp(e) {
 document.ondragstart = function() {
     return false;
 };
+
+// TODO: Remove of change right mouse click!!!
 
 // Add events to highlight allowed steps
 function addHoverNClickEvents() {
@@ -515,5 +509,4 @@ allowedSteps.forEach((step) => {
 
 letPlayerToMakeHisTurn();
 
-
-// console.log(allowedFields);
+// TODO: Make a step cancellation abiility!

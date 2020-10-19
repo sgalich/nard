@@ -120,7 +120,8 @@ button:focus {
         button.start:focus {
             outline: none;
         }
-        button.start.option:hover, .start.option:focus {
+        button.start.option:hover,
+        .start.option:focus {
             border: 1px solid #040405;
         }
         button.start.option.selected {
@@ -212,7 +213,9 @@ button:focus {
             vertical-align:      middle;
             font-family:         "Lucida Sans Unicode", "Lucida Grande", sans-serif; 
         }
-        #start-friends-link, #start-friends-link:hover, #start-friends-link:focus {
+        #start-friends-link,
+        #start-friends-link:hover,
+        #start-friends-link:focus {
             font-size:     20px;
             line-height:   20px;
             font-weight:   500;
