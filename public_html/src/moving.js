@@ -95,7 +95,9 @@ function chooseTheClosestField(fieldFrom, x, y) {
     let idFrom = fieldFrom.getAttribute('id');
     var theClosestField = fieldFrom;
     var distance = countDistanceBetween(getFieldCenter(fieldFrom), [x, y]);
-    allowedFields.get(idFrom).forEach((fieldId) => {
+    let allowedIds = allowedFields.get(idFrom);
+    if (!allowedIds) return theClosestField;
+    allowedIds.forEach((fieldId) => {
         let field = document.getElementById(fieldId);
         let newDistance = countDistanceBetween(getFieldCenter(field), [x, y]);
         if (newDistance < distance) {
@@ -311,45 +313,38 @@ function mouseUp(e) {
     ////////////////////////////////
 
     // Simple version
-    
-    // If the mouse is under the field area => place checker here
+    // // If the mouse is under the field area => place checker here
+    // // Out of any field => unselect
     // let fieldTo = getFieldClicked(document.elementFromPoint(e.pageX, e.pageY));
-    // Out of any field => unselect
     // if (!fieldTo) {
     //     unmakeAllCheckers('selected');
     //     removeHighlightFromAllFields();
     //     return;
     // };
-    // let idTo = fieldTo.getAttribute('id');
-    // // If not a valid step
-    // if (!isItAllowedStep(idFrom, idTo)) {
-    //     // If checker the same 
-    //     if (!(isCheckerSelectedAtFirst && idFrom === idTo)) {
-    //         unmakeAllCheckers('selected');
-    //         removeHighlightFromAllFields();
-    //         isCheckerSelectedAtFirst = true;
-    //     };
-    // // A valid step => place a checker
-    // } else {
-    //     placeChecker(idFrom, idTo);
-    //     removeHighlightFromAllFields();
-    //     unmakeAllCheckers('selected');
-    // };
 
-    // Magneto version
-    
+    // Magneto version 
     // Place the checker at the closest field
     let fieldTo = chooseTheClosestField(fieldFrom, e.pageX, e.pageY);
+
+    // Place the checker to the field
     let idTo = fieldTo.getAttribute('id');
-    if (fieldTo === fieldFrom) {
-        removeHighlightFromAllFields();
-        unmakeAllCheckers('selected');
-        isCheckerSelectedAtFirst = true;
+    // TODO: Make this if's chain easier !
+    // If not a valid step
+    if (!isItAllowedStep(idFrom, idTo)) {
+        // If checker the same 
+        if (!(isCheckerSelectedAtFirst && idFrom === idTo)) {
+            unmakeAllCheckers('selected');
+            removeHighlightFromAllFields();
+            isCheckerSelectedAtFirst = true;
+
+        };
+    // A valid step => place a checker
     } else {
         placeChecker(idFrom, idTo);
         removeHighlightFromAllFields();
         unmakeAllCheckers('selected');
-    }
+    };
+
     // Stop tracking mouse movements
     document.removeEventListener('mousemove', mouseMovesWhenClicked);
 };
