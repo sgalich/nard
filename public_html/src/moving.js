@@ -5,7 +5,7 @@
 // TESTS:
 // TODO: TEST: cursor: grab on field/checker when click/drag - ???
 
-var allowedMoves;
+
 var allowedFields;
 const CHECKEROVERLAP = 4.5;
 const color = '1';
@@ -16,6 +16,15 @@ var mouseDownCoordinates = [];
 var isCheckerSelectedAtFirst = true;
 var shift = checkers[0].getBoundingClientRect().width / 2;
 var draggingChecker = null;
+
+
+///////////////////////////////////
+// This we will get from the server
+var allowedMoves;
+var allowedSteps;
+var die1;
+var die2;
+///////////////////////////////////
 
 
 ///////////
@@ -48,7 +57,7 @@ function allowedMovesToAllowedFields() {
 };
 
 // Create a dragging checker
-function createADraggingChecker() {
+function createADraggingChecker(x, y) {
     draggingChecker = document.createElement('checker');   // Create a checker
     draggingChecker.setAttribute('color', color);
     draggingChecker.classList.add('dragging');
@@ -56,7 +65,6 @@ function createADraggingChecker() {
     draggingChecker.style.top = `${y - shift}px`;
     draggingChecker.classList.add('selected');
     document.body.appendChild(draggingChecker);    // Place checker inside the field
-    console.log(draggingChecker);
 };
 
 // Checks whether a node is a field (returns this node) or not (returns null)
@@ -67,6 +75,35 @@ function getFieldClicked(node) {
         return node;
     };
     return;
+};
+
+// Get the center point of the field
+function getFieldCenter(field) {
+    let fieldCoordinates = field.getBoundingClientRect();
+    let x = fieldCoordinates.left + fieldCoordinates.width / 2;
+    let y = fieldCoordinates.top + fieldCoordinates.height / 2;
+    return [x, y];
+};
+
+// Counts the distance between two points, like ([34, 34] & [234, 323])
+function countDistanceBetween(a, b) {
+    return ((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2) ** 0.5;
+};
+
+// Chooses a field that is the closest to the mouse position
+function chooseTheClosestField(fieldFrom, x, y) {
+    let idFrom = fieldFrom.getAttribute('id');
+    var theClosestField = fieldFrom;
+    var distance = countDistanceBetween(getFieldCenter(fieldFrom), [x, y]);
+    allowedFields.get(idFrom).forEach((fieldId) => {
+        let field = document.getElementById(fieldId);
+        let newDistance = countDistanceBetween(getFieldCenter(field), [x, y]);
+        if (newDistance < distance) {
+            theClosestField = field;
+            distance = newDistance;
+        };
+    });
+    return theClosestField;
 };
 
 // Finds the id of the field with selected checker or returns null
@@ -167,7 +204,6 @@ function mouseEntersField(e) {
         if (isMyField(this)) {
             highlightAllowedFields(this);
             makeCheckerAt(this, 'hovered');
-            // this.style.cursor = 'grab';
         };
     };
 };
@@ -183,16 +219,13 @@ function mouseLeavesField(e) {
     };
 };
 
-
 // CLICK & DRAG
 
 // Util adds a new ghost checker which actually player drags
 function addDragEventListeners(checker, x, y) {
-    createADraggingChecker();
-
+    createADraggingChecker(x, y);
     // Make the selected checker transparent
     checker.classList.add('transparent');
-
     // Listen to the mouse moves
     document.addEventListener('mousemove', mouseMovesWhenClicked);
     document.addEventListener('touchmove', mouseMovesWhenClicked);
@@ -269,29 +302,54 @@ function mouseUp(e) {
     // Remove a dragging ghost checker from the board
     if (draggingChecker) draggingChecker.remove();
     // movingChecker = null;
-    let fieldTo = getFieldClicked(document.elementFromPoint(e.pageX, e.pageY));
-    // Out of any field => unselect
-    if (!fieldTo) {
-        unmakeAllCheckers('selected');
-        removeHighlightFromAllFields();
-        return;
-    };
+    
     let idFrom = findIdFrom();
+    let fieldFrom = document.getElementById(idFrom);
+
+    ////////////////////////////////
+    // Placing a dragging checker //
+    ////////////////////////////////
+
+    // Simple version
+    
+    // If the mouse is under the field area => place checker here
+    // let fieldTo = getFieldClicked(document.elementFromPoint(e.pageX, e.pageY));
+    // Out of any field => unselect
+    // if (!fieldTo) {
+    //     unmakeAllCheckers('selected');
+    //     removeHighlightFromAllFields();
+    //     return;
+    // };
+    // let idTo = fieldTo.getAttribute('id');
+    // // If not a valid step
+    // if (!isItAllowedStep(idFrom, idTo)) {
+    //     // If checker the same 
+    //     if (!(isCheckerSelectedAtFirst && idFrom === idTo)) {
+    //         unmakeAllCheckers('selected');
+    //         removeHighlightFromAllFields();
+    //         isCheckerSelectedAtFirst = true;
+    //     };
+    // // A valid step => place a checker
+    // } else {
+    //     placeChecker(idFrom, idTo);
+    //     removeHighlightFromAllFields();
+    //     unmakeAllCheckers('selected');
+    // };
+
+    // Magneto version
+    
+    // Place the checker at the closest field
+    let fieldTo = chooseTheClosestField(fieldFrom, e.pageX, e.pageY);
     let idTo = fieldTo.getAttribute('id');
-    // If not a valid step
-    if (!isItAllowedStep(idFrom, idTo)) {
-        // If checker the same 
-        if (!(isCheckerSelectedAtFirst && idFrom === idTo)) {
-            unmakeAllCheckers('selected');
-            removeHighlightFromAllFields();
-            isCheckerSelectedAtFirst = true;
-        };
-    // A valid step => place a checker
+    if (fieldTo === fieldFrom) {
+        removeHighlightFromAllFields();
+        unmakeAllCheckers('selected');
+        isCheckerSelectedAtFirst = true;
     } else {
         placeChecker(idFrom, idTo);
-        unmakeAllCheckers('selected');
         removeHighlightFromAllFields();
-    };
+        unmakeAllCheckers('selected');
+    }
     // Stop tracking mouse movements
     document.removeEventListener('mousemove', mouseMovesWhenClicked);
 };
@@ -366,7 +424,7 @@ function letPlayerToMakeHisTurn() {
 //     [move_1],
 //     [move_2, move_3],
 // ];
-// let's dice are 5-5
+[die1, die2] = [5, 5];
 let step_1 = new Map();
 let step_2 = new Map();
 let step_3 = new Map();
@@ -379,14 +437,20 @@ let step_6 = new Map();
 // step_4.set(16, 21);
 // step_5.set(12, 17);
 // step_6.set(17, 22);
-step_1.set(1, 21);    // 5 * 4 (idFrom = 1)
-step_2.set(1, 16);    // 5 * 3 (idFrom = 1)
-step_3.set(1, 11);    // 5 * 2 (idFrom = 1)
-step_4.set(12, 17);   // 5 * 2 (idFrom = 12)
-step_5.set(12, 22);   // 5 * 1 (idFrom = 12)
+// step_1.set(1, 21);    // 5 * 4 (idFrom = 1)
+// step_2.set(1, 16);    // 5 * 3 (idFrom = 1)
+// step_3.set(1, 11);    // 5 * 2 (idFrom = 1)
+// step_4.set(12, 17);   // 5 * 2 (idFrom = 12)
+// step_5.set(12, 22);   // 5 * 1 (idFrom = 12)
 // Сначала ищем все steps, затем объединяем их. Ищем сначала -
 // какие фишки могут походить разом весь move
 // затем перебираем варианты, когда часть хода одна фишка, часть - другая...
+
+
+
+
+// + Нужна функция, которая сворачивает steps пользователя
+// пример - [ Map { 1 => 5 }, Map { 5 => 9 }] должен сохраняться как [ Map { 1 => 9 } ]
 allowedMoves = [
     [step_1],            // 5 * 4
     [step_2, step_4],    // 5 * 3 + 5 * 1
@@ -396,7 +460,29 @@ allowedMoves = [
 //     [ Map { 1 => 5 } ],
 //     [ Map { 1 => 2 }, Map { 12 => 15 } ]
 // ]
-
+// Берем все элементарные steps, а потом их свернутые версии
+allowedSteps = [
+    // Simple steps
+    new Map().set(1, 6),
+    new Map().set(6, 11),
+    new Map().set(11, 16),
+    new Map().set(16, 21),
+    new Map().set(12, 17),
+    new Map().set(17, 22),
+    // Complementary steps
+    // idFrom = 1
+    new Map().set(1, 11),
+    new Map().set(1, 16),
+    new Map().set(1, 21),
+    new Map().set(6, 16),
+    new Map().set(6, 21),
+    new Map().set(11, 21),
+    // idFrom = 12
+    new Map().set(12, 22),
+]
+// Перебираем каждое поле и если оно нашего цвета получаем idTo
+// проверяем - поле с idTo чужое? (написать зеркальную функцию, проверяющую это)
+// если свое - ...
 
 
 // let a user to make only allowed moves and cancel his' move
@@ -417,10 +503,22 @@ playersMoves = [
 
 
 
-allowedFields = allowedMovesToAllowedFields();
+// allowedFields = allowedMovesToAllowedFields();
 
+allowedFields = new Map();
+allowedSteps.forEach((step) => {
+    step = step.entries().next().value;
+    let idFrom = String(step[0]);
+    let idTo = String(step[1]);
+    if (allowedFields.has(idFrom)) {
+        allowedFields.get(idFrom).push(idTo);
+    } else {
+        allowedFields.set(idFrom, [idTo]);
+    };
+});
 
 
 letPlayerToMakeHisTurn();
 
 
+// console.log(allowedFields);
