@@ -13,7 +13,7 @@ const checkers = document.getElementsByTagName('checker');
 var mouseDownCoordinates = [];
 var isCheckerSelectedAtFirst = true;
 var shift = checkers[0].getBoundingClientRect().width / 2;
-var draggingChecker = null;
+var ghostChecker = null;
 
 
 ///////////////////////////////////
@@ -54,15 +54,15 @@ function allowedMovesToAllowedFields() {
     return allowedFields;
 };
 
-// Create a dragging checker
-function createADraggingChecker(x, y) {
-    draggingChecker = document.createElement('checker');   // Create a checker
-    draggingChecker.setAttribute('color', color);
-    draggingChecker.classList.add('dragging');
-    draggingChecker.style.left = `${x - shift}px`;
-    draggingChecker.style.top = `${y - shift}px`;
-    draggingChecker.classList.add('selected');
-    document.body.appendChild(draggingChecker);    // Place checker inside the field
+// Create a dragging ghost checker
+function createGhostChecker(x, y) {
+    ghostChecker = document.createElement('checker');   // Create a checker
+    ghostChecker.setAttribute('color', color);
+    ghostChecker.classList.add('ghost');
+    ghostChecker.style.left = `${x - shift}px`;
+    ghostChecker.style.top = `${y - shift}px`;
+    ghostChecker.classList.add('selected');
+    document.body.appendChild(ghostChecker);    // Place checker inside the field
 };
 
 // Checks whether a node is a field (returns this node) or not (returns null)
@@ -153,6 +153,11 @@ function placeChecker(idFrom, idTo) {
         checker.setAttribute('style', `bottom: calc(${checkersInNewField} * ${CHECKEROVERLAP}%);`);
     };
     newField.appendChild(checker);
+    // Add cancellation move
+    allowedSteps.push(
+        new Map().set(idTo, idFrom)
+    );
+    rearrangeAllowedFields();
 };
 
 // Highlight allowed fields
@@ -184,6 +189,35 @@ function makeCheckerAt(field, effect) {
 function unmakeAllCheckers(effect) {
     let checkersEffected = document.getElementsByClassName(effect);
     while (checkersEffected.length) checkersEffected[0].classList.remove(effect);
+};
+
+// Animate checker that was dragged
+function animatePlacingChecker(xFrom, yFrom) {
+
+
+    // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/transitionend_event
+    // ghostChecker.addEventListener('transitionrun', function() {
+    //     console.log('transitionrun');
+    //   });
+      
+    //   ghostChecker.addEventListener('transitionstart', function() {
+    //     console.log('transitionstart');
+    //   });
+      
+    //   ghostChecker.addEventListener('transitioncancel', function() {
+    //     console.log('transitioncancel'); 
+    //   }); 
+      
+    //   ghostChecker.addEventListener('transitionend', function() {
+    //     console.log('transitionend');
+    //     ghostChecker.remove();
+    //   });
+
+    
+    
+    ghostChecker.remove();
+
+    
 };
 
 
@@ -219,7 +253,7 @@ function mouseLeavesField(e) {
 
 // Util adds a new ghost checker which actually player drags
 function addDragEventListeners(checker, x, y) {
-    createADraggingChecker(x, y);
+    createGhostChecker(x, y);
     // Make the selected checker transparent
     checker.classList.add('transparent');
     // Listen to the mouse moves
@@ -231,6 +265,8 @@ function addDragEventListeners(checker, x, y) {
 // Select a checker from a field we allowed to make a step
 function mouseClicksField(e) {
     e.preventDefault();
+    // Do nothing if it was not left click
+    if (e.which === 2 || e.which === 3) return;
     // Save mouse click coordinates
     mouseDownCoordinates.push({x: e.pageX, y: e.pageY});
     // Check whether the event was on a field or not
@@ -279,8 +315,8 @@ function mouseClicksField(e) {
 // Mouse moves when clicked
 function mouseMovesWhenClicked(e) {
     function moveChecker(pageX, pageY) {
-        draggingChecker.setAttribute('style', `transform: translate(${pageX - shift}px, ${pageY - shift}px);`);
-        draggingChecker.setAttribute('style', `-webkit-transform: translate(${pageX - shift}px, ${pageY - shift}px);`);
+        ghostChecker.setAttribute('style', `transform: translate(${pageX - shift}px, ${pageY - shift}px);`);
+        ghostChecker.setAttribute('style', `-webkit-transform: translate(${pageX - shift}px, ${pageY - shift}px);`);
     };
     e.preventDefault();
     // TODO: MEDIUM: disable page scroll when dragging a checker
@@ -290,45 +326,25 @@ function mouseMovesWhenClicked(e) {
 // Mouse up
 function mouseUp(e) {
     e.preventDefault();
-    // Remove transparency from the transparent checker
-    let transparentChecker = document.getElementsByClassName('transparent')[0];
-    if (transparentChecker) transparentChecker.classList.remove('transparent');
-    // Remove a dragging ghost checker from the board
-    if (draggingChecker) draggingChecker.remove();
-    // movingChecker = null;
-    
+    // Do nothing if it was not left click
+    if (e.which === 2 || e.which === 3) return;
     let idFrom = findIdFrom();
+    // Do nothing if it is not a player's field
+    if (!idFrom) return;
     let fieldFrom = document.getElementById(idFrom);
 
-    ////////////////////////////////
-    // Placing a dragging checker //
-    ////////////////////////////////
-
-    // Simple version
-    // // If the mouse is under the field area => place checker here
-    // // Out of any field => unselect
-    // let fieldTo = getFieldClicked(document.elementFromPoint(e.pageX, e.pageY));
-    // if (!fieldTo) {
-    //     unmakeAllCheckers('selected');
-    //     removeHighlightFromAllFields();
-    //     return;
-    // };
-
-    // Magneto version 
-    // Place the checker at the closest field
+    // Place the checker at the closest valid field
     let fieldTo = chooseTheClosestField(fieldFrom, e.pageX, e.pageY);
-
     // Place the checker to the field
     let idTo = fieldTo.getAttribute('id');
     // TODO: LOW: Make this if's chain easier !
     // If not a valid step
     if (!isItAllowedStep(idFrom, idTo)) {
-        // If checker the same 
+        // If checker the same => return it back to fieldFrom
         if (!(isCheckerSelectedAtFirst && idFrom === idTo)) {
             unmakeAllCheckers('selected');
             removeHighlightFromAllFields();
             isCheckerSelectedAtFirst = true;
-
         };
     // A valid step => place a checker
     } else {
@@ -336,6 +352,13 @@ function mouseUp(e) {
         removeHighlightFromAllFields();
         unmakeAllCheckers('selected');
     };
+
+    // Remove a dragging ghost checker from the board
+    if (ghostChecker) animatePlacingChecker(e.pageX, e.pageY);
+    // Remove transparency from the transparent checker
+    let transparentChecker = document.getElementsByClassName('transparent')[0];
+    if (transparentChecker) transparentChecker.classList.remove('transparent');
+
 
     // Stop tracking mouse movements
     document.removeEventListener('mousemove', mouseMovesWhenClicked);
@@ -351,7 +374,10 @@ document.ondragstart = function() {
     return false;
 };
 
-// TODO: HIGH: Remove of change right mouse click!!!
+// Restrict a right mouse click on the board
+document.getElementById('board').addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+});
 
 // Add events to highlight allowed steps
 function addHoverNClickEvents() {
@@ -388,6 +414,7 @@ function removeHoverNClickEvents() {
 
 // The main function that let player to make a move
 function letPlayerToMakeHisTurn() {
+    rearrangeAllowedFields();
     addHoverNClickEvents();
 
 
@@ -474,8 +501,7 @@ allowedSteps = [
 // если свое - ...
 
 
-// let a user to make only allowed moves and cancel his' move
-//
+
 // This must be copied when a player makes his moves !!!
 // how to copy in js - Object.assign([], allowedMoves[i])
 // Say after a player has made a move 1:2, the only 12:15 move is remained
@@ -493,19 +519,19 @@ playersMoves = [
 
 
 // allowedFields = allowedMovesToAllowedFields();
-
-allowedFields = new Map();
-allowedSteps.forEach((step) => {
-    step = step.entries().next().value;
-    let idFrom = String(step[0]);
-    let idTo = String(step[1]);
-    if (allowedFields.has(idFrom)) {
-        allowedFields.get(idFrom).push(idTo);
-    } else {
-        allowedFields.set(idFrom, [idTo]);
-    };
-});
-
+function rearrangeAllowedFields() {
+    allowedFields = new Map();
+    allowedSteps.forEach((step) => {
+        step = step.entries().next().value;
+        let idFrom = String(step[0]);
+        let idTo = String(step[1]);
+        if (allowedFields.has(idFrom)) {
+            allowedFields.get(idFrom).push(idTo);
+        } else {
+            allowedFields.set(idFrom, [idTo]);
+        };
+    });
+};
 
 letPlayerToMakeHisTurn();
 

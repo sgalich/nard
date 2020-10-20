@@ -1,3 +1,4 @@
+
 :root {
     --scale-hovered-checker: 1.025;
     --scale-selected-checker: 1.05;
@@ -195,6 +196,26 @@ checker.transparent {
     /* opacity: 0.25; */
     display: none;
 }
+
+
+
+/* checker:hover, */
+/* checker.ghost {
+    background: purple;
+    transition-property: transform background;
+    width: 100px;
+    transition: width 2s;
+  transition-duration: 2s;
+  transition-delay: 1s;
+  transition:left .33s ease;
+} */
+
+
+
+
+
+
+
 [draggable] {
     user-select: none;
 }

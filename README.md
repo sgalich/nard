@@ -40,5 +40,23 @@ desynch, reconciliation, lag compensation
 - Make small & middle size versions
 - Add different languages
 - Decide about start window BEFORE the loading page !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-- TODO: show a ghost correctly when dragging a checker
 - 
+
+Style:
+- TODO: Copy friend's link button - make it like in the codepen.io
+- 
+
+
+
+DESIGN INSPIRATIONS:
+https://www.behance.net/ray-oranges
+http://ray-oranges.com
+
+Colors:
+https://codepen.io/mirandalwashburn/pen/wvWKNRz
+https://dribbble.com/shots/4551593/attachments/4551593-California-Poster?mode=media
+
+Noise:
+https://codepen.io/IbeVanmeenen/pen/vZzgvg
+
+
