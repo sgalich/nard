@@ -121,6 +121,12 @@ function isMyField(field) {
     return false;
 };
 
+// Checks if a field is owned by a rival
+function isRivalsField(field) {
+    if (field.lastChild && field.lastChild.getAttribute('color') !== color) return true;
+    return false;
+};
+
 // Check whether it is allowed step or not
 // Function must be called when we already have a selected checker reafy to step
 function isItAllowedStep(idFrom, idTo) {
@@ -408,25 +414,87 @@ function removeHoverNClickEvents() {
 };
 
 
-///////////////////
-// PLAYER'S TURN //
-///////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// The main function that let player to make a move
-function letPlayerToMakeHisTurn() {
-    rearrangeAllowedFields();
-    addHoverNClickEvents();
+////////////////
+// IN DEVELOP //
+////////////////
 
+// ALL OF THIS BELOW SUPPOSED TO BE COUNTED ON THE SERVER !!!!!!!!1
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    // // Restrict any other steps when the move is done
-    // removeHoverNClickEvents();
+// Get all possible step values
+// [5, 5] => Set{ 5, 10, 15, 20 };
+// [1, 3] => Set{ 1, 3, 4 };
+function getStepVariants(die1, die2) {
+    let stepVariants = (die1 !== die2) ? [die1, die2] : [die1, die1, die1, die1];
+    let allPossibleStepVariants = [
+        // For two dice
+        stepVariants[0],
+        stepVariants[1],
+        stepVariants[1] + stepVariants[0],
+        // For doubles
+        stepVariants[3],
+        stepVariants[4],
+        stepVariants[3] * 2,
+        stepVariants[3] * 3,
+        stepVariants[3] * 4
+    ];
+    // Filter from NaN & undefined
+    allPossibleStepVariants = allPossibleStepVariants.filter((die) => {
+        return Boolean(die);
+    });
+    return new Set(allPossibleStepVariants);
+};
+
+// Get all possible steps according to the board situation
+// returns [
+//     Map {1 => 6},
+//     Map {1 => 11},
+//     Map {1 => 16},
+//     Map {1 => 21},
+//     Map {12 => 17},
+//     Map {12 => 22}
+// ]
+function getAllowedSteps() {
+    let steps = [];
+    // Count simple steps
+    for (field of fields) {
+        // Skip invalid fieldFrom
+        if (!isMyField(field)) continue;
+        let idFrom = Number(field.getAttribute('id'));
+        let stepVariants = getStepVariants(die1, die2);
+        stepVariants.forEach((die) => {    // [5, 10, 15, 20]
+            let idTo = idFrom + die;
+            // If it is valid step
+            let fieldTo = document.getElementById(String(idTo));
+            if (idTo <= 24 && !isRivalsField(fieldTo)) {
+                steps.push(new Map().set(idFrom, idTo));
+            };
+        });
+    };
+    return steps;
+};
+
+// Gathers all possible steps for each of the field
+// Map {"1" => ["6", "11", "16", "21"], "12" => ["17", "22"]}
+function rearrangeAllowedFields() {
+    allowedFields = new Map();
+    allowedSteps = getAllowedSteps();
+    allowedSteps.forEach((step) => {
+        step = step.entries().next().value;
+        let idFrom = String(step[0]);
+        let idTo = String(step[1]);
+        if (allowedFields.has(idFrom)) {
+            allowedFields.get(idFrom).push(idTo);
+        } else {
+            allowedFields.set(idFrom, [idTo]);
+        };
+    });
 };
 
 
-///////////////
-// TEST ONLY //
-///////////////
 
 // THIS OBJECT WILL GET HERE FROM THE SERVER
 // let's dice are 3-1
@@ -440,13 +508,13 @@ function letPlayerToMakeHisTurn() {
 //     [move_1],
 //     [move_2, move_3],
 // ];
-[die1, die2] = [5, 5];
-let step_1 = new Map();
-let step_2 = new Map();
-let step_3 = new Map();
-let step_4 = new Map();
-let step_5 = new Map();
-let step_6 = new Map();
+// [die1, die2] = [5, 5];
+// let step_1 = new Map();
+// let step_2 = new Map();
+// let step_3 = new Map();
+// let step_4 = new Map();
+// let step_5 = new Map();
+// let step_6 = new Map();
 // step_1.set(1, 6);
 // step_2.set(6, 11);
 // step_3.set(11, 16);
@@ -467,35 +535,39 @@ let step_6 = new Map();
 
 // + Нужна функция, которая сворачивает steps пользователя
 // пример - [ Map { 1 => 5 }, Map { 5 => 9 }] должен сохраняться как [ Map { 1 => 9 } ]
-allowedMoves = [
-    [step_1],            // 5 * 4
-    [step_2, step_4],    // 5 * 3 + 5 * 1
-    [step_3, step_5]     // 5 * 2 + 5 * 2
-];
+// allowedMoves = [
+//     [step_1],            // 5 * 4
+//     [step_2, step_4],    // 5 * 3 + 5 * 1
+//     [step_3, step_5]     // 5 * 2 + 5 * 2
+// ];
 // allowedMoves = [
 //     [ Map { 1 => 5 } ],
 //     [ Map { 1 => 2 }, Map { 12 => 15 } ]
 // ]
-// Берем все элементарные steps, а потом их свернутые версии
-allowedSteps = [
-    // Simple steps
-    new Map().set(1, 6),
-    new Map().set(6, 11),
-    new Map().set(11, 16),
-    new Map().set(16, 21),
-    new Map().set(12, 17),
-    new Map().set(17, 22),
-    // Complementary steps
-    // idFrom = 1
-    new Map().set(1, 11),
-    new Map().set(1, 16),
-    new Map().set(1, 21),
-    new Map().set(6, 16),
-    new Map().set(6, 21),
-    new Map().set(11, 21),
-    // idFrom = 12
-    new Map().set(12, 22),
-]
+
+
+// Рассчитываем все элементарные steps, а потом их свернутые версии
+// allowedSteps = [
+//     // Simple steps
+//     // The checker from field 1
+//     new Map().set(1, 6),
+//     new Map().set(6, 11),
+//     new Map().set(11, 16),
+//     new Map().set(16, 21),
+//     // The checker from field 1
+//     new Map().set(12, 17),
+//     new Map().set(17, 22),
+//     // Complementary steps
+//     // idFrom = 1
+//     new Map().set(1, 11),
+//     new Map().set(1, 16),
+//     new Map().set(1, 21),
+//     new Map().set(6, 16),
+//     new Map().set(6, 21),
+//     new Map().set(11, 21),
+//     // idFrom = 12
+//     new Map().set(12, 22),
+// ]
 // Перебираем каждое поле и если оно нашего цвета получаем idTo
 // проверяем - поле с idTo чужое? (написать зеркальную функцию, проверяющую это)
 // если свое - ...
@@ -518,22 +590,39 @@ playersMoves = [
 
 
 
-// allowedFields = allowedMovesToAllowedFields();
-function rearrangeAllowedFields() {
-    allowedFields = new Map();
-    allowedSteps.forEach((step) => {
-        step = step.entries().next().value;
-        let idFrom = String(step[0]);
-        let idTo = String(step[1]);
-        if (allowedFields.has(idFrom)) {
-            allowedFields.get(idFrom).push(idTo);
-        } else {
-            allowedFields.set(idFrom, [idTo]);
-        };
-    });
+
+
+
+/////////////
+// MY STEP //
+/////////////
+
+function letMeMakeMyStep() {
+    rearrangeAllowedFields();
+    addHoverNClickEvents();
 };
 
-letPlayerToMakeHisTurn();
+///////////////////
+// PLAYER'S TURN //
+///////////////////
 
-// TODO: HIGH: Make a step cancellation abiility!
+// The main function that let player to make a move
+function letMeMakeMyTurn() {
+    letMeMakeMyStep();
+
+
+
+    // // Restrict any other steps when the move is done
+    // removeHoverNClickEvents();
+};
+
+
+
+[die1, die2] = [5, 5];
+letMeMakeMyTurn();
+
+
+// TODO: HIGH: Make a step cancellation ability!
 // TODO: MEDIUM: Add some animation to a checkers moving
+
+
