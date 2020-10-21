@@ -14,7 +14,9 @@ var mouseDownCoordinates = [];
 var isCheckerSelectedAtFirst = true;
 var shift = checkers[0].getBoundingClientRect().width / 2;
 var ghostChecker = null;
-
+var playersMoves = [];
+var valToMove;    // the amount sum of steps to make
+var valMoved = 0;    // initial move counter
 
 ///////////////////////////////////
 // This we will get from the server
@@ -22,6 +24,8 @@ var allowedMoves;
 var allowedSteps;
 var die1;
 var die2;
+var die3;
+var die4;
 ///////////////////////////////////
 
 
@@ -160,9 +164,10 @@ function placeChecker(idFrom, idTo) {
     };
     newField.appendChild(checker);
     // Add cancellation move
-    allowedSteps.push(
-        new Map().set(idTo, idFrom)
-    );
+    // allowedSteps.push(
+    //     new Map().set(idTo, idFrom)
+    // );
+    playersMoves.push(new Map().set(idFrom, idTo));
     rearrangeAllowedFields();
 };
 
@@ -395,8 +400,8 @@ function addHoverNClickEvents() {
     // Call click / drag & drop events
     document.addEventListener('mousedown', mouseClicksField);
     document.addEventListener('mouseup', mouseUp);
-    document.addEventListener("touchstart", mouseClicksField);
-    document.addEventListener("touchend", mouseUp);
+    document.addEventListener('touchstart', mouseClicksField);
+    document.addEventListener('touchend', mouseUp);
 };
 
 // Remove events to highlight allowed steps
@@ -409,9 +414,10 @@ function removeHoverNClickEvents() {
     // Call click / drag & drop events
     document.removeEventListener('mousedown', mouseClicksField);
     document.removeEventListener('mouseup', mouseUp);
-    document.removeEventListener("touchstart", mouseClicksField);
-    document.removeEventListener("touchend", mouseUp);
+    document.removeEventListener('touchstart', mouseClicksField);
+    document.removeEventListener('touchend', mouseUp);
 };
+
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -424,28 +430,54 @@ function removeHoverNClickEvents() {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// Returns an 4-length array with dice to step
+function getDice() {
+    die3 = die4 = (die1 === die2) ? die1 : undefined;
+    return [die1, die2, die3, die4];
+};
+
+// Counts the sum of player's steps
+function setValMoved() {
+    valMoved = 0;
+    playersMoves.forEach((step) => {
+        step = step.entries().next().value;
+        let idFrom = Number(step[0]);
+        let idTo = Number(step[1]);
+        valMoved += idTo - idFrom;
+    });
+};
+
+// Counts the sum of getDice()
+function setValToMove() {
+    valToMove = getDice().filter((die) => {
+        return Boolean(die);
+    }).reduce((total, num) => {return total + num});
+};
+
 // Get all possible step values
 // [5, 5] => Set{ 5, 10, 15, 20 };
 // [1, 3] => Set{ 1, 3, 4 };
-function getStepVariants(die1, die2) {
-    let stepVariants = (die1 !== die2) ? [die1, die2] : [die1, die1, die1, die1];
+function getStepVariants() {
+    // let stepVariants = (die1 !== die2) ? [die1, die2] : [die1, die1, die1, die1];
+    let dice = getDice();
     let allPossibleStepVariants = [
         // For two dice
-        stepVariants[0],
-        stepVariants[1],
-        stepVariants[1] + stepVariants[0],
+        dice[0],
+        dice[1],
+        dice[1] + dice[0],
         // For doubles
-        stepVariants[3],
-        stepVariants[4],
-        stepVariants[3] * 2,
-        stepVariants[3] * 3,
-        stepVariants[3] * 4
+        dice[3],
+        dice[4],
+        dice[3] * 2,
+        dice[3] * 3,
+        dice[3] * 4
     ];
     // Filter from NaN & undefined
     allPossibleStepVariants = allPossibleStepVariants.filter((die) => {
         return Boolean(die);
     });
-    return new Set(allPossibleStepVariants);
+    allPossibleStepVariants = new Set(allPossibleStepVariants);
+    return allPossibleStepVariants;
 };
 
 // Get all possible steps according to the board situation
@@ -459,17 +491,17 @@ function getStepVariants(die1, die2) {
 // ]
 function getAllowedSteps() {
     let steps = [];
+    let stepVariants = getStepVariants();
     // Count simple steps
     for (field of fields) {
         // Skip invalid fieldFrom
         if (!isMyField(field)) continue;
-        let idFrom = Number(field.getAttribute('id'));
-        let stepVariants = getStepVariants(die1, die2);
+        let idFrom = Number(field.getAttribute('id'));     
         stepVariants.forEach((die) => {    // [5, 10, 15, 20]
             let idTo = idFrom + die;
             // If it is valid step
             let fieldTo = document.getElementById(String(idTo));
-            if (idTo <= 24 && !isRivalsField(fieldTo)) {
+            if (idTo <= 24 && !isRivalsField(fieldTo) && die <= (valToMove - valMoved)) {
                 steps.push(new Map().set(idFrom, idTo));
             };
         });
@@ -477,9 +509,12 @@ function getAllowedSteps() {
     return steps;
 };
 
+// The main function that arranges allowed steps
 // Gathers all possible steps for each of the field
 // Map {"1" => ["6", "11", "16", "21"], "12" => ["17", "22"]}
 function rearrangeAllowedFields() {
+    setValToMove();
+    setValMoved();
     allowedFields = new Map();
     allowedSteps = getAllowedSteps();
     allowedSteps.forEach((step) => {
@@ -492,6 +527,8 @@ function rearrangeAllowedFields() {
             allowedFields.set(idFrom, [idTo]);
         };
     });
+    // Restrict any other steps when the move is done
+    if (!allowedFields.size) {removeHoverNClickEvents()};
 };
 
 
@@ -579,14 +616,14 @@ function rearrangeAllowedFields() {
 // Say after a player has made a move 1:2, the only 12:15 move is remained
 // So for now a player has only 12:15 move to make
 // or he can cancel his move 1:2 - make 2:1 move
-playersMoves = [
-    [
-        {12: 15}
-    ],
-    [
-        {2: 1}
-    ]
-]
+// playersMoves = [
+//     [
+//         {12: 15}
+//     ],
+//     [
+//         {2: 1}
+//     ]
+// ]
 
 
 
@@ -597,32 +634,30 @@ playersMoves = [
 // MY STEP //
 /////////////
 
-function letMeMakeMyStep() {
-    rearrangeAllowedFields();
-    addHoverNClickEvents();
-};
+// function letMeMakeMyStep() {
+//     rearrangeAllowedFields();
+//     addHoverNClickEvents();
+// };
 
 ///////////////////
 // PLAYER'S TURN //
 ///////////////////
 
 // The main function that let player to make a move
-function letMeMakeMyTurn() {
-    letMeMakeMyStep();
-
-
-
-    // // Restrict any other steps when the move is done
-    // removeHoverNClickEvents();
+function letMeMakeMyStep() {
+    rearrangeAllowedFields();
+    addHoverNClickEvents();
 };
 
 
 
 [die1, die2] = [5, 5];
-letMeMakeMyTurn();
+letMeMakeMyStep();
 
 
-// TODO: HIGH: Make a step cancellation ability!
+
+// TODO: HIGH: Add a move completely without a cancellation
+// TODO: MEDIUM: Make a step cancellation ability!
 // TODO: MEDIUM: Add some animation to a checkers moving
 
 
