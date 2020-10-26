@@ -169,7 +169,7 @@ socket.on('renderCheckers', renderCheckers);
 // restrictMovingCheckers is from moving.js
 // socket.on('restrictMovingCheckers', restrictMovingCheckers);
 
-// Render dice
+// Render dice after they are rolled on the server
 function renderDice([dieRes1, dieRes2]) {
     
     console.log([dieRes1, dieRes2]);
@@ -183,6 +183,7 @@ function renderDice([dieRes1, dieRes2]) {
     diceBox.appendChild(die1);
     diceBox.appendChild(die2);
 };
+socket.on('renderDice', renderDice);
 
 // Print a hint
 function printHint(hint) {
@@ -274,8 +275,7 @@ socket.on('hideStartModal', hideStartModal);
 
 
 
-// Render dice after they are rolled on the server
-socket.on('renderDice', renderDice);
+
 
 // Reconnection
 socket.on('user-reconnected', function (username) {

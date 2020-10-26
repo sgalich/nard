@@ -6,7 +6,7 @@
 
 var allowedFields;
 const CHECKEROVERLAP = 4.5;
-const color = '1';
+var color = '1';
 const fields = document.getElementsByClassName('field');
 const checkers = document.getElementsByTagName('checker');
 // This is for clicking and dragging
@@ -14,7 +14,10 @@ var mouseDownCoordinates = [];
 var isCheckerSelectedAtFirst = true;
 var shift = checkers[0].getBoundingClientRect().width / 2;
 var ghostChecker = null;
-var playersMoves = [];
+var playersMoves = {
+    '1': [],
+    '-1': []
+};
 var valToMove;    // the amount sum of steps to make
 var valMoved = 0;    // initial move counter
 
@@ -22,10 +25,10 @@ var valMoved = 0;    // initial move counter
 // This we will get from the server
 var allowedMoves;
 var allowedSteps;
-var die1;
-var die2;
-var die3;
-var die4;
+// var die1;
+// var die2;
+// var die3;
+// var die4;
 ///////////////////////////////////
 
 
@@ -167,7 +170,7 @@ function placeChecker(idFrom, idTo) {
     // allowedSteps.push(
     //     new Map().set(idTo, idFrom)
     // );
-    playersMoves.push(new Map().set(idFrom, idTo));
+    playersMoves[color].push(new Map().set(idFrom, idTo));
     rearrangeAllowedFields();
 };
 
@@ -420,6 +423,9 @@ function removeHoverNClickEvents() {
 
 
 
+
+
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////
@@ -430,16 +436,22 @@ function removeHoverNClickEvents() {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+
+
+
+
+
 // Returns an 4-length array with dice to step
-function getDice() {
-    die3 = die4 = (die1 === die2) ? die1 : undefined;
-    return [die1, die2, die3, die4];
-};
+// function getDice() {
+//     die3 = die4 = (die1 === die2) ? die1 : undefined;
+//     return [die1, die2, die3, die4];
+// };
 
 // Counts the sum of player's steps
 function setValMoved() {
     valMoved = 0;
-    playersMoves.forEach((step) => {
+    playersMoves[color].forEach((step) => {
         step = step.entries().next().value;
         let idFrom = Number(step[0]);
         let idTo = Number(step[1]);
@@ -454,31 +466,45 @@ function setValToMove() {
     }).reduce((total, num) => {return total + num});
 };
 
-// Get all possible step values
-// [5, 5] => Set{ 5, 10, 15, 20 };
-// [1, 3] => Set{ 1, 3, 4 };
-function getStepVariants() {
-    // let stepVariants = (die1 !== die2) ? [die1, die2] : [die1, die1, die1, die1];
-    let dice = getDice();
-    let allPossibleStepVariants = [
-        // For two dice
-        dice[0],
-        dice[1],
-        dice[1] + dice[0],
-        // For doubles
-        dice[3],
-        dice[4],
-        dice[3] * 2,
-        dice[3] * 3,
-        dice[3] * 4
-    ];
-    // Filter from NaN & undefined
-    allPossibleStepVariants = allPossibleStepVariants.filter((die) => {
-        return Boolean(die);
-    });
-    allPossibleStepVariants = new Set(allPossibleStepVariants);
-    return allPossibleStepVariants;
+// Checks whether it is allowed step
+// TODO: MEDIUM: Think about different name for this func & that - "isItAllowedStep"
+function isStepAllowed(idFrom, die) {
+    let idTo = idFrom + die;
+    let fieldTo = document.getElementById(String(idTo));
+    if (
+        idTo <= 24
+        && valMoved !== die
+        && !isRivalsField(fieldTo) 
+        && die <= (valToMove - valMoved)
+    ) {
+        return true;
+    };
+    return false;
 };
+
+ // Add reversed steps for steps that are already made by a player
+function addCancelSteps() {
+    if (!allowedSteps.length) return;
+    playersMoves[color].forEach((step) => {
+        let [idFrom, idTo] = step.entries().next().value;
+        allowedSteps.push(new Map().set(Number(idTo), Number(idFrom)));
+    });
+};
+
+// Filter allowed steps with the rules
+function filterAllowedSteps() {
+    // Add an ability to cancel the last step (if the move is not completed)
+    addCancelSteps();
+
+
+
+    // TODO: HIGH: 6 подряд перед самой первой фишкой соперника? - запретить такой ход.
+    // TODO: HIGH: с головы сколько раз? - реализовать логику (с учетом первого хода)
+    
+    // TODO: HIGH: Все на поле для выкидывания? - разработать свою логику тут.
+
+};
+
 
 // Get all possible steps according to the board situation
 // returns [
@@ -489,34 +515,68 @@ function getStepVariants() {
 //     Map {12 => 17},
 //     Map {12 => 22}
 // ]
-function getAllowedSteps() {
-    let steps = [];
-    let stepVariants = getStepVariants();
-    // Count simple steps
-    for (field of fields) {
-        // Skip invalid fieldFrom
-        if (!isMyField(field)) continue;
-        let idFrom = Number(field.getAttribute('id'));     
-        stepVariants.forEach((die) => {    // [5, 10, 15, 20]
-            let idTo = idFrom + die;
-            // If it is valid step
-            let fieldTo = document.getElementById(String(idTo));
-            if (idTo <= 24 && !isRivalsField(fieldTo) && die <= (valToMove - valMoved)) {
-                steps.push(new Map().set(idFrom, idTo));
+function rearrangeAllowedSteps() {
+    allowedSteps = [];
+    // If not doubles
+    if (die1 !== die2) {
+        for (field of fields) {
+            if (!isMyField(field)) continue;
+            let idFrom = Number(field.getAttribute('id'));
+            let sumIsAllowed = false;
+            // Check a step by the die1
+            if (isStepAllowed(idFrom, die1)) {
+                allowedSteps.push(new Map().set(idFrom, idFrom + die1));
+                sumIsAllowed = true;
             };
-        });
+            // Check a step by the die2
+            if (isStepAllowed(idFrom, die2)) {
+                allowedSteps.push(new Map().set(idFrom, idFrom + die2));
+                sumIsAllowed = true;
+            };
+            // Check a step by the die1 + die2
+            if (sumIsAllowed && isStepAllowed(idFrom, die1 + die2)) {
+                allowedSteps.push(new Map().set(idFrom, idFrom + die1 + die2));
+            };
+        };
+    // If doubles
+    } else {
+        for (field of fields) {
+            if (!isMyField(field)) continue;
+            let idFrom = Number(field.getAttribute('id'));
+            // Check a step by one die
+            if (isStepAllowed(idFrom, die1)) {
+                allowedSteps.push(new Map().set(idFrom, idFrom + die1));
+                // Check a step by doubled die
+                if (isStepAllowed(idFrom, die1 * 2)) {
+                    allowedSteps.push(new Map().set(idFrom, idFrom + die1 * 2));
+                    // Check a step by tripled die
+                    if (isStepAllowed(idFrom, die1 * 3)) {
+                        allowedSteps.push(new Map().set(idFrom, idFrom + die1 * 3));
+                        // Check a step by quadrupled die
+                        if (isStepAllowed(idFrom, die1 * 4)) {
+                            allowedSteps.push(new Map().set(idFrom, idFrom + die1 * 4));
+                        };
+                    };
+                };
+            };
+        };
     };
-    return steps;
+    filterAllowedSteps();
 };
 
 // The main function that arranges allowed steps
 // Gathers all possible steps for each of the field
 // Map {"1" => ["6", "11", "16", "21"], "12" => ["17", "22"]}
 function rearrangeAllowedFields() {
+
+
+    // TODO: SUPERHIGH!!! Remake it with a board obj
+
+
     setValToMove();
     setValMoved();
     allowedFields = new Map();
-    allowedSteps = getAllowedSteps();
+    rearrangeAllowedSteps();
     allowedSteps.forEach((step) => {
         step = step.entries().next().value;
         let idFrom = String(step[0]);
@@ -528,9 +588,19 @@ function rearrangeAllowedFields() {
         };
     });
     // Restrict any other steps when the move is done
-    if (!allowedFields.size) {removeHoverNClickEvents()};
+    if (!allowedFields.size) {
+        changeTurn();
+    };
 };
 
+
+function changeTurn() {
+    removeHoverNClickEvents();
+    playersMoves[color] = [];
+    color = String(-color);
+    rollDice();
+    letMeMakeMyStep();
+};
 
 
 // THIS OBJECT WILL GET HERE FROM THE SERVER
@@ -651,11 +721,20 @@ function letMeMakeMyStep() {
 
 
 
-[die1, die2] = [5, 5];
-letMeMakeMyStep();
+// [die1, die2] = [1, 1];
+
+document.getElementById('diceBox').onclick = () => {
+    die1 = Math.floor(Math.random() * 6) + 1;
+    die2 = Math.floor(Math.random() * 6) + 1;     
+    rollDice();
+    letMeMakeMyStep();
+};
+
+// letMeMakeMyStep();
 
 
 
+// TODO: HIGH: Make normal rules to make steps
 // TODO: HIGH: Add a move completely without a cancellation
 // TODO: MEDIUM: Make a step cancellation ability!
 // TODO: MEDIUM: Add some animation to a checkers moving

@@ -9,7 +9,7 @@
 // https://codepen.io/uiswarup/pen/NWqvVdy - liquid
 // https://codepen.io/uiswarup/pen/GRJLOMp - raindrops
 // https://codepen.io/uiswarup/pen/dyPwwLv - background
-// https://codepen.io/toshiya-marukubo/pen/MWKKorN - noise
+// https://codepen.io/vbl/pen/KOdExr - noise
 // https://codepen.io/toshiya-marukubo/pen/jObpoWP - checkers design with blink
 // 
 
@@ -65,9 +65,6 @@
 // DICE ROLL //
 ///////////////
 
-// https://codepen.io/tameraydin/pen/CADvB
-// https://codepen.io/jpanter/pen/PGqJOm
-// https://codepen.io/borntofrappe/pen/WNNJxwM
 // https://codepen.io/stphnnnn/pen/rRmQgr
 
 
