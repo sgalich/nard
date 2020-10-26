@@ -220,7 +220,7 @@
         //     24: -1
         // };
 
-        let CHECKEROVERLAP2 = 5.5;
+        var CHECKEROVERLAP = 5.5;
 
         // Place one checker at certain field by id
         function createChecker(id, color) {
@@ -234,9 +234,9 @@
             // checker.style.visibility = "visible"
             let checkersInField = field.children.length;
             if (field.classList.contains('top')) {
-                checker.setAttribute('style', `top: calc(${checkersInField} * ${CHECKEROVERLAP2}%);`);
+                checker.setAttribute('style', `top: calc(${checkersInField} * ${CHECKEROVERLAP}%);`);
             } else {
-                checker.setAttribute('style', `bottom: calc(${checkersInField} * ${CHECKEROVERLAP2}%);`);
+                checker.setAttribute('style', `bottom: calc(${checkersInField} * ${CHECKEROVERLAP}%);`);
             };
             field.appendChild(checker);    // Place checker inside the field
             // board[id] += color;

@@ -5,8 +5,7 @@
 
 
 var allowedFields;
-const CHECKEROVERLAP = 4.5;
-var color = '1';
+// const CHECKEROVERLAP = 4.5;
 const fields = document.getElementsByClassName('field');
 const checkers = document.getElementsByTagName('checker');
 // This is for clicking and dragging
@@ -14,17 +13,18 @@ var mouseDownCoordinates = [];
 var isCheckerSelectedAtFirst = true;
 var shift = checkers[0].getBoundingClientRect().width / 2;
 var ghostChecker = null;
-var playersMoves = {
-    '1': [],
-    '-1': []
-};
-var valToMove;    // the amount sum of steps to make
-var valMoved = 0;    // initial move counter
-
+var valToMove;    // the amount sum of steps to make // TODO: MEDIUM: Deprecate it !
+var valMoved = 0;    // initial move counter // TODO: MEDIUM: Deprecate it !
+var remainedValToStep;
+var stepsMade; 
+var diceMade;
 ///////////////////////////////////
 // This we will get from the server
 var allowedMoves;
 var allowedSteps;
+var color = '1';
+var colorN = Number(color);
+var moves = [];   // all moves
 // var die1;
 // var die2;
 // var die3;
@@ -36,30 +36,6 @@ var allowedSteps;
 // UTILS //
 ///////////
 
-// This function transforms allowedMoves to allowedFields
-// [ [ Map { 1 => 5 } ], [ Map { 1 => 2 }, Map { 12 => 15 } ] ]
-// This transforms into this object for highlighting allowed fields
-// let allowedFields = {
-//     '1' => ['2', '5'],
-//     '12' => ['15']
-// };
-// NB: allowedMoves has Numbers as ids, allowedFields has Strings as ids !
-function allowedMovesToAllowedFields() {
-    let allowedFields = new Map;
-    allowedMoves.forEach((move) => {
-        move.forEach((step) => {
-            step = step.entries().next().value;
-            let idFrom = String(step[0]);
-            let idTo = String(step[1]);
-            if (allowedFields.has(idFrom)) {
-                allowedFields.get(idFrom).push(idTo);
-            } else {
-                allowedFields.set(idFrom, [idTo]);
-            };
-        });
-    });
-    return allowedFields;
-};
 
 // Create a dragging ghost checker
 function createGhostChecker(x, y) {
@@ -147,32 +123,66 @@ function isItAllowedStep(idFrom, idTo) {
     return true
 };
 
+// Remove a step from stepsMade
+function registerCancelStep(idFromCancelled, idToCancelled) {
+    for (let i = 0; i < stepsMade.length; i++) {
+        let [idFrom, idTo] = stepsMade[i].entries().next().value;
+        // Find a step that is cancelled
+        if (idFromCancelled === idTo) {
+            // If it is cancelled fully => delete this whole step
+            if (idFrom === idToCancelled) {
+                stepsMade.splice(i, 1);
+            // If it is changed => change this move
+            } else {
+                stepsMade[i].set(idFrom, idToCancelled);
+            };
+        };
+    };
+};
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+// PLACE CHECKER FUNCTION //
+///////////////////////////////////////////////////////////////////////////////////////////////
+
 // Place a checker into a new field
 function placeChecker(idFrom, idTo) {
     let checker = document.getElementById(idFrom).lastChild;
     let newField = document.getElementById(idTo);
     // Restrict steps that are not allowed
-    if (!isItAllowedStep(idFrom, idTo)) return;
+    if (!isItAllowedStep(idFrom, idTo)) return;    
     // Place the checker correctly inside the target
-    let checkersInNewField = newField.children.length;
+    // let checkersInNewField = newField.children.length;
+    let checkersInFieldTo = Math.abs(board[idTo]);
     // If the checker goes back to it's field, then move it under the new place
     if (checker.parentNode === newField) {checkersInNewField -= 1};
-    // Place the checker correctly in his field
+    // Place the checker correctly in his field under another checkers
     checker.style.removeProperty('top');
     checker.style.removeProperty('bottom');
     if (newField.classList.contains('top')) {
-        checker.setAttribute('style', `top: calc(${checkersInNewField} * ${CHECKEROVERLAP}%);`);
+        checker.setAttribute('style', `top: calc(${checkersInFieldTo} * ${CHECKEROVERLAP}%);`);
     } else {
-        checker.setAttribute('style', `bottom: calc(${checkersInNewField} * ${CHECKEROVERLAP}%);`);
+        checker.setAttribute('style', `bottom: calc(${checkersInFieldTo} * ${CHECKEROVERLAP}%);`);
     };
     newField.appendChild(checker);
-    // Add cancellation move
-    // allowedSteps.push(
-    //     new Map().set(idTo, idFrom)
-    // );
-    playersMoves[color].push(new Map().set(idFrom, idTo));
+    // Register this step
+    if (idFrom < idTo) {
+        moves[moves.length - 1].steps.push(new Map().set(idFrom, idTo));
+    // If it is cancel step
+    } else if (idFrom > idTo) {
+        // TODO: HIGH: Add cancel moves for: [6, 1] 1 => 6. Allow cancel 6 => 2 (not only 6 => 1)
+        registerCancelStep(idFrom, idTo);
+        console.log('cancel', stepsMade);
+        console.log('cancel', moves);
+    };
+
+    
+    board[idFrom] -= color;
+    board[idTo] += color;
+    // Arrange new steps
     rearrangeAllowedFields();
 };
+
+///////////////////////////////////////////////////////////////////////////////////////////////
 
 // Highlight allowed fields
 function highlightAllowedFields(fieldFrom) {
@@ -230,8 +240,6 @@ function animatePlacingChecker(xFrom, yFrom) {
     
     
     ghostChecker.remove();
-
-    
 };
 
 
@@ -440,42 +448,33 @@ function removeHoverNClickEvents() {
 
 
 
-
-
-// Returns an 4-length array with dice to step
-// function getDice() {
-//     die3 = die4 = (die1 === die2) ? die1 : undefined;
-//     return [die1, die2, die3, die4];
-// };
-
-// Counts the sum of player's steps
-function setValMoved() {
-    valMoved = 0;
-    playersMoves[color].forEach((step) => {
-        step = step.entries().next().value;
-        let idFrom = Number(step[0]);
-        let idTo = Number(step[1]);
+// Rearrange stepsMade, diceMade, remainedValToStep
+function resetGlobalVariables() {
+    // Set stepsMade
+    stepsMade = moves[moves.length - 1].steps;    // For convinience
+    // Set diceMade
+    diceMade = [];
+    let valMoved = 0;
+    stepsMade.forEach((step) => {
+        let [idFrom, idTo] = step.entries().next().value;
+        diceMade.push(idTo - idFrom);
         valMoved += idTo - idFrom;
     });
-};
-
-// Counts the sum of getDice()
-function setValToMove() {
-    valToMove = getDice().filter((die) => {
+    // Set remainedValToStep
+    let valToMove = getDice().filter((die) => {
         return Boolean(die);
     }).reduce((total, num) => {return total + num});
+    remainedValToStep = valToMove - valMoved;
 };
 
 // Checks whether it is allowed step
 // TODO: MEDIUM: Think about different name for this func & that - "isItAllowedStep"
 function isStepAllowed(idFrom, die) {
     let idTo = idFrom + die;
-    let fieldTo = document.getElementById(String(idTo));
     if (
         idTo <= 24
-        && valMoved !== die
-        && !isRivalsField(fieldTo) 
-        && die <= (valToMove - valMoved)
+        && ((colorN > 0) === (board[idTo] >= 0))    // if the fieldTo is mine or empty
+        && (die <= remainedValToStep)    // for doubles
     ) {
         return true;
     };
@@ -485,26 +484,19 @@ function isStepAllowed(idFrom, die) {
  // Add reversed steps for steps that are already made by a player
 function addCancelSteps() {
     if (!allowedSteps.length) return;
-    playersMoves[color].forEach((step) => {
+    stepsMade.forEach((step) => {
         let [idFrom, idTo] = step.entries().next().value;
-        allowedSteps.push(new Map().set(Number(idTo), Number(idFrom)));
+        allowedSteps.push(new Map().set(idTo, idFrom));
+        // Additional cancellations for big steps when the are double dice
+        if (die1 === die2 && idTo - idFrom > die1) {    // i.e. 1 => 16
+            microCancelStep = die1;
+            while (microCancelStep < idTo - idFrom) {    // i.e. 5 < 16 - 1
+                allowedSteps.push(new Map().set(idTo, idTo - microCancelStep));
+                microCancelStep += die1;
+            };
+        };
     });
 };
-
-// Filter allowed steps with the rules
-function filterAllowedSteps() {
-    // Add an ability to cancel the last step (if the move is not completed)
-    addCancelSteps();
-
-
-
-    // TODO: HIGH: 6 подряд перед самой первой фишкой соперника? - запретить такой ход.
-    // TODO: HIGH: с головы сколько раз? - реализовать логику (с учетом первого хода)
-    
-    // TODO: HIGH: Все на поле для выкидывания? - разработать свою логику тут.
-
-};
-
 
 // Get all possible steps according to the board situation
 // returns [
@@ -516,33 +508,43 @@ function filterAllowedSteps() {
 //     Map {12 => 22}
 // ]
 function rearrangeAllowedSteps() {
+    resetGlobalVariables();
+
+    // TODO: HIGH: 6 подряд перед самой первой фишкой соперника? - запретить такой ход.
+    // TODO: HIGH: с головы сколько раз? - реализовать логику (с учетом первого хода)
+    
+    // TODO: HIGH: Все на поле для выкидывания? - разработать свою логику тут.
+
+    // TODO: HIGH: Make 3 variants: 
+        // 1 - first move
+        // 2 - usual move (here)
+        // 3 - bearing off
+
+    // playersMoves
     allowedSteps = [];
     // If not doubles
     if (die1 !== die2) {
-        for (field of fields) {
-            if (!isMyField(field)) continue;
-            let idFrom = Number(field.getAttribute('id'));
-            let sumIsAllowed = false;
+        for (field of Object.entries(board)) {
+            if ((colorN > 0) !== (field[1] > 0)) continue;    // If it is not my field
+            let idFrom = Number(field[0]);
             // Check a step by the die1
-            if (isStepAllowed(idFrom, die1)) {
+            if (!diceMade.includes(die1) && isStepAllowed(idFrom, die1)) {
                 allowedSteps.push(new Map().set(idFrom, idFrom + die1));
-                sumIsAllowed = true;
             };
             // Check a step by the die2
-            if (isStepAllowed(idFrom, die2)) {
+            if (!diceMade.includes(die2) && isStepAllowed(idFrom, die2)) {
                 allowedSteps.push(new Map().set(idFrom, idFrom + die2));
-                sumIsAllowed = true;
             };
             // Check a step by the die1 + die2
-            if (sumIsAllowed && isStepAllowed(idFrom, die1 + die2)) {
+            if (!diceMade.length && isStepAllowed(idFrom, die1 + die2)) {
                 allowedSteps.push(new Map().set(idFrom, idFrom + die1 + die2));
             };
         };
     // If doubles
     } else {
-        for (field of fields) {
-            if (!isMyField(field)) continue;
-            let idFrom = Number(field.getAttribute('id'));
+        for (field of Object.entries(board)) {
+            if ((colorN > 0) !== (field[1] > 0)) continue;    // If it is not my field
+            let idFrom = Number(field[0]);
             // Check a step by one die
             if (isStepAllowed(idFrom, die1)) {
                 allowedSteps.push(new Map().set(idFrom, idFrom + die1));
@@ -561,22 +563,21 @@ function rearrangeAllowedSteps() {
             };
         };
     };
-    filterAllowedSteps();
+    addCancelSteps();
+    // console.log(allowedSteps);
+};
+
+// Register this move in moves variable
+function registerMove() {
+    
 };
 
 // The main function that arranges allowed steps
 // Gathers all possible steps for each of the field
 // Map {"1" => ["6", "11", "16", "21"], "12" => ["17", "22"]}
 function rearrangeAllowedFields() {
-
-
-    // TODO: SUPERHIGH!!! Remake it with a board obj
-
-
-    setValToMove();
-    setValMoved();
     allowedFields = new Map();
-    rearrangeAllowedSteps();
+    rearrangeAllowedSteps();    // this is a source for creating allowedFields
     allowedSteps.forEach((step) => {
         step = step.entries().next().value;
         let idFrom = String(step[0]);
@@ -587,117 +588,23 @@ function rearrangeAllowedFields() {
             allowedFields.set(idFrom, [idTo]);
         };
     });
+    // console.log(allowedFields);
     // Restrict any other steps when the move is done
     if (!allowedFields.size) {
-        changeTurn();
+        console.log('Move is complete.');
+        registerMove();
+        // console.log(moves);
+        // changeTurn();
     };
 };
 
 
 function changeTurn() {
     removeHoverNClickEvents();
-    playersMoves[color] = [];
     color = String(-color);
     rollDice();
     letMeMakeMyStep();
 };
-
-
-// THIS OBJECT WILL GET HERE FROM THE SERVER
-// let's dice are 3-1
-// let move_1 = new Map();
-// let move_2 = new Map();
-// let move_3 = new Map();
-// move_1.set(1, 5);
-// move_2.set(1, 2);
-// move_3.set(12, 15);
-// allowedMoves = [
-//     [move_1],
-//     [move_2, move_3],
-// ];
-// [die1, die2] = [5, 5];
-// let step_1 = new Map();
-// let step_2 = new Map();
-// let step_3 = new Map();
-// let step_4 = new Map();
-// let step_5 = new Map();
-// let step_6 = new Map();
-// step_1.set(1, 6);
-// step_2.set(6, 11);
-// step_3.set(11, 16);
-// step_4.set(16, 21);
-// step_5.set(12, 17);
-// step_6.set(17, 22);
-// step_1.set(1, 21);    // 5 * 4 (idFrom = 1)
-// step_2.set(1, 16);    // 5 * 3 (idFrom = 1)
-// step_3.set(1, 11);    // 5 * 2 (idFrom = 1)
-// step_4.set(12, 17);   // 5 * 2 (idFrom = 12)
-// step_5.set(12, 22);   // 5 * 1 (idFrom = 12)
-// Сначала ищем все steps, затем объединяем их. Ищем сначала -
-// какие фишки могут походить разом весь move
-// затем перебираем варианты, когда часть хода одна фишка, часть - другая...
-
-
-
-
-// + Нужна функция, которая сворачивает steps пользователя
-// пример - [ Map { 1 => 5 }, Map { 5 => 9 }] должен сохраняться как [ Map { 1 => 9 } ]
-// allowedMoves = [
-//     [step_1],            // 5 * 4
-//     [step_2, step_4],    // 5 * 3 + 5 * 1
-//     [step_3, step_5]     // 5 * 2 + 5 * 2
-// ];
-// allowedMoves = [
-//     [ Map { 1 => 5 } ],
-//     [ Map { 1 => 2 }, Map { 12 => 15 } ]
-// ]
-
-
-// Рассчитываем все элементарные steps, а потом их свернутые версии
-// allowedSteps = [
-//     // Simple steps
-//     // The checker from field 1
-//     new Map().set(1, 6),
-//     new Map().set(6, 11),
-//     new Map().set(11, 16),
-//     new Map().set(16, 21),
-//     // The checker from field 1
-//     new Map().set(12, 17),
-//     new Map().set(17, 22),
-//     // Complementary steps
-//     // idFrom = 1
-//     new Map().set(1, 11),
-//     new Map().set(1, 16),
-//     new Map().set(1, 21),
-//     new Map().set(6, 16),
-//     new Map().set(6, 21),
-//     new Map().set(11, 21),
-//     // idFrom = 12
-//     new Map().set(12, 22),
-// ]
-// Перебираем каждое поле и если оно нашего цвета получаем idTo
-// проверяем - поле с idTo чужое? (написать зеркальную функцию, проверяющую это)
-// если свое - ...
-
-
-
-// This must be copied when a player makes his moves !!!
-// how to copy in js - Object.assign([], allowedMoves[i])
-// Say after a player has made a move 1:2, the only 12:15 move is remained
-// So for now a player has only 12:15 move to make
-// or he can cancel his move 1:2 - make 2:1 move
-// playersMoves = [
-//     [
-//         {12: 15}
-//     ],
-//     [
-//         {2: 1}
-//     ]
-// ]
-
-
-
-
 
 
 /////////////
@@ -715,6 +622,11 @@ function changeTurn() {
 
 // The main function that let player to make a move
 function letMeMakeMyStep() {
+    moves.push({
+        color: colorN,
+        dice: [die1, die2],
+        steps: []
+    });
     rearrangeAllowedFields();
     addHoverNClickEvents();
 };
