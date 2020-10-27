@@ -123,8 +123,8 @@ function isItAllowedStep(idFrom, idTo) {
     return true
 };
 
-// Remove a step from stepsMade
-function registerCancelStep(idFromCancelled, idToCancelled) {
+// Register in moves a step back
+function registerStepBack(idFromCancelled, idToCancelled) {
     for (let i = 0; i < stepsMade.length; i++) {
         let [idFrom, idTo] = stepsMade[i].entries().next().value;
         // Find a step that is cancelled
@@ -138,6 +138,26 @@ function registerCancelStep(idFromCancelled, idToCancelled) {
             };
         };
     };
+
+    console.log('stepsMade BACK', stepsMade);
+
+};
+
+// Register in moves a step forward
+function registerStepForward(idFromMade, idToMade) {
+   // Trying to find a step which could be a part of a new big step
+   // prev. 1 => 3 and now 3 => 5. So we change pprev step to 1 => 5
+    for (let i = 0; i < stepsMade.length; i++) {
+        let [idFrom, idTo] = stepsMade[i].entries().next().value;
+        // Find a step that is cancelled
+        if (idTo === idFromMade) {
+            stepsMade[i].set(idFrom, idToMade);
+            return;
+        };
+    };
+    // If we failed to find a first part of a new step =>
+    // just register this step
+    moves[moves.length - 1].steps.push(new Map().set(idFromMade, idToMade));
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -154,7 +174,7 @@ function placeChecker(idFrom, idTo) {
     // let checkersInNewField = newField.children.length;
     let checkersInFieldTo = Math.abs(board[idTo]);
     // If the checker goes back to it's field, then move it under the new place
-    if (checker.parentNode === newField) {checkersInNewField -= 1};
+    if (checker.parentNode === newField) {checkersInFieldTo -= 1};
     // Place the checker correctly in his field under another checkers
     checker.style.removeProperty('top');
     checker.style.removeProperty('bottom');
@@ -165,19 +185,17 @@ function placeChecker(idFrom, idTo) {
     };
     newField.appendChild(checker);
     // Register this step
+    idFrom = Number(idFrom);
+    idTo = Number(idTo);
+    // If it is a step forward (change a previous step or it is a new step)
     if (idFrom < idTo) {
-        moves[moves.length - 1].steps.push(new Map().set(idFrom, idTo));
-    // If it is cancel step
+        registerStepForward(idFrom, idTo);
+    // If it is a step back (change or cancel at all)
     } else if (idFrom > idTo) {
-        // TODO: HIGH: Add cancel moves for: [6, 1] 1 => 6. Allow cancel 6 => 2 (not only 6 => 1)
-        registerCancelStep(idFrom, idTo);
-        console.log('cancel', stepsMade);
-        console.log('cancel', moves);
+        registerStepBack(idFrom, idTo);
     };
-
-    
-    board[idFrom] -= color;
-    board[idTo] += color;
+    board[idFrom] -= colorN;
+    board[idTo] += colorN;
     // Arrange new steps
     rearrangeAllowedFields();
 };
@@ -465,12 +483,25 @@ function resetGlobalVariables() {
         return Boolean(die);
     }).reduce((total, num) => {return total + num});
     remainedValToStep = valToMove - valMoved;
+    // Empty allowedSteps
+    allowedSteps = [];
+};
+
+// Checks if there was a move from the fieldId 1
+function wasThereAStepFromTheHeadField() {
+    for (step of stepsMade) {
+        let [idFrom, _] = step.entries().next().value;
+        if (idFrom === 1) return true;
+    };
+    return false;
 };
 
 // Checks whether it is allowed step
 // TODO: MEDIUM: Think about different name for this func & that - "isItAllowedStep"
 function isStepAllowed(idFrom, die) {
     let idTo = idFrom + die;
+    // Restrict getiing twice a checker from the head
+    if (wasThereAStepFromTheHeadField() && idFrom === 1 && moves.length > 2) return false;
     if (
         idTo <= 24
         && ((colorN > 0) === (board[idTo] >= 0))    // if the fieldTo is mine or empty
@@ -481,14 +512,22 @@ function isStepAllowed(idFrom, die) {
     return false;
 };
 
- // Add reversed steps for steps that are already made by a player
+// Add reversed steps for steps that are already made by a player
 function addCancelSteps() {
     if (!allowedSteps.length) return;
+    // Add cancel steps
     stepsMade.forEach((step) => {
         let [idFrom, idTo] = step.entries().next().value;
         allowedSteps.push(new Map().set(idTo, idFrom));
+        // Add an ability to change a step (make a step back with another dice)
+        if (idTo - idFrom === die1) {
+            allowedSteps.push(new Map().set(idTo, idFrom + die2));
+        } else {
+            allowedSteps.push(new Map().set(idTo, idFrom + die1));
+        };
         // Additional cancellations for big steps when the are double dice
         if (die1 === die2 && idTo - idFrom > die1) {    // i.e. 1 => 16
+            if (moves.length < 2) return;    // 3-3 hardcoded
             microCancelStep = die1;
             while (microCancelStep < idTo - idFrom) {    // i.e. 5 < 16 - 1
                 allowedSteps.push(new Map().set(idTo, idTo - microCancelStep));
@@ -496,6 +535,152 @@ function addCancelSteps() {
             };
         };
     });
+};
+
+// Add allowed steps for unique dice
+function addAllowedStepsForUniqueDice(idFrom) {
+    let isSumAllowed = false;
+    // Check a step by the die1
+    if (!diceMade.includes(die1) && isStepAllowed(idFrom, die1)) {
+        allowedSteps.push(new Map().set(idFrom, idFrom + die1));
+        isSumAllowed = true;
+    };
+    // Check a step by the die2
+    if (!diceMade.includes(die2) && isStepAllowed(idFrom, die2)) {
+        allowedSteps.push(new Map().set(idFrom, idFrom + die2));
+        isSumAllowed = true;
+    };
+    // Check a step by the die1 + die2
+    if (!diceMade.length && isSumAllowed && isStepAllowed(idFrom, die1 + die2)) {
+        allowedSteps.push(new Map().set(idFrom, idFrom + die1 + die2));
+    };
+};
+
+// Add allowed steps for doubles
+function addAllowedStepsForDoubles(idFrom) {
+    // Check a step by a single die
+    if (isStepAllowed(idFrom, die1)) {
+        allowedSteps.push(new Map().set(idFrom, idFrom + die1));
+        // Check a step by a doubled die
+        if (isStepAllowed(idFrom, die1 * 2)) {
+            allowedSteps.push(new Map().set(idFrom, idFrom + die1 * 2));
+            // Check a step by a tripled die
+            if (isStepAllowed(idFrom, die1 * 3)) {
+                allowedSteps.push(new Map().set(idFrom, idFrom + die1 * 3));
+                // Check a step by a quadrupled die
+                if (isStepAllowed(idFrom, die1 * 4)) {
+                    allowedSteps.push(new Map().set(idFrom, idFrom + die1 * 4));
+                };
+            };
+        };
+    };
+};
+
+// Checks if all my checkers are in the fields to bearing off
+function isItBearingOff() {
+    // Get all my feilds from 19 to 24 and count the sum
+    let homeSum = Object.entries(board).slice(18, 24)
+        .map((x) => x[1])    // get only checkers' values without fieldIds
+        .filter(checkers => (colorN > 0 === checkers > 0))    // Get only my color's checkers
+    if (!homeSum.length) return false;
+    homeSum = homeSum.reduce((sum, checkers) => sum + checkers);    // count the sum
+    return (Math.abs(homeSum) === 15);
+};
+
+// Arrange allowed steps for the first move
+function arrangeAllowedStepsForTheFirstMove() {
+    let idFrom = 1;
+    // If unique dice
+    if (die1 != die2) {
+        if (!stepsMade.length) {
+            allowedSteps.push(new Map().set(idFrom, idFrom + die1 + die2));
+        };
+    // If doubles
+    } else {
+        // If it is the first step & a usual doubles
+        if (!stepsMade.length && [1, 2, 5].includes(die1)) {
+            allowedSteps.push(new Map().set(idFrom, idFrom + die1 * 4));
+        // Exception for 3, 4 & 6 => two steps from the head are allowed
+        } else if (stepsMade.length < 2) {
+            if (die1 === 3) {
+                // This case is very unique.
+                // So I decided to hardcode it.
+                // It will be much more readible!
+                // If there were no step yet
+                if (!stepsMade.length) {
+                    // A new step
+                    allowedSteps.push(new Map().set(idFrom, idFrom + die1));
+                    allowedSteps.push(new Map().set(idFrom, idFrom + die1 * 2));
+                    allowedSteps.push(new Map().set(idFrom, idFrom + die1 * 3));
+                // If it was a step already
+                } else {
+                    let [_, idToMade] = stepsMade[0].entries().next().value;
+                    // If it was 1=>4 step
+                    if (idToMade === 4) {
+                        // A new step
+                        allowedSteps.push(new Map().set(idFrom, idFrom + die1 * 3));
+                        // A cancel/change step
+                        allowedSteps.push(new Map().set(idToMade, idToMade + die1));
+                        allowedSteps.push(new Map().set(idToMade, idToMade + die1 * 2));
+                    // If it was 1=>7 step
+                    } else if (idToMade === 7) {
+                        // A new step
+                        allowedSteps.push(new Map().set(idFrom, idFrom + die1 * 2));
+                        // A cancel/change step
+                        allowedSteps.push(new Map().set(idToMade, idToMade - die1));
+                        allowedSteps.push(new Map().set(idToMade, idToMade + die1));
+                        // If it was 1=>10 step
+                    } else if (idToMade === 10) {
+                        // A new step
+                        allowedSteps.push(new Map().set(idFrom, idFrom + die1));
+                        // A cancel/change step
+                        allowedSteps.push(new Map().set(idToMade, idToMade - die1));
+                        allowedSteps.push(new Map().set(idToMade, idToMade - die1 * 2));
+                    };
+                };
+            } else if (die1 === 4) {
+                allowedSteps.push(new Map().set(idFrom, idFrom + die1 * 2));
+            } else if (die1 === 6) {
+                allowedSteps.push(new Map().set(idFrom, idFrom + die1));
+            };
+        };
+    };
+};
+
+// Arrange allowed steps for the second move
+function arrangeAllowedStepsForTheSecondMove() {
+  // TODO: HIGH: 6 подряд перед самой первой фишкой соперника? - запретить такой ход.
+};
+
+// Arrange allowed steps for the bearing off
+function arrangeAllowedStepsForTheBearingOff() {
+    // TODO: HIGH: Все на поле для выкидывания? - разработать свою логику тут.
+};
+
+
+
+
+// Arrange allowed steps for the middle of the game
+function arrangeAllowedStepsForTheMiddleOfTheGame() {
+    // TODO: HIGH: 6 подряд перед самой первой фишкой соперника? - запретить такой ход.
+    // playersMoves
+
+    // If not doubles
+    if (die1 !== die2) {
+        for (field of Object.entries(board)) {
+            if ((colorN > 0) !== (field[1] > 0)) continue;    // If it is not my field
+            let idFrom = Number(field[0]);
+            addAllowedStepsForUniqueDice(idFrom);
+
+        };
+    // If doubles
+    } else {
+        for (field of Object.entries(board)) {
+            if ((colorN > 0) !== (field[1] > 0)) continue;    // If it is not my field
+            let idFrom = Number(field[0]);
+            addAllowedStepsForDoubles(idFrom);
+        };
+    };  
 };
 
 // Get all possible steps according to the board situation
@@ -510,66 +695,44 @@ function addCancelSteps() {
 function rearrangeAllowedSteps() {
     resetGlobalVariables();
 
-    // TODO: HIGH: 6 подряд перед самой первой фишкой соперника? - запретить такой ход.
-    // TODO: HIGH: с головы сколько раз? - реализовать логику (с учетом первого хода)
+
+    ////////////////////////
+    // FOR TEST ONLY
+    // // ALWAYS THE FIRST MOVE If there was no steps
+    // ///////////////////////
+    // if (!stepsMade.length) {
+    //     moves = [{
+    //         color: colorN,
+    //         dice: [die1, die2],
+    //         steps: []
+    //     }];
+    // };
+    // ////////////////////////
+
+
+
     
-    // TODO: HIGH: Все на поле для выкидывания? - разработать свою логику тут.
-
-    // TODO: HIGH: Make 3 variants: 
-        // 1 - first move
-        // 2 - usual move (here)
-        // 3 - bearing off
-
-    // playersMoves
-    allowedSteps = [];
-    // If not doubles
-    if (die1 !== die2) {
-        for (field of Object.entries(board)) {
-            if ((colorN > 0) !== (field[1] > 0)) continue;    // If it is not my field
-            let idFrom = Number(field[0]);
-            // Check a step by the die1
-            if (!diceMade.includes(die1) && isStepAllowed(idFrom, die1)) {
-                allowedSteps.push(new Map().set(idFrom, idFrom + die1));
-            };
-            // Check a step by the die2
-            if (!diceMade.includes(die2) && isStepAllowed(idFrom, die2)) {
-                allowedSteps.push(new Map().set(idFrom, idFrom + die2));
-            };
-            // Check a step by the die1 + die2
-            if (!diceMade.length && isStepAllowed(idFrom, die1 + die2)) {
-                allowedSteps.push(new Map().set(idFrom, idFrom + die1 + die2));
-            };
-        };
-    // If doubles
+    // If it is the first move
+    if (moves.length === 1) {
+        // ArrangeAllowedSteps for the first move
+        console.log('1ST MOVE !');
+        arrangeAllowedStepsForTheFirstMove();
+    // If it is the second move
+    } else if (moves.length === 2) {
+        // ArrangeAllowedSteps for the second move
+        arrangeAllowedStepsForTheSecondMove();
+        console.log('2ND MOVE !');
+    // If it is bearing off
+    } else if (isItBearingOff()) {
+        console.log('BEARING OFF !');
+        arrangeAllowedStepsForTheBearingOff();
+    // If it is middle of the game
     } else {
-        for (field of Object.entries(board)) {
-            if ((colorN > 0) !== (field[1] > 0)) continue;    // If it is not my field
-            let idFrom = Number(field[0]);
-            // Check a step by one die
-            if (isStepAllowed(idFrom, die1)) {
-                allowedSteps.push(new Map().set(idFrom, idFrom + die1));
-                // Check a step by doubled die
-                if (isStepAllowed(idFrom, die1 * 2)) {
-                    allowedSteps.push(new Map().set(idFrom, idFrom + die1 * 2));
-                    // Check a step by tripled die
-                    if (isStepAllowed(idFrom, die1 * 3)) {
-                        allowedSteps.push(new Map().set(idFrom, idFrom + die1 * 3));
-                        // Check a step by quadrupled die
-                        if (isStepAllowed(idFrom, die1 * 4)) {
-                            allowedSteps.push(new Map().set(idFrom, idFrom + die1 * 4));
-                        };
-                    };
-                };
-            };
-        };
+        arrangeAllowedStepsForTheMiddleOfTheGame();
+        addCancelSteps();
     };
-    addCancelSteps();
-    // console.log(allowedSteps);
-};
-
-// Register this move in moves variable
-function registerMove() {
     
+    // console.log(allowedSteps);
 };
 
 // The main function that arranges allowed steps
@@ -592,7 +755,6 @@ function rearrangeAllowedFields() {
     // Restrict any other steps when the move is done
     if (!allowedFields.size) {
         console.log('Move is complete.');
-        registerMove();
         // console.log(moves);
         // changeTurn();
     };
@@ -652,3 +814,5 @@ document.getElementById('diceBox').onclick = () => {
 // TODO: MEDIUM: Add some animation to a checkers moving
 
 
+// TODO: MEDIUM: Split this file for server - client after moving rules are done !
+// TODO: MEDIUM: Reverse a board for a rival !

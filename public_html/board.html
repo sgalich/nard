@@ -167,7 +167,8 @@
 
     <!-- Render the checkers -->
     <script>
-        var board = {    // the board with a starting position
+        // the board with a starting position
+        var board = {
             1: 15,
             2: 0,
             3: 0,
@@ -193,6 +194,8 @@
             23: 0,
             24: 0
         };
+        
+        // // Middle of the game
         // var board = {
         //     1: 5,
         //     2: -2,
@@ -217,6 +220,34 @@
         //     21: 0,
         //     22: -1,
         //     23: 0,
+        //     24: -1
+        // };
+
+        // // Bearing off
+        // var board = {
+        //     1: 0,
+        //     2: -2,
+        //     3: 0,
+        //     4: -2,
+        //     5: 0,
+        //     6: 0,
+        //     7: 0,
+        //     8: 0,
+        //     9: -1,
+        //     10: 0,
+        //     11: 0,
+        //     12: 0,
+        //     13: -5,
+        //     14: 0,
+        //     15: 0,
+        //     16: 0,
+        //     17: 0,
+        //     18: -1,
+        //     19: 5,
+        //     20: -2,
+        //     21: 3,
+        //     22: -1,
+        //     23: 7,
         //     24: -1
         // };
 
@@ -280,12 +311,20 @@
         function rollDice() {
             die1 = Math.floor(Math.random() * 6) + 1;
             die2 = Math.floor(Math.random() * 6) + 1;
+            
+            // /////////////////
+            // // IN DEVELOP ////
+            // /////////////////
+            // [die1, die2] = [3, 3];
+            // ////////////////////
+            
+            
             renderDice();
         }
 
         rollDice();
         // Roll dice till they show different results
-        while (this.die1 == this.die2) this.rollDice();
+        // while (this.die1 == this.die2) this.rollDice();
 
 
 
