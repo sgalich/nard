@@ -139,7 +139,7 @@ function registerStepBack(idFromCancelled, idToCancelled) {
         };
     };
 
-    console.log('stepsMade BACK', stepsMade);
+    // console.log('stepsMade BACK', stepsMade);
 
 };
 
@@ -463,7 +463,10 @@ function removeHoverNClickEvents() {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-
+// If the field is rival's
+function isTheFieldRivals(fieldId) {
+    return ((colorN > 0) !== (board[fieldId] >= 0));
+};
 
 
 // Rearrange stepsMade, diceMade, remainedValToStep
@@ -587,6 +590,76 @@ function isItBearingOff() {
     return (Math.abs(homeSum) === 15);
 };
 
+// Add moves variations for the first move some doubles 3-3 & some another cases
+function addSpecialStepsForTheFirstMoveSomeSpecialDoubles() {
+    // This cases are very unique.
+    // So I decided to hardcode them.
+    // It will be much more readible!
+    // If there were no step yet
+    let idFrom = 1;
+    if (!stepsMade.length) {
+        // A new step
+        allowedSteps.push(new Map().set(idFrom, idFrom + die1));
+        allowedSteps.push(new Map().set(idFrom, idFrom + die1 * 2));
+        allowedSteps.push(new Map().set(idFrom, idFrom + die1 * 3));
+    // If it was a step already
+    } else {
+        let [_, idToMade] = stepsMade[0].entries().next().value;
+        // If it was 1=>6 step
+        if (idToMade === idFrom + die1 * 1) {
+            // A new step
+            allowedSteps.push(new Map().set(idFrom, idFrom + die1 * 3));
+            // A cancel/change step
+            allowedSteps.push(new Map().set(idToMade, idToMade + die1));
+            allowedSteps.push(new Map().set(idToMade, idToMade + die1 * 2));
+        // If it was 1=>11 step
+        } else if (idToMade === idFrom + die1 * 2) {
+            // A new step
+            allowedSteps.push(new Map().set(idFrom, idFrom + die1 * 2));
+            // A cancel/change step
+            allowedSteps.push(new Map().set(idToMade, idToMade - die1));
+            allowedSteps.push(new Map().set(idToMade, idToMade + die1));
+            // If it was 1=>10 step
+        } else if (idToMade === idFrom + die1 * 3) {
+            // A new step
+            allowedSteps.push(new Map().set(idFrom, idFrom + die1));
+            // A cancel/change step
+            allowedSteps.push(new Map().set(idToMade, idToMade - die1));
+            allowedSteps.push(new Map().set(idToMade, idToMade - die1 * 2));
+        };  
+    };
+};
+
+// Add moves variations for the second move some dice: 5-3 & 6-2 after the rival's 5-5
+function addSpecialStepsForTheSecondMove() {
+    // This cases are very unique.
+    // So I decided to hardcode them.
+    // It will be much more readible!
+    // If there were no step yet
+    let idFrom = 1;
+    if (!stepsMade.length) {
+        // A new step
+        allowedSteps.push(new Map().set(idFrom, idFrom + die1));
+        allowedSteps.push(new Map().set(idFrom, idFrom + die2));
+    // If it was a step already
+    } else {
+        let [_, idToMade] = stepsMade[0].entries().next().value;
+        // If it was 1=>3 step
+        if (idToMade === idFrom + Math.min(die1, die2)) {
+            // A new step
+            allowedSteps.push(new Map().set(idFrom, idFrom + Math.max(die1, die2)));
+            // A change step
+            allowedSteps.push(new Map().set(idToMade, idFrom + Math.max(die1, die2)));
+        // If it was 1=>11 step
+        } else if (idToMade === idFrom + Math.max(die1, die2)) {
+            // A new step
+            allowedSteps.push(new Map().set(idFrom, idFrom + Math.min(die1, die2)));
+            // A cancel/change step
+            allowedSteps.push(new Map().set(idToMade, idFrom + Math.min(die1, die2)));
+        };
+    };
+};
+
 // Arrange allowed steps for the first move
 function arrangeAllowedStepsForTheFirstMove() {
     let idFrom = 1;
@@ -603,41 +676,7 @@ function arrangeAllowedStepsForTheFirstMove() {
         // Exception for 3, 4 & 6 => two steps from the head are allowed
         } else if (stepsMade.length < 2) {
             if (die1 === 3) {
-                // This case is very unique.
-                // So I decided to hardcode it.
-                // It will be much more readible!
-                // If there were no step yet
-                if (!stepsMade.length) {
-                    // A new step
-                    allowedSteps.push(new Map().set(idFrom, idFrom + die1));
-                    allowedSteps.push(new Map().set(idFrom, idFrom + die1 * 2));
-                    allowedSteps.push(new Map().set(idFrom, idFrom + die1 * 3));
-                // If it was a step already
-                } else {
-                    let [_, idToMade] = stepsMade[0].entries().next().value;
-                    // If it was 1=>4 step
-                    if (idToMade === 4) {
-                        // A new step
-                        allowedSteps.push(new Map().set(idFrom, idFrom + die1 * 3));
-                        // A cancel/change step
-                        allowedSteps.push(new Map().set(idToMade, idToMade + die1));
-                        allowedSteps.push(new Map().set(idToMade, idToMade + die1 * 2));
-                    // If it was 1=>7 step
-                    } else if (idToMade === 7) {
-                        // A new step
-                        allowedSteps.push(new Map().set(idFrom, idFrom + die1 * 2));
-                        // A cancel/change step
-                        allowedSteps.push(new Map().set(idToMade, idToMade - die1));
-                        allowedSteps.push(new Map().set(idToMade, idToMade + die1));
-                        // If it was 1=>10 step
-                    } else if (idToMade === 10) {
-                        // A new step
-                        allowedSteps.push(new Map().set(idFrom, idFrom + die1));
-                        // A cancel/change step
-                        allowedSteps.push(new Map().set(idToMade, idToMade - die1));
-                        allowedSteps.push(new Map().set(idToMade, idToMade - die1 * 2));
-                    };
-                };
+                addSpecialStepsForTheFirstMoveSomeSpecialDoubles();
             } else if (die1 === 4) {
                 allowedSteps.push(new Map().set(idFrom, idFrom + die1 * 2));
             } else if (die1 === 6) {
@@ -649,7 +688,45 @@ function arrangeAllowedStepsForTheFirstMove() {
 
 // Arrange allowed steps for the second move
 function arrangeAllowedStepsForTheSecondMove() {
-  // TODO: HIGH: 6 подряд перед самой первой фишкой соперника? - запретить такой ход.
+    let idFrom = 1;
+
+    // Special cases
+    
+    [prevDie1, prevDie2] = moves[0].dice;
+    // Let me take twice a checker from the head
+    if (stepsMade.length < 2) {
+        // his 2-1 & my 5-5 => move 5-5 twice from the head
+        if (isTheFieldRivals(3) && die1 === 5 && die2 === 5) {
+            allowedSteps.push(new Map().set(idFrom, idFrom + die1 * 2));
+            return;
+        // his 6-2/2-2/5-3/4-4 & my 5-5 => move 5-5 twice from the head
+        } else if (isTheFieldRivals(21) && die1 === 5 && die2 === 5) {
+            addSpecialStepsForTheFirstMoveSomeSpecialDoubles();
+            return;
+        // Mirrored previous case
+        // his 5-5 & my 6-2/5-3/4-4/2-2 => 1=>6 + 1=>2
+        } else if (isTheFieldRivals(9)) {
+            // my 2-2
+            if (die1 === 2 && die2 === 2) {
+                addSpecialStepsForTheFirstMoveSomeSpecialDoubles();
+                return;
+            // my 4-4
+            } else if (die1 === 4 && die2 === 4) {
+                allowedSteps.push(new Map().set(idFrom, idFrom + die1));
+                return;
+            // my 5-3
+            } else if (die1 === 5 && die2 === 3 || die1 === 3 && die2 === 5) {
+                addSpecialStepsForTheSecondMove();
+                return;
+            // my 6-2
+            } else if (die1 === 6 && die2 === 2 || die1 === 2 && die2 === 6) {
+                addSpecialStepsForTheSecondMove();
+                return;
+            };
+        };
+    };
+    // Arrange everything else just like at the 1st move
+    arrangeAllowedStepsForTheFirstMove();
 };
 
 // Arrange allowed steps for the bearing off
@@ -696,18 +773,27 @@ function rearrangeAllowedSteps() {
     resetGlobalVariables();
 
 
-    ////////////////////////
+    //////////////////////
     // FOR TEST ONLY
-    // // ALWAYS THE FIRST MOVE If there was no steps
-    // ///////////////////////
-    // if (!stepsMade.length) {
-    //     moves = [{
-    //         color: colorN,
-    //         dice: [die1, die2],
-    //         steps: []
-    //     }];
-    // };
-    // ////////////////////////
+    // ALWAYS THE FIRST MOVE If there was no steps
+    ///////////////////////
+    if (!stepsMade.length) {
+        // Special cases for the 2nd turn:
+        // 2-1
+        // 6-1
+        // 5-5
+        moves = [{
+            color: -colorN,
+            dice: [3, 2],
+            steps: []
+        }];
+        moves.push({
+            color: colorN,
+            dice: [die1, die2],
+            steps: []
+        });
+    };
+    ////////////////////////
 
 
 
