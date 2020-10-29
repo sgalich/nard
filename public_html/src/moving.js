@@ -18,6 +18,7 @@ var valMoved = 0;    // initial move counter // TODO: MEDIUM: Deprecate it !
 var remainedValToStep;
 var stepsMade; 
 var diceMade;
+var isBearingOff;
 ///////////////////////////////////
 // This we will get from the server
 var allowedMoves;
@@ -169,7 +170,7 @@ function placeChecker(idFrom, idTo) {
     let checker = document.getElementById(idFrom).lastChild;
     let newField = document.getElementById(idTo);
     // Restrict steps that are not allowed
-    if (!isItAllowedStep(idFrom, idTo)) return;    
+    // if (!isItAllowedStep(idFrom, idTo)) return;    
     // Place the checker correctly inside the target
     // let checkersInNewField = newField.children.length;
     let checkersInFieldTo = Math.abs(board[idTo]);
@@ -183,10 +184,15 @@ function placeChecker(idFrom, idTo) {
     } else {
         checker.setAttribute('style', `bottom: calc(${checkersInFieldTo} * ${CHECKEROVERLAP}%);`);
     };
-    newField.appendChild(checker);
-    // Register this step
     idFrom = Number(idFrom);
     idTo = Number(idTo);
+    // Remove the checker if it is bearing off
+    if (isBearingOff && idTo === 1) {
+        checker.remove();
+    } else {
+        newField.appendChild(checker);
+    };
+    // Register this step
     // If it is a step forward (change a previous step or it is a new step)
     if (idFrom < idTo) {
         registerStepForward(idFrom, idTo);
@@ -256,7 +262,7 @@ function animatePlacingChecker(xFrom, yFrom) {
     //   });
 
     
-    
+    // TODO: Animate the checker that was beared off
     ghostChecker.remove();
 };
 
@@ -372,12 +378,10 @@ function mouseUp(e) {
     // Do nothing if it is not a player's field
     if (!idFrom) return;
     let fieldFrom = document.getElementById(idFrom);
-
     // Place the checker at the closest valid field
     let fieldTo = chooseTheClosestField(fieldFrom, e.pageX, e.pageY);
     // Place the checker to the field
     let idTo = fieldTo.getAttribute('id');
-    // TODO: LOW: Make this if's chain easier !
     // If not a valid step
     if (!isItAllowedStep(idFrom, idTo)) {
         // If checker the same => return it back to fieldFrom
@@ -392,14 +396,11 @@ function mouseUp(e) {
         removeHighlightFromAllFields();
         unmakeAllCheckers('selected');
     };
-
     // Remove a dragging ghost checker from the board
     if (ghostChecker) animatePlacingChecker(e.pageX, e.pageY);
     // Remove transparency from the transparent checker
     let transparentChecker = document.getElementsByClassName('transparent')[0];
     if (transparentChecker) transparentChecker.classList.remove('transparent');
-
-
     // Stop tracking mouse movements
     document.removeEventListener('mousemove', mouseMovesWhenClicked);
 };
@@ -454,6 +455,8 @@ function removeHoverNClickEvents() {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// NARD RULES
+
 ////////////////
 // IN DEVELOP //
 ////////////////
@@ -464,8 +467,13 @@ function removeHoverNClickEvents() {
 
 
 // If the field is rival's
-function isTheFieldRivals(fieldId) {
+function isTheFieldRivals(fieldId, board=board) {
     return ((colorN > 0) !== (board[fieldId] >= 0));
+};
+
+// If the field is mine
+function isTheFieldMine(fieldId, board=board) {
+    return ((colorN > 0) === (board[fieldId] > 0));
 };
 
 
@@ -488,6 +496,8 @@ function resetGlobalVariables() {
     remainedValToStep = valToMove - valMoved;
     // Empty allowedSteps
     allowedSteps = [];
+    // Bearing off
+    isBearingOff = isItBearingOff();
 };
 
 // Checks if there was a move from the fieldId 1
@@ -499,14 +509,66 @@ function wasThereAStepFromTheHeadField() {
     return false;
 };
 
+// Ckecks whether a new step respects a 6-checkers-in-a-row rule
+function is6CheckersInARowRuleRespected(idFrom, die) {
+
+    // Reverse id for the board
+    function getReversedId(fieldId) {
+        let newId = (Number(fieldId) + 12) % 24;
+        if (newId === 0) newId = 24;
+        return newId;
+    };
+
+    // Find the first rival's checker's id
+    function findTheFirstRivalsCheckersReversedId(reversedBoard) {
+        for ([fieldId, checkerCount] of Object.entries(reversedBoard).reverse()) {
+            if (isTheFieldRivals(fieldId, reversedBoard)) return Number(fieldId);
+        };
+        return 1;
+    };
+
+    // Get the board with reversed ids (1 = 13, 2 = 14, ..., 12 = 24, 13 = 1, ..., 24 = 12)
+    function getReversedBoard(newBoard) {
+        let reversedBoard = {};
+        for ([fieldId, checkerCount] of Object.entries(newBoard)) {
+            reversedBoard[getReversedId(fieldId)] = checkerCount;
+        };
+        return reversedBoard;
+    };
+
+    // Generate a board as if this step is done
+    let newBoard = {};
+    Object.assign(newBoard, board);
+    newBoard[idFrom] -= colorN;
+    newBoard[idFrom + die] += colorN;
+    // Reverse ids of this "future board"
+    let reversedBoard = getReversedBoard(newBoard);
+    // Find rival's checker with the highest id
+    let firstRivalsCheckerId = findTheFirstRivalsCheckersReversedId(reversedBoard);
+    // Iterate reversed board to find my longest checkers chain
+    let myLongestChain = 0;
+    for ([fieldId, checkerCount] of Object.entries(reversedBoard)) {
+        // Skip everything before the first rival's checker
+        if (Number(fieldId) <= firstRivalsCheckerId) continue;
+        if (isTheFieldMine(fieldId, reversedBoard)) {
+            myLongestChain += 1;
+            // If this chain's length is >= 6 => return false
+            if (myLongestChain >= 6) return false;
+        } else {
+            myLongestChain = 0;
+        };
+    };
+    return true;
+};
+
 // Checks whether it is allowed step
-// TODO: MEDIUM: Think about different name for this func & that - "isItAllowedStep"
 function isStepAllowed(idFrom, die) {
     let idTo = idFrom + die;
     // Restrict getiing twice a checker from the head
     if (wasThereAStepFromTheHeadField() && idFrom === 1 && moves.length > 2) return false;
     if (
         idTo <= 24
+        // && !isTheFieldRivals(idTo)    // if the fieldTo is mine or empty
         && ((colorN > 0) === (board[idTo] >= 0))    // if the fieldTo is mine or empty
         && (die <= remainedValToStep)    // for doubles
     ) {
@@ -545,16 +607,27 @@ function addAllowedStepsForUniqueDice(idFrom) {
     let isSumAllowed = false;
     // Check a step by the die1
     if (!diceMade.includes(die1) && isStepAllowed(idFrom, die1)) {
-        allowedSteps.push(new Map().set(idFrom, idFrom + die1));
         isSumAllowed = true;
+        // is the rule 6-in-a-row is respected?
+        if (is6CheckersInARowRuleRespected(idFrom, die1)) { 
+            allowedSteps.push(new Map().set(idFrom, idFrom + die1));
+        };
     };
     // Check a step by the die2
     if (!diceMade.includes(die2) && isStepAllowed(idFrom, die2)) {
-        allowedSteps.push(new Map().set(idFrom, idFrom + die2));
         isSumAllowed = true;
+        // is the rule 6-in-a-row is respected?
+        if (is6CheckersInARowRuleRespected(idFrom, die2)) {   
+            allowedSteps.push(new Map().set(idFrom, idFrom + die2));
+        };
     };
     // Check a step by the die1 + die2
-    if (!diceMade.length && isSumAllowed && isStepAllowed(idFrom, die1 + die2)) {
+    if (
+        !diceMade.length
+        && isSumAllowed
+        && isStepAllowed(idFrom, die1 + die2)
+        && is6CheckersInARowRuleRespected(idFrom, die1 + die2)
+    ) {
         allowedSteps.push(new Map().set(idFrom, idFrom + die1 + die2));
     };
 };
@@ -563,15 +636,27 @@ function addAllowedStepsForUniqueDice(idFrom) {
 function addAllowedStepsForDoubles(idFrom) {
     // Check a step by a single die
     if (isStepAllowed(idFrom, die1)) {
-        allowedSteps.push(new Map().set(idFrom, idFrom + die1));
+        // is the rule 6-in-a-row is respected?
+        if (is6CheckersInARowRuleRespected(idFrom, die1 * 1)) {
+            allowedSteps.push(new Map().set(idFrom, idFrom + die1 * 1));
+        };
         // Check a step by a doubled die
         if (isStepAllowed(idFrom, die1 * 2)) {
-            allowedSteps.push(new Map().set(idFrom, idFrom + die1 * 2));
+            // is the rule 6-in-a-row is respected?
+            if (is6CheckersInARowRuleRespected(idFrom, die1 * 2)) {
+                allowedSteps.push(new Map().set(idFrom, idFrom + die1 * 2));
+            };
             // Check a step by a tripled die
             if (isStepAllowed(idFrom, die1 * 3)) {
-                allowedSteps.push(new Map().set(idFrom, idFrom + die1 * 3));
+                // is the rule 6-in-a-row is respected?
+                if (is6CheckersInARowRuleRespected(idFrom, die1 * 3)) {
+                    allowedSteps.push(new Map().set(idFrom, idFrom + die1 * 3));
+                };
                 // Check a step by a quadrupled die
-                if (isStepAllowed(idFrom, die1 * 4)) {
+                if (
+                    isStepAllowed(idFrom, die1 * 4)
+                    && is6CheckersInARowRuleRespected(idFrom, die1 * 4)
+                ) {
                     allowedSteps.push(new Map().set(idFrom, idFrom + die1 * 4));
                 };
             };
@@ -581,13 +666,16 @@ function addAllowedStepsForDoubles(idFrom) {
 
 // Checks if all my checkers are in the fields to bearing off
 function isItBearingOff() {
-    // Get all my feilds from 19 to 24 and count the sum
-    let homeSum = Object.entries(board).slice(18, 24)
+    // Get all my feilds from not home (fields from 1 to 18) and count them
+    let outOfHomeSum = Object.entries(board).slice(0, 18)
         .map((x) => x[1])    // get only checkers' values without fieldIds
         .filter(checkers => (colorN > 0 === checkers > 0))    // Get only my color's checkers
-    if (!homeSum.length) return false;
-    homeSum = homeSum.reduce((sum, checkers) => sum + checkers);    // count the sum
-    return (Math.abs(homeSum) === 15);
+
+    console.log('outOfHomeSum', outOfHomeSum);
+    if (!outOfHomeSum.length) return true;
+    return false;
+    // outOfHomeSum = outOfHomeSum.reduce((sum, checkers) => sum + checkers);    // count the sum
+    // return (Math.abs(outOfHomeSum) === 0);
 };
 
 // Add moves variations for the first move some doubles 3-3 & some another cases
@@ -731,24 +819,59 @@ function arrangeAllowedStepsForTheSecondMove() {
 
 // Arrange allowed steps for the bearing off
 function arrangeAllowedStepsForTheBearingOff() {
-    // TODO: HIGH: Все на поле для выкидывания? - разработать свою логику тут.
+    // Allow just usual middle-game steps
+    arrangeAllowedStepsForTheMiddleOfTheGame();
+    // Allow bearing off
+    
+    for (field of Object.entries(board)) {
+        if ((colorN > 0) !== (field[1] > 0)) continue;    // If it is not my field
+        let idFrom = Number(field[0]);
+        if (idFrom + die1 === 25) {
+            allowedSteps.push(new Map().set(idFrom, 1));
+        };
+
+
+        let fieldWeight = 25 - idFrom;
+        // TODO: HIGH: разработать свою логику тут.
+        // Eсли выпало 6, а дальше 4-ч ничего нет, то добавляем ход 4=>off
+        // if ()
+
+
+// TODO: Think about this:
+// var dice = {
+//     die3: {
+//         val: NaN,
+//         active: false
+//     },
+//     die1: {
+//         val: 1,
+//         active: true    // after step it becomes false
+//     },
+//     die2: {
+//         val: 5,
+//         active: false
+//     },
+//     die4: {
+//         val: NaN,
+//         active: false
+//     }
+// };
+
+        
+    };
+
+    console.log('allowedSteps', allowedSteps);
+
 };
-
-
-
 
 // Arrange allowed steps for the middle of the game
 function arrangeAllowedStepsForTheMiddleOfTheGame() {
-    // TODO: HIGH: 6 подряд перед самой первой фишкой соперника? - запретить такой ход.
-    // playersMoves
-
     // If not doubles
     if (die1 !== die2) {
         for (field of Object.entries(board)) {
             if ((colorN > 0) !== (field[1] > 0)) continue;    // If it is not my field
             let idFrom = Number(field[0]);
             addAllowedStepsForUniqueDice(idFrom);
-
         };
     // If doubles
     } else {
@@ -773,6 +896,8 @@ function rearrangeAllowedSteps() {
     resetGlobalVariables();
 
 
+
+
     //////////////////////
     // FOR TEST ONLY
     // ALWAYS THE FIRST MOVE If there was no steps
@@ -792,12 +917,22 @@ function rearrangeAllowedSteps() {
             dice: [die1, die2],
             steps: []
         });
+        moves.push({
+            color: -colorN,
+            dice: [die1, die2],
+            steps: []
+        });
+        moves.push({
+            color: colorN,
+            dice: [die1, die2],
+            steps: []
+        });
     };
     ////////////////////////
 
 
 
-    
+
     // If it is the first move
     if (moves.length === 1) {
         // ArrangeAllowedSteps for the first move
@@ -808,12 +943,12 @@ function rearrangeAllowedSteps() {
         // ArrangeAllowedSteps for the second move
         arrangeAllowedStepsForTheSecondMove();
         console.log('2ND MOVE !');
-    // If it is bearing off
-    } else if (isItBearingOff()) {
-        console.log('BEARING OFF !');
+    // If it is middle of the game & bearing off
+    } else if (isBearingOff) {
+        console.log('BEARING OFF!');
         arrangeAllowedStepsForTheBearingOff();
-    // If it is middle of the game
     } else {
+        console.log('MIDDLE OF THE GAME!');
         arrangeAllowedStepsForTheMiddleOfTheGame();
         addCancelSteps();
     };
@@ -895,8 +1030,6 @@ document.getElementById('diceBox').onclick = () => {
 
 
 // TODO: HIGH: Make normal rules to make steps
-// TODO: HIGH: Add a move completely without a cancellation
-// TODO: MEDIUM: Make a step cancellation ability!
 // TODO: MEDIUM: Add some animation to a checkers moving
 
 
