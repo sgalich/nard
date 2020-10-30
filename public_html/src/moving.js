@@ -26,6 +26,7 @@ var allowedSteps;
 var color = '1';
 var colorN = Number(color);
 var moves = [];   // all moves
+var dice;
 // var die1;
 // var die2;
 // var die3;
@@ -161,6 +162,19 @@ function registerStepForward(idFromMade, idToMade) {
     moves[moves.length - 1].steps.push(new Map().set(idFromMade, idToMade));
 };
 
+// Register a step made
+function registerAStep(idFrom, idTo) {
+    // If it is a step forward (change a previous step or it is a new step)
+    if (idFrom < idTo) {
+        registerStepForward(idFrom, idTo);
+    // If it is a step back (change or cancel at all)
+    } else if (idFrom > idTo) {
+        registerStepBack(idFrom, idTo);
+    };
+};
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // PLACE CHECKER FUNCTION //
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -189,20 +203,15 @@ function placeChecker(idFrom, idTo) {
     // Remove the checker if it is bearing off
     if (isBearingOff && idTo === 1) {
         checker.remove();
+        registerAStep(idFrom, idTo);
+        board[idFrom] -= colorN;
+    // Else: place it to the new field
     } else {
         newField.appendChild(checker);
+        registerAStep(idFrom, idTo);
+        board[idFrom] -= colorN;
+        board[idTo] += colorN;
     };
-    // Register this step
-    // If it is a step forward (change a previous step or it is a new step)
-    if (idFrom < idTo) {
-        registerStepForward(idFrom, idTo);
-    // If it is a step back (change or cancel at all)
-    } else if (idFrom > idTo) {
-        registerStepBack(idFrom, idTo);
-    };
-    board[idFrom] -= colorN;
-    board[idTo] += colorN;
-    // Arrange new steps
     rearrangeAllowedFields();
 };
 
@@ -467,19 +476,44 @@ function removeHoverNClickEvents() {
 
 
 // If the field is rival's
-function isTheFieldRivals(fieldId, board=board) {
-    return ((colorN > 0) !== (board[fieldId] >= 0));
+function isTheFieldRivals(fieldId, brd=board) {
+    return ((colorN > 0) !== (brd[fieldId] >= 0));
 };
 
 // If the field is mine
-function isTheFieldMine(fieldId, board=board) {
-    return ((colorN > 0) === (board[fieldId] > 0));
+function isTheFieldMine(fieldId, brd=board) {
+    return ((colorN > 0) === (brd[fieldId] > 0));
 };
 
+// Count dice - what else to move
+function getDiceObj() {
+    // Get dice with active & unactive values
+    let dice = [
+        {val: die1, active: true},
+        {val: die2, active: true},
+        {val: die3, active: true},
+        {val: die4, active: true}
+    ];
+    // Make some dice values unactive
+    console.log(moves);
+    stepsMade = moves[moves.length - 1].steps;    // For convinience
+    for (die of dice) {if (!die.val) die.active = false};
+    for (step of stepsMade) {
+        let [idFrom, idTo] = step.entries().next().value;
+        for (die of dice.reverse()) {
+            if (!die.active) continue;
+            if (die.val === idTo - idFrom) {
+                die.active = false;
+            };
+        };
+    };
+    // TODO: HIGH !!!! Count sums of dice !! (step 1=>10, make unactive both 4 & 5 dice)
+    // ...
+    return dice;
+};
 
 // Rearrange stepsMade, diceMade, remainedValToStep
 function resetGlobalVariables() {
-    // Set stepsMade
     stepsMade = moves[moves.length - 1].steps;    // For convinience
     // Set diceMade
     diceMade = [];
@@ -489,6 +523,7 @@ function resetGlobalVariables() {
         diceMade.push(idTo - idFrom);
         valMoved += idTo - idFrom;
     });
+    dice = getDiceObj();    // dice with active/uncative dice values
     // Set remainedValToStep
     let valToMove = getDice().filter((die) => {
         return Boolean(die);
@@ -664,18 +699,34 @@ function addAllowedStepsForDoubles(idFrom) {
     };
 };
 
+// Count how many my checkers on the fields range
+function countMyCheckersInRange(idFrom, idTo=24) {
+    let checkersInRange = Object.entries(board)
+        .slice(Number(idFrom) - 1, Number(idTo))
+        .filter(x => isTheFieldMine(x[0]));    // Get only my color's checkers
+    if (!checkersInRange.length) return 0;
+    checkersInRange = checkersInRange
+        .map((x) => x[1])    // get only checkers' values without fieldIds
+        .reduce((acc, chckrs) => acc + chckrs);
+    return checkersInRange;
+};
+
 // Checks if all my checkers are in the fields to bearing off
 function isItBearingOff() {
     // Get all my feilds from not home (fields from 1 to 18) and count them
-    let outOfHomeSum = Object.entries(board).slice(0, 18)
-        .map((x) => x[1])    // get only checkers' values without fieldIds
-        .filter(checkers => (colorN > 0 === checkers > 0))    // Get only my color's checkers
-
-    console.log('outOfHomeSum', outOfHomeSum);
-    if (!outOfHomeSum.length) return true;
+    if (!countMyCheckersInRange(1, 18)) return true;    // 0 checkers out of home
     return false;
-    // outOfHomeSum = outOfHomeSum.reduce((sum, checkers) => sum + checkers);    // count the sum
-    // return (Math.abs(outOfHomeSum) === 0);
+};
+
+// Get max active die
+function getMaxActiveDie() {
+    let maxActiveDie = 0;
+    for (die of dice) {
+        if (die.active && die.val > maxActiveDie) {
+            maxActiveDie = die.val;
+        };
+    };
+    return maxActiveDie;
 };
 
 // Add moves variations for the first move some doubles 3-3 & some another cases
@@ -819,47 +870,56 @@ function arrangeAllowedStepsForTheSecondMove() {
 
 // Arrange allowed steps for the bearing off
 function arrangeAllowedStepsForTheBearingOff() {
+    let idTo = 1;
     // Allow just usual middle-game steps
     arrangeAllowedStepsForTheMiddleOfTheGame();
     // Allow bearing off
     
-    for (field of Object.entries(board)) {
-        if ((colorN > 0) !== (field[1] > 0)) continue;    // If it is not my field
-        let idFrom = Number(field[0]);
-        if (idFrom + die1 === 25) {
-            allowedSteps.push(new Map().set(idFrom, 1));
+
+    console.log('dice', dice);
+    console.log('stepsMade', stepsMade);
+
+
+    for ([idFrom, _] of Object.entries(board)) {
+        idFrom = Number(idFrom);
+        if (!isTheFieldMine(idFrom)) continue;    // If it is not my field
+        // Add exactly those which goes to the "25" field
+        // die1
+        if (dice[0].active && idFrom + dice[0].val === 25) {
+            allowedSteps.push(new Map().set(idFrom, idTo));
         };
-
-
-        let fieldWeight = 25 - idFrom;
-        // TODO: HIGH: разработать свою логику тут.
-        // Eсли выпало 6, а дальше 4-ч ничего нет, то добавляем ход 4=>off
-        // if ()
-
-
-// TODO: Think about this:
-// var dice = {
-//     die3: {
-//         val: NaN,
-//         active: false
-//     },
-//     die1: {
-//         val: 1,
-//         active: true    // after step it becomes false
-//     },
-//     die2: {
-//         val: 5,
-//         active: false
-//     },
-//     die4: {
-//         val: NaN,
-//         active: false
-//     }
-// };
-
-        
+        // die2
+        if (dice[1].active && idFrom + dice[1].val === 25) {
+            allowedSteps.push(new Map().set(idFrom, idTo));
+        };
+        // die1 + die2
+        if (dice[0].active && dice[1].active && idFrom + dice[0].val + dice[1].val === 25) {
+            allowedSteps.push(new Map().set(idFrom, idTo));
+        };
+        // die3 * 3 (doubles only)
+        if (
+            dice[1].active    // it means that dice[2] & dice[3] are also active
+            && idFrom + dice[2].val * 3 === 25
+        ) {
+            allowedSteps.push(new Map().set(idFrom, idTo));
+        };
+        // die3 * 4 (doubles only)
+        if (dice[0].active && idFrom + dice[2].val * 4 === 25) {
+            allowedSteps.push(new Map().set(idFrom, idTo));
+        };
     };
-
+    // Bearing off from the closer fields
+    // (i.e. bearing off from 24 if the die is 6)
+    // Check the whole head
+    let maxActiveDie = getMaxActiveDie();
+    for (let idFrom = 19; idFrom < 25; idFrom++) {
+        if (!isTheFieldMine(idFrom)) continue;
+        if (25 - idFrom < maxActiveDie) {
+            allowedSteps.push(new Map().set(idFrom, idTo));
+        };
+        break;
+    };
+    
     console.log('allowedSteps', allowedSteps);
 
 };
@@ -880,7 +940,42 @@ function arrangeAllowedStepsForTheMiddleOfTheGame() {
             let idFrom = Number(field[0]);
             addAllowedStepsForDoubles(idFrom);
         };
-    };  
+    };
+
+
+    // // TODO: THINK ABOUT NEW ALGO:
+    // // Level 1: every single die
+    // let nextLevelIsAllowed = false;
+    // for (die of dice) {
+    //     if (!die.active) continue;
+    //     for ([idFrom, _] of Object.entries(board)) {
+    //         idFrom = Number(idFrom);
+    //         if (!isTheFieldMine(idFrom)) continue;    // If it is not my field
+    //         // Add exactly those which goes to the "25" field
+    //         if (idFrom + die.val === ALLOWED_FIELD TO STEP) {
+    //             nextLevelIsAllowed = TRUE;
+    //             ADD THIS STEP
+    //         };
+    //     };
+    // };
+    // // Level 2: die1 + die2 ( this equals to "die * 2" for doubles)
+    // if (die1 + die2 === ALLOWED_FIELD TO STEP) {
+    //     nextLevelIsAllowed = TRUE;
+    //     ADD THIS STEP
+    // };
+    // // Level 3: die * 3 (only for doubles)
+    // if (die3 * 3 === ALLOWED_FIELD TO STEP) {
+    //     nextLevelIsAllowed = TRUE;
+    //     ADD THIS STEP
+    // };
+    // // Level 4: die * 4 (only for doubles)
+    // if (die1 * 4 === ALLOWED_FIELD TO STEP) {
+    //     nextLevelIsAllowed = TRUE;
+    //     ADD THIS STEP
+    // };
+    // // THAT'S IT!!!
+
+
 };
 
 // Get all possible steps according to the board situation
@@ -929,6 +1024,7 @@ function rearrangeAllowedSteps() {
         });
     };
     ////////////////////////
+
 
 
 
