@@ -301,6 +301,7 @@ checker.transparent {
     #hint {
         /* Test */
         /* border: 1px dashed red; */
+        z-index: 10;
 
         /* Size & position */
         width: 50%;

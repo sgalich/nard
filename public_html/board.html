@@ -164,11 +164,25 @@
     <!-- <script src="src/DragDropTouch.js"></script> -->
     
     <!-- My scripts -->
+    <!-- Initiate global variables -->
+    <script>
+        var dice;
+        var board;
+        var allowedSteps;
+        var moves = [];    // all moves
+        var stepsMade;    // part of the last move - steps that are made in this move
 
+
+        // // Deprecated
+        // var die1;
+        // var die2;
+
+
+    </script>
     <!-- Render the checkers -->
     <script>
         // the board with a starting position
-        var board = {
+        board = {
             1: 15,
             2: 0,
             3: 0,
@@ -195,8 +209,65 @@
             24: 0
         };
 
-        // // The second move
-        // var board = {
+
+        // // The second move: case 1
+        // board = {
+        //     1: 15,
+        //     2: 0,
+        //     3: 0,
+        //     4: 0,
+        //     5: 0,
+        //     6: 0,
+        //     7: 0,
+        //     8: 0,
+        //     9: 0,
+        //     10: 0,
+        //     11: 0,
+        //     12: 0,
+        //     13: -14,
+        //     14: 0,
+        //     15: 0,
+        //     16: -1,
+        //     17: 0,
+        //     18: 0,
+        //     19: 0,
+        //     20: 0,
+        //     21: 0,
+        //     22: 0,
+        //     23: 0,
+        //     24: 0
+        // };
+
+                // // The second move: case 2
+        // board = {
+        //     1: 15,
+        //     2: 0,
+        //     3: 0,
+        //     4: 0,
+        //     5: 0,
+        //     6: 0,
+        //     7: 0,
+        //     8: 0,
+        //     9: 0,
+        //     10: 0,
+        //     11: 0,
+        //     12: 0,
+        //     13: -14,
+        //     14: 0,
+        //     15: 0,
+        //     16: 0,
+        //     17: 0,
+        //     18: 0,
+        //     19: 0,
+        //     20: 0,
+        //     21: -1,
+        //     22: 0,
+        //     23: 0,
+        //     24: 0
+        // };
+
+        // // The second move: case 3
+        // board = {
         //     1: 15,
         //     2: 0,
         //     3: 0,
@@ -224,7 +295,7 @@
         // };
         
         // // Middle of the game
-        // var board = {
+        // board = {
         //     1: 5,
         //     2: -2,
         //     3: 2,
@@ -252,8 +323,8 @@
         // };
 
         // Case 1
-        // // Middle of the game - about to 6 in row before the rival's first checker
-        // var board = {
+        // Middle of the game - about to 6 in row before the rival's first checker
+        // board = {
         //     1: 15,
         //     2: -1,
         //     3: 1,
@@ -283,7 +354,7 @@
         // Case 2
         // dice = 1-2
         // // Middle of the game - about to 6 in row before the rival's first checker
-        // var board = {
+        // board = {
         //     1: 10,
         //     2: 0,
         //     3: 1,
@@ -311,32 +382,32 @@
         // };
 
         // // Bearing off
-        var board = {
-            1: -1,
-            2: -2,
-            3: 0,
-            4: -2,
-            5: 0,
-            6: 0,
-            7: 0,
-            8: 0,
-            9: -1,
-            10: 0,
-            11: 0,
-            12: 0,
-            13: -6,
-            14: 0,
-            15: 0,
-            16: 0,
-            17: 0,
-            18: -1,
-            19: 0,
-            20: 0,
-            21: 0,
-            22: 3,
-            23: 7,
-            24: 5
-        };
+        // board = {
+        //     1: -1,
+        //     2: -2,
+        //     3: 0,
+        //     4: -2,
+        //     5: 0,
+        //     6: 0,
+        //     7: 0,
+        //     8: 0,
+        //     9: -1,
+        //     10: 0,
+        //     11: 0,
+        //     12: 0,
+        //     13: -6,
+        //     14: 0,
+        //     15: 0,
+        //     16: 0,
+        //     17: 0,
+        //     18: -1,
+        //     19: 0,
+        //     20: 0,
+        //     21: 0,
+        //     22: 3,
+        //     23: 7,
+        //     24: 5
+        // };
 
         var CHECKEROVERLAP = 5.5;
 
@@ -362,6 +433,15 @@
 
         // Render checkers
         function renderCheckers(board) {
+
+            ////////////////////////////////////////////////////
+            // for test
+            // Clear all previous checkers
+            for (let i = 0; i < 25; i++) {
+                document.getElementById(i).innerHTML = '';    // clear the field
+            };
+            ////////////////////////////////////////////////////
+
             Object.entries(board).forEach((field) => {
                 for (let i = 0; i < Math.abs(field[1]); i++) {
                     createChecker(field[0], Math.sign(field[1]));
@@ -374,42 +454,29 @@
 
     <!-- Dice roll -->
     <script>
-        var die3;
-        var die1;
-        var die2;
-        var die4;
 
-        function getDice() {
-            die3 = die4 = (die1 === die2) ? die1 : undefined;
-            let dice = [die1, die2, die3, die4].filter((die) => {
-                return Boolean(die);
-            });
-            return dice;
-        };
+
+        // function getDice() {
+        //     die3 = die4 = (die1 === die2) ? die1 : undefined;
+        //     let dice = [die1, die2, die3, die4].filter((die) => {
+        //         return Boolean(die);
+        //     });
+        //     return dice;
+        // };
 
         function renderDice() {
-            let dice = getDice();
-            document.getElementById('die1').setAttribute('result', die1);
-            document.getElementById('die2').setAttribute('result', die2);
-            document.getElementById('die3').setAttribute('result', die3);
-            document.getElementById('die4').setAttribute('result', die4);
+            if (!dice) return;
+            // let dice = getDice();
+            // let die3, die4;
+            // die3 = die4 = (die1 === die2) ? die1 : undefined;
+            document.getElementById('die1').setAttribute('result', dice[0].val);
+            document.getElementById('die2').setAttribute('result', dice[1].val);
+            document.getElementById('die3').setAttribute('result', dice[2].val);
+            document.getElementById('die4').setAttribute('result', dice[3].val);
         };
 
-        function rollDice() {
-            die1 = Math.floor(Math.random() * 6) + 1;
-            die2 = Math.floor(Math.random() * 6) + 1;
-            
-            /////////////////
-            // IN DEVELOP ////
-            /////////////////
-            // [die1, die2] = [2, 1];
-            ////////////////////
-            
-            
-            renderDice();
-        }
 
-        rollDice();
+        // rollDice();
         // Roll dice till they show different results
         // while (this.die1 == this.die2) this.rollDice();
 
@@ -418,8 +485,9 @@
 
     </script>
 
-    <script src="src/utils.js" defer></script>
+    <!-- <script src="src/utils.js" defer></script> -->
     <script src="src/moving.js" defer></script>
+    <script src="src/nardRules.js" defer></script>
     <!-- <script type="module" src="src/client.js" defer></script> -->
 
 </body>
