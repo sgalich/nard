@@ -12,7 +12,7 @@ const checkers = document.getElementsByTagName('checker');
 // This is for clicking and dragging
 var mouseDownCoordinates = [];
 var isCheckerSelectedAtFirst = true;
-var shift = checkers[0].getBoundingClientRect().width / 2;
+var shift = checkers[0].getBoundingClientRect().width / 2;    // TODO: find another way
 var ghostChecker = null;
 
 
@@ -154,19 +154,6 @@ function placeChecker(idFrom, idTo) {
     // Find this step & call the callback function
     let step = getAStepFromAllowedSteps(idFrom, idTo);
     step.callback(checker);
-
-    // // Remove the checker if it is bearing off
-    // if (isBearingOff && idTo === 1) {
-    //     // checker.remove();
-    //     // addStepToStepsMade(idFrom, idTo);
-    //     // board[idFrom] -= colorN;
-    // // Else: place it to the new field
-    // } else {
-    //     newField.appendChild(checker);
-    //     addStepToStepsMade(idFrom, idTo);
-    //     board[idFrom] -= colorN;
-    //     board[idTo] += colorN;
-    // };
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -193,13 +180,6 @@ function highlightAllowedFieldsFor(fieldFrom) {
     for (idTo of getAllAllowedIdTosFor(idFrom)) {
         document.getElementById(idTo).classList.add('allowed');
     };
-
-    // // Old function
-    // let allowedIds = allowedFields.get(fieldFrom.getAttribute('id'));
-    // if (!allowedIds) return;
-    // allowedIds.forEach((allowedId) => {
-    //     document.getElementById(allowedId).classList.add('allowed');
-    // });
 };
 
 // Remove a highlight from all of the fields

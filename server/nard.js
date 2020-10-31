@@ -37,27 +37,18 @@ class Nard {
             23: 0,
             24: 0
         };
+
+
+        this.dice = null;
+        this.allowedSteps = null;
+        this.moves = [];    // all moves
+        this.stepsMade = null;    // part of the last move - steps that are made in this move
+
+
         this.placeInTheGame(0);
         this.placeInTheGame(1);
         this.chooseWhoIsFirst();
         this.makeTurn();
-
-
-
-
-
-
-
-
-        
-
-
-
-
-
-
-
-
 
 
     };
@@ -66,9 +57,10 @@ class Nard {
     placeInTheGame(ind) {
         let socket = this.players[ind];
         this.renderBoard(ind);
-        // socket.emit('hint', `Welcome to the ${socket.player.game} game!`);
-        socket.on('roll_dice', () => {this.rollDice()});
-        socket.on('isThisOKMove', this.isThisOKMove);
+        socket.emit('hint', `Welcome to the ${socket.player.game} game!`);
+        // this.rollDice();
+        // socket.on('roll_dice', () => {this.rollDice()});
+        // socket.on('isThisOKMove', this.isThisOKMove);
     };
 
     // Render the whole page
@@ -77,34 +69,55 @@ class Nard {
         socket.emit('hideStartModal');
         let invert = (ind === 0) ? 1 : -1;
         socket.emit('renderCheckers', this.board, invert);
-        if (invert === 1) {
-            socket.emit('renderDice', [this.die1, this.die2]); 
-        } else {
-            socket.emit('renderDice', [this.die2, this.die1]);
-        };
+        // if (invert === 1) {
+        //     socket.emit('renderDice', [this.die1, this.die2]); 
+        // } else {
+        //     socket.emit('renderDice', [this.die2, this.die1]);
+        // };
     };
 
     // Main function to roll dice
     rollDice() {
-        this.die1 = Math.floor(Math.random() * 6) + 1;
-        this.die2 = Math.floor(Math.random() * 6) + 1;
-        this.players[0].emit('renderDice', [this.die1, this.die2]);
-        this.players[1].emit('renderDice', [this.die2, this.die1]);
+
+        function getDice(die1, die2) {
+            let die3, die4;
+            die3 = die4 = (die1 === die2) ? die1 : undefined;
+            // Get dice with active & unactive values
+            let dice = [
+                {val: die1, active: true},
+                {val: die2, active: true},
+                {val: die3, active: true},
+                {val: die4, active: true}
+            ];
+            // Make some dice values unactive
+            // let stepsMade = (moves.length) ? moves[moves.length - 1].steps : [];    // For convinience
+            for (let die of dice) {if (!die.val) die.active = false};
+            return dice
+        };
+
+        let die1 = Math.floor(Math.random() * 6) + 1;
+        let die2 = Math.floor(Math.random() * 6) + 1;
+        this.dice = getDice(die1, die2);
+        
+        
+        console.log('this.dice', this.dice);
+
+
+        this.players[0].emit('renderDice', this.dice);
+        this.players[1].emit('renderDice', this.dice);
     };
 
     // Print hint
     printHint(socket, hint) {
         socket.emit('printHint', hint);
     };
-    
-
 
     // Choose who's turn is first
     chooseWhoIsFirst() {
         this.rollDice();
         // Roll dice till they show different results
-        while (this.die1 == this.die2) this.rollDice();
-        this.turn = (this.die1 > this.die2) ? 0 : 1;
+        while (this.dice[0].val === this.dice[1].val) this.rollDice();
+        this.turn = (this.dice[0].val > this.dice[1].val) ? 0 : 1;
         // Send hints
         this.printHint(this.players[this.turn], 'your turn');
         this.printHint(this.players[Math.abs(this.turn - 1)], 'rival\'s turn');
@@ -114,6 +127,8 @@ class Nard {
 
     makeTurn() {
         if (this.winner) return;
+
+        console.log('makeTurn()');
 
         // 1. Turn off cliking and dragging in checkers' properties for the awaiting player
         // 2. Count allowed moves for the player who's turn
@@ -129,11 +144,15 @@ class Nard {
         
         // 1. Turn off cliking and dragging in checkers' properties for the awaiting player
         let color = this.players[this.turn].player.color;
+        
+        
+        // 2. Count allowed moves for the player who's turn
+        // TODO: THIS.
         this.players[this.turn].emit('allowMovingCheckers', color);
         this.players[Math.abs(this.turn - 1)].emit('restrictMovingCheckers');
-        this.countSteps(color);
+        // this.countSteps(color);
 
-        // 2. Count allowed moves for the player who's turn
+        
 
         // 2.1 Count all steps in move
 
@@ -142,7 +161,7 @@ class Nard {
 
 
         
-        this.movesCount += 1;
+        // this.movesCount += 1;
         // this.rollDice();
     };
 
@@ -230,7 +249,7 @@ class Nard {
 
 
 
-        console.log(moves);
+        // console.log(moves);
 
 
 

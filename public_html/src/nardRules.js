@@ -540,6 +540,7 @@ function rearrangeAllowedSteps() {
     if (!allowedSteps.length) {
         console.log('Move is complete.\n\n');
         if (countMyCheckersInRange(1)) {
+            // changeTurn();
             letMeMakeMyStep();
         } else {
             document.getElementById('hint').innerHTML = 'Congratulations!';
@@ -639,20 +640,20 @@ function letMeMakeMyStep() {
 };
 
 // Count dice - what else to move
-function setDice(die1, die2) {
-    let die3, die4;
-    die3 = die4 = (die1 === die2) ? die1 : undefined;
-    // Get dice with active & unactive values
-    dice = [
-        {val: die1, active: true},
-        {val: die2, active: true},
-        {val: die3, active: true},
-        {val: die4, active: true}
-    ];
-    // Make some dice values unactive
-    stepsMade = (moves.length) ? moves[moves.length - 1].steps : [];    // For convinience
-    for (die of dice) {if (!die.val) die.active = false};
-};
+// function setDice(die1, die2) {
+//     let die3, die4;
+//     die3 = die4 = (die1 === die2) ? die1 : undefined;
+//     // Get dice with active & unactive values
+//     dice = [
+//         {val: die1, active: true},
+//         {val: die2, active: true},
+//         {val: die3, active: true},
+//         {val: die4, active: true}
+//     ];
+//     // Make some dice values unactive
+//     stepsMade = (moves.length) ? moves[moves.length - 1].steps : [];    // For convinience
+//     for (die of dice) {if (!die.val) die.active = false};
+// };
 
 
 
@@ -661,24 +662,24 @@ function setDice(die1, die2) {
 ///////////////////
 
 
-function rollDice() {
-    die1 = Math.floor(Math.random() * 6) + 1;
-    die2 = Math.floor(Math.random() * 6) + 1;
-    setDice(die1, die2);
-    renderDice();
-};
+// function rollDice() {
+//     die1 = Math.floor(Math.random() * 6) + 1;
+//     die2 = Math.floor(Math.random() * 6) + 1;
+//     setDice(die1, die2);
+//     renderDice();
+// };
 
-document.getElementById('diceBox').onclick = function startTheGame() {
-    // die1 = Math.floor(Math.random() * 6) + 1;
-    // die2 = Math.floor(Math.random() * 6) + 1;     
-    // rollDice();
-    // dice = getDice(die1, die2);
+// document.getElementById('diceBox').onclick = function startTheGame() {
+//     // die1 = Math.floor(Math.random() * 6) + 1;
+//     // die2 = Math.floor(Math.random() * 6) + 1;     
+//     // rollDice();
+//     // dice = getDice(die1, die2);
 
 
 
-    // board = getReversedBoard(board);
-    letMeMakeMyStep();
-};
+//     // board = getReversedBoard(board);
+//     letMeMakeMyStep();
+// };
 
 // board = {
 //     1: 15,

@@ -4,15 +4,11 @@ var rival = 'random';
 var wait = false;
 
 
-
-// System.import("mobile-drag-drop");
-// // import css if using system-js css loader plugin 
-// System.import("mobile-drag-drop/default.css!");
-
-// window.addEventListener( 'touchmove', function() {});
-
-
-
+var dice;
+var board;
+var allowedSteps;
+var moves = [];    // all moves
+var stepsMade;    // part of the last move - steps that are made in this move
 
 
 // START SCREEN
@@ -117,15 +113,15 @@ function hideStartModal() {
     document.getElementById('start-modal').classList.add('hide');
     
     
-    console.log(document.getElementsByClassName('selected'));
+    // console.log(document.getElementsByClassName('selected'));
     
     
     [].forEach.call(document.getElementsByClassName('selected'), (el) => {
         el.classList.remove('selected');
     });
-    console.log('hided start modal and deleted all selected');
+    // console.log('hided start modal and deleted all selected');
 
-    console.log(document.getElementsByClassName('selected'));
+    // console.log(document.getElementsByClassName('selected'));
 
 };
 
@@ -155,6 +151,11 @@ function hideStartModal() {
 
 // Render checkers
 function renderCheckers(board, invert=1) {
+    // Clear all previous checkers
+    for (let i = 0; i < 25; i++) {
+        document.getElementById(i).innerHTML = '';    // clear the field
+    };
+    // Place new checkers from the board variable
     Object.entries(board).forEach((field) => {
         for (let i = 0; i < Math.abs(field[1]); i++) {
             createChecker(field[0], invert * Math.sign(field[1]));
@@ -170,20 +171,32 @@ socket.on('renderCheckers', renderCheckers);
 // socket.on('restrictMovingCheckers', restrictMovingCheckers);
 
 // Render dice after they are rolled on the server
-function renderDice([dieRes1, dieRes2]) {
+socket.on('renderDice',
+    function renderDice(dice) {
     
-    console.log([dieRes1, dieRes2]);
+        console.log('dice', dice);
 
-    let diceBox = document.getElementById('diceBox');
-    diceBox.innerHTML = '';    // Clear all previous dice
-    let die1 = document.createElement('die');   // Create a die
-    let die2 = document.createElement('die');   // Create a die
-    die1.setAttribute('result', dieRes1);
-    die2.setAttribute('result', dieRes2);
-    diceBox.appendChild(die1);
-    diceBox.appendChild(die2);
-};
-socket.on('renderDice', renderDice);
+
+        // let diceBox = document.getElementById('diceBox');
+        // diceBox.innerHTML = '';    // Clear all previous dice
+        // let die1 = document.createElement('die');   // Create a die
+        // let die2 = document.createElement('die');   // Create a die
+        // die1.setAttribute('result', dieRes1);
+        // die2.setAttribute('result', dieRes2);
+        // diceBox.appendChild(die1);
+        // diceBox.appendChild(die2);
+
+
+
+        document.getElementById('die1').setAttribute('result', dice[0].val);
+        document.getElementById('die2').setAttribute('result', dice[1].val);
+        document.getElementById('die3').setAttribute('result', dice[2].val);
+        document.getElementById('die4').setAttribute('result', dice[3].val);
+
+
+    }
+);
+// socket.on('renderDice', renderDice);
 
 // Print a hint
 function printHint(hint) {
@@ -244,10 +257,10 @@ document.getElementById('start-play-btn').onclick = pressPlayButton;
 
 // Roll dice by click
 // Temp function REMOVE IT !
-document.getElementById('diceBox').addEventListener('click', (e) => {
-    console.log('dice rolled!');
-    socket.emit('roll_dice');
-}, false);
+// document.getElementById('diceBox').addEventListener('click', (e) => {
+//     console.log('dice rolled!');
+//     socket.emit('roll_dice');
+// }, false);
 
 //  Chat
 // document
