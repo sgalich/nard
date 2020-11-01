@@ -626,18 +626,18 @@ function rearrangeAllowedSteps() {
 //     letMeMakeMyStep();
 // };
 
-// The main function that let player to make a move
-function letMeMakeMyStep() {
-    rollDice();
-    moves.push({
-        color: colorN,
-        dice: [die1, die2],
-        steps: []
-    });
-    // board = (colorN < 0) ? getReversedBoard(board) : board;
-    // renderCheckers(board);
-    rearrangeAllowedSteps();
-};
+// // The main function that let player to make a move
+// function letMeMakeMyStep() {
+//     rollDice();
+//     moves.push({
+//         color: colorN,
+//         dice: [die1, die2],
+//         steps: []
+//     });
+//     // board = (colorN < 0) ? getReversedBoard(board) : board;
+//     // renderCheckers(board);
+//     rearrangeAllowedSteps();
+// };
 
 // Count dice - what else to move
 // function setDice(die1, die2) {

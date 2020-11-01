@@ -148,8 +148,8 @@ class Nard {
         
         // 2. Count allowed moves for the player who's turn
         // TODO: THIS.
-        this.players[this.turn].emit('allowMovingCheckers', color);
-        this.players[Math.abs(this.turn - 1)].emit('restrictMovingCheckers');
+        this.players[this.turn].emit('letMeMakeMyStep');
+        // this.players[Math.abs(this.turn - 1)].emit('restrictMovingCheckers');
         // this.countSteps(color);
 
         

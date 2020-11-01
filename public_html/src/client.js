@@ -206,6 +206,25 @@ function printHint(hint) {
 };
 socket.on('printHint', printHint);
 
+
+
+// The main function that let player to make a move
+socket.on('letMeMakeMyStep',
+    function letMeMakeMyStep() {
+        rollDice();
+        moves.push({
+            color: colorN,
+            dice: [dice[0].val, dice[1].val],
+            steps: []
+        });
+        // board = (colorN < 0) ? getReversedBoard(board) : board;
+        // renderCheckers(board);
+        rearrangeAllowedSteps();
+    }
+);
+
+
+
 // Print message in chat
 // function printHint(hint) {
 //     // document.getElementById('hint').innerHTML = null;    // clear
