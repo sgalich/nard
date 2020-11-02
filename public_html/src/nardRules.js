@@ -13,9 +13,17 @@
 
 ///////////////////////////////////
 // This we will get from the server
+// var dice;
+// var board;
+// var allowedSteps;
+// var moves = [];    // all moves
+// var stepsMade;    // part of the last move - steps that are made in this move
 
-var colorN = 1;
-var color = String(colorN);
+// var colorN;
+// var color;
+
+// var colorN = 1;
+// var color = String(colorN);
 ///////////////////////////////////
 
 // If the field is rival's
@@ -541,7 +549,8 @@ function rearrangeAllowedSteps() {
         console.log('Move is complete.\n\n');
         if (countMyCheckersInRange(1)) {
             // changeTurn();
-            letMeMakeMyStep();
+            // moveIsFinished();
+            moveIsDone();
         } else {
             document.getElementById('hint').innerHTML = 'Congratulations!';
         };

@@ -8,7 +8,7 @@ class Nard {
         this.die1 = null;    // random result from die1
         this.die2 = null;    // random result from die2
         this.wait = null;    // 1 or -1 (for 'white' or 'black') - who is awaiting now
-        this.movesCount = 0;    // moves counter
+        // this.movesCount = 0;    // moves counter
         this.winner = null;
         this.chat = [];
         this.board = {    // the board with a starting position
@@ -40,9 +40,14 @@ class Nard {
 
 
         this.dice = null;
-        this.allowedSteps = null;
         this.moves = [];    // all moves
-        this.stepsMade = null;    // part of the last move - steps that are made in this move
+
+
+        // this.players[0].on('moveIsFinished', this.moveIsFinished);
+        // this.players[1].on('moveIsFinished', this.moveIsFinished);
+        // this.players[0].on('moveIsFinished', this.makeTurn());
+        // this.players[1].on('moveIsFinished', this.makeTurn());
+
 
 
         this.placeInTheGame(0);
@@ -114,21 +119,35 @@ class Nard {
 
     // Choose who's turn is first
     chooseWhoIsFirst() {
+        // https://stackoverflow.com/questions/42107359/passing-turns-with-socket-io-and-nodejs-in-turn-based-game
         this.rollDice();
         // Roll dice till they show different results
         while (this.dice[0].val === this.dice[1].val) this.rollDice();
-        this.turn = (this.dice[0].val > this.dice[1].val) ? 0 : 1;
+        this.turn = (this.dice[0].val > this.dice[1].val) ? 1 : 0;
         // Send hints
-        this.printHint(this.players[this.turn], 'your turn');
-        this.printHint(this.players[Math.abs(this.turn - 1)], 'rival\'s turn');
+        this.printHint(this.players[Math.abs(this.turn - 1)], 'your turn');
+        this.printHint(this.players[this.turn], 'rival\'s turn');
         // setTimeout(() => {}, 4000);
         this.rollDice();
     };
 
     makeTurn() {
         if (this.winner) return;
+        this.turn = Math.abs(this.turn - 1);    // switch the turn
+
+
+        // this.board = board;
+        // this.moves = moves;
+
+
+        this.renderBoard(this.turn);
 
         console.log('makeTurn()');
+        console.log('this.board', this.board);
+        console.log('this.moves', this.moves);
+  
+
+
 
         // 1. Turn off cliking and dragging in checkers' properties for the awaiting player
         // 2. Count allowed moves for the player who's turn
@@ -148,7 +167,7 @@ class Nard {
         
         // 2. Count allowed moves for the player who's turn
         // TODO: THIS.
-        this.players[this.turn].emit('letMeMakeMyStep');
+        this.players[this.turn].emit('letMeMakeMyStep', color, this.moves);
         // this.players[Math.abs(this.turn - 1)].emit('restrictMovingCheckers');
         // this.countSteps(color);
 
@@ -165,6 +184,23 @@ class Nard {
         // this.rollDice();
     };
 
+    moveIsFinished(board, moves) {
+        console.log('move is finished')
+        this.board = board;
+        this.moves = moves;
+        this.turn = Math.abs(this.turn - 1);    // switch the turn
+
+        // this.renderBoard(this.turn);
+
+
+        this.makeTurn();
+
+
+
+
+        
+
+    };
 
 
 

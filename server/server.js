@@ -119,6 +119,15 @@ function getCookVal(cookies, cookiename) {
     return;
 };
 
+// Find a game for the socket
+function findAGameForSocket(player) {
+    for (game of rooms[player.game]) {
+        if (player.id === game.players[0].player.id || player.id === game.players[1].player.id) {
+        return game;
+        };
+    };
+    return;
+};
 
 app.use(express.static(clientPath));
 
@@ -241,6 +250,20 @@ io.on('connection', (socket) => {
         //     console.log('Someone send this: ', text);
         //     io.emit('hint', text);                       // SEND TO ALL
         // });
+
+
+
+
+        ////////////////////////////////////////////////////////
+        // THE GAME
+        socket.on('moveIsDone', (board, moves) => {
+            let game = findAGameForSocket(socket.player);
+            game.board = board;
+            game.moves = moves;
+            game.makeTurn();
+        });
+        ////////////////////////////////////////////////////////
+
 
 
         // User is disconnected - remove the user from waitingRandom and from rooms (?)

@@ -208,6 +208,15 @@
     <!-- My scripts -->
     <!-- Initiate global variables -->
     <script>
+        var dice;
+        var board;
+        var allowedSteps;
+        var moves = [];    // all moves
+        var stepsMade;    // part of the last move - steps that are made in this move
+
+        var colorN;
+        var color;
+
         // var dice;
         // var board;
         // var allowedSteps;
@@ -328,9 +337,11 @@
     </script>
 
     <!-- <script src="src/utils.js" defer></script> -->
+    <!-- type="module" -->
+    <script  src="src/client.js" defer></script> 
     <script src="src/moving.js" defer></script>
     <script src="src/nardRules.js" defer></script>
-    <script type="module" src="src/client.js" defer></script>
+    
     
 
 

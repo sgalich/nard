@@ -4,11 +4,14 @@ var rival = 'random';
 var wait = false;
 
 
-var dice;
-var board;
-var allowedSteps;
-var moves = [];    // all moves
-var stepsMade;    // part of the last move - steps that are made in this move
+// var dice;
+// var board;
+// var allowedSteps;
+// var moves = [];    // all moves
+// var stepsMade;    // part of the last move - steps that are made in this move
+
+// var colorN;
+// var color;
 
 
 // START SCREEN
@@ -172,22 +175,9 @@ socket.on('renderCheckers', renderCheckers);
 
 // Render dice after they are rolled on the server
 socket.on('renderDice',
-    function renderDice(dice) {
-    
+    function renderDice(diceS) {
+        dice = diceS;
         console.log('dice', dice);
-
-
-        // let diceBox = document.getElementById('diceBox');
-        // diceBox.innerHTML = '';    // Clear all previous dice
-        // let die1 = document.createElement('die');   // Create a die
-        // let die2 = document.createElement('die');   // Create a die
-        // die1.setAttribute('result', dieRes1);
-        // die2.setAttribute('result', dieRes2);
-        // diceBox.appendChild(die1);
-        // diceBox.appendChild(die2);
-
-
-
         document.getElementById('die1').setAttribute('result', dice[0].val);
         document.getElementById('die2').setAttribute('result', dice[1].val);
         document.getElementById('die3').setAttribute('result', dice[2].val);
@@ -210,8 +200,11 @@ socket.on('printHint', printHint);
 
 // The main function that let player to make a move
 socket.on('letMeMakeMyStep',
-    function letMeMakeMyStep() {
-        rollDice();
+    function letMeMakeMyStep(colorS, movesS) {
+        colorN = colorS;
+        color = String(colorN);
+        moves = movesS;
+        
         moves.push({
             color: colorN,
             dice: [dice[0].val, dice[1].val],
@@ -222,6 +215,27 @@ socket.on('letMeMakeMyStep',
         rearrangeAllowedSteps();
     }
 );
+
+// The main function that let player to make a move
+function moveIsDone() {
+    socket.emit(
+        'moveIsDone',
+        board,
+        moves
+    );
+};
+
+// The main function that let player to make a move
+// function moveIsFinished() {
+//     socket.emit(
+//         'moveIsFinished',
+//         board,
+//         moves
+//     );
+// };
+
+
+
 
 
 
