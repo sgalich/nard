@@ -5,6 +5,9 @@
 // TODO: HIGH: Make normal rules to make steps
 
 
+// TODO: HIGH: Restrict half-moves when it is possible to a full move
+
+
 // TODO: MEDIUM: Split this file for server - client after moving rules are done !
 // TODO: MEDIUM: Reverse a board for a rival !
 // TODO: MEDIUM: MAKE TRANSPARENT RIVAL'S CHECKERS ON TH FIELD #1 when bearing-off
@@ -28,42 +31,47 @@
 
 // If the field is rival's
 function isTheFieldRivals(fieldId, brd=board) {
-    return ((colorN > 0) !== (brd[fieldId] >= 0));
+    if (brd[fieldId] === 0) return false;
+    return (Math.sign(colorN) !== Math.sign(brd[fieldId]));
+    // return ((colorN > 0) !== (brd[fieldId] >= 0));
 };
 
 // If the field is mine
 function isTheFieldMine(fieldId, brd=board) {
-    return ((colorN > 0) === (brd[fieldId] > 0));
+    if (brd[fieldId] === 0) return false;
+    return (Math.sign(colorN) === Math.sign(brd[fieldId]));
+    // return ((colorN > 0) === (brd[fieldId] > 0));
 };
 
-// Rearrange stepsMade, diceMade, remainedValToStep
+// Rearrange stepsMade, diceMade, allowedSteps
 function resetGlobalVariables() {
     stepsMade = moves[moves.length - 1].steps;    // For convinience
     // Set diceMade
     diceMade = [];
-    let valMoved = 0;
-    stepsMade.forEach((step) => {
-        let [idFrom, idTo] = step.entries().next().value;
-        diceMade.push(idTo - idFrom);
-        valMoved += idTo - idFrom;
-    });
-    // dice = getDice();    // dice with active/uncative dice values
-    // Set remainedValToStep
-    let valToMove = dice
-        .map((x) => x.val)
-        .filter((die) => {return Boolean(die)})
-        .reduce((total, num) => {return total + num});
-    remainedValToStep = valToMove - valMoved;
+    // let valMoved = 0;
+    // stepsMade.forEach((step) => {
+    //     let [idFrom, idTo] = step.entries().next().value;
+    //     diceMade.push(idTo - idFrom);
+    //     valMoved += idTo - idFrom;
+    // });
+    // // dice = getDice();    // dice with active/uncative dice values
+    // // Set remainedValToStep
+    // let valToMove = dice
+    //     .map((x) => x.val)
+    //     .filter((die) => {return Boolean(die)})
+    //     .reduce((total, num) => {return total + num});
+    // remainedValToStep = valToMove - valMoved;
     // Empty allowedSteps
     allowedSteps = [];
-    allowedStepsOld = [];
+    // allowedStepsOld = [];
 };
 
 // Checks if there was a move from the fieldId 1
 function wasThereAStepFromTheHeadField() {
     for (step of stepsMade) {
-        let [idFrom, _] = step.entries().next().value;
-        if (idFrom === 1) return true;
+        if (step.idFrom === 1) return true;
+        // let [idFrom, _] = step.entries().next().value;
+        // if (idFrom === 1) return true;
     };
     return false;
 };
@@ -136,30 +144,30 @@ function isStepAllowed(idFrom, idTo) {
     return false;
 };
 
-// Add reversed steps for steps that are already made by a player
-function addCancelSteps() {
-    if (!allowedStepsOld.length) return;
-    // Add cancel steps
-    stepsMade.forEach((step) => {
-        let [idFrom, idTo] = step.entries().next().value;
-        allowedStepsOld.push(new Map().set(idTo, idFrom));
-        // Add an ability to change a step (make a step back with another dice)
-        if (idTo - idFrom === die1) {
-            allowedStepsOld.push(new Map().set(idTo, idFrom + die2));
-        } else {
-            allowedStepsOld.push(new Map().set(idTo, idFrom + die1));
-        };
-        // Additional cancellations for big steps when the are double dice
-        if (die1 === die2 && idTo - idFrom > die1) {    // i.e. 1 => 16
-            if (moves.length < 2) return;    // 3-3 hardcoded
-            microCancelStep = die1;
-            while (microCancelStep < idTo - idFrom) {    // i.e. 5 < 16 - 1
-                allowedStepsOld.push(new Map().set(idTo, idTo - microCancelStep));
-                microCancelStep += die1;
-            };
-        };
-    });
-};
+// // Add reversed steps for steps that are already made by a player
+// function addCancelSteps() {
+//     if (!allowedStepsOld.length) return;
+//     // Add cancel steps
+//     stepsMade.forEach((step) => {
+//         let [idFrom, idTo] = step.entries().next().value;
+//         allowedStepsOld.push(new Map().set(idTo, idFrom));
+//         // Add an ability to change a step (make a step back with another dice)
+//         if (idTo - idFrom === die1) {
+//             allowedStepsOld.push(new Map().set(idTo, idFrom + die2));
+//         } else {
+//             allowedStepsOld.push(new Map().set(idTo, idFrom + die1));
+//         };
+//         // Additional cancellations for big steps when the are double dice
+//         if (die1 === die2 && idTo - idFrom > die1) {    // i.e. 1 => 16
+//             if (moves.length < 2) return;    // 3-3 hardcoded
+//             microCancelStep = die1;
+//             while (microCancelStep < idTo - idFrom) {    // i.e. 5 < 16 - 1
+//                 allowedStepsOld.push(new Map().set(idTo, idTo - microCancelStep));
+//                 microCancelStep += die1;
+//             };
+//         };
+//     });
+// };
 
 // Count how many my checkers on the fields range
 function countMyCheckersInRange(idFrom, idTo=24) {
@@ -278,8 +286,10 @@ function arrangeAllowedStepsForTheSecondMove() {
                 addNewAllowedStep(idFrom, idFrom + dice[1].val, [1], callbackForReplacingChecker);
             };
         };
+    };
+    // TODO: HIGH: Check this - it was else if in board.html, but it didn't work with the server version
     // If unique dice
-    } else if (dice[0].val !== dice[1].val) {
+    if (dice[0].val !== dice[1].val) {
         if (!stepsMade.length) {
             addNewAllowedStep(idFrom, idFrom + dice[0].val + dice[1].val, [0, 1], callbackForReplacingChecker);
         };
@@ -325,10 +335,11 @@ function arrangeAllowedStepsForTheSecondMove() {
 function addToStepsMadeStepBack(step) {
     // If not bearing Off => a step cancelled / changed
     if (isItBearingOff()) {
-        stepsMade.push(new Map().set(step.idFrom, step.idTo));
+        stepsMade.push(step);
     } else {
         for (let i = 0; i < stepsMade.length; i++) {
-            let [idFrom, idTo] = stepsMade[i].entries().next().value;
+            let idFrom = stepsMade[i].idFrom;
+            let idTo = stepsMade[i].idTo;
             // Find a step that is cancelled
             if (step.idFrom === idTo) {
                 // If it is cancelled fully => delete this whole step
@@ -336,7 +347,7 @@ function addToStepsMadeStepBack(step) {
                     stepsMade.splice(i, 1);
                 // If it is changed => change this move
                 } else {
-                    stepsMade[i].push(new Map().set(idFrom, step.idTo));
+                    stepsMade[i].idTo = step.idTo;
                 };
             };
         };   
@@ -348,16 +359,17 @@ function addToStepsMadeStepForward(step) {
    // Trying to find a step which could be a part of a new big step
    // prev. 1 => 3 and now 3 => 5. So we change the previous step to 1 => 5
     for (let i = 0; i < stepsMade.length; i++) {
-        let [idFrom, idTo] = stepsMade[i].entries().next().value;
+        let idFrom = stepsMade[i].idFrom;
+        let idTo = stepsMade[i].idTo;
         // Find a step that is cancelled
         if (idTo === step.idFrom) {
-            stepsMade[i].set(idFrom, step.idTo);
+            stepsMade[i].idTo = step.idTo;
             return;
         };
     };
     // If we failed to find a first part of a new step =>
     // just register this step
-    stepsMade.push(new Map().set(step.idFrom, step.idTo));
+    stepsMade.push(step);
 };
 
 // Register a step made
@@ -422,6 +434,11 @@ function arrangeAllowedStepsForTheMiddleOfTheGame() {
     for ([idFrom, _] of Object.entries(board)) {
         idFrom = Number(idFrom);
         if (!isTheFieldMine(idFrom)) continue;    // If it is not my field
+
+
+        console.log('my field: ', idFrom);
+
+
         let nextLevelIsAllowed = false;
         // Level 1: SINGLE DIE: every single die
         // Iterate through the dice in reversed order
@@ -528,6 +545,8 @@ function rearrangeAllowedSteps() {
     };
     addHoverNClickEvents();
 
+
+    console.log('allowedSteps after rearranging: ', allowedSteps);
 
 
     // console.log('color', color);

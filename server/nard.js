@@ -72,8 +72,7 @@ class Nard {
     renderBoard(ind) {
         let socket = this.players[ind];
         socket.emit('hideStartModal');
-        let invert = (ind === 0) ? 1 : -1;
-        socket.emit('renderCheckers', this.board, invert);
+        socket.emit('renderCheckers', this.board, socket.player.color);
         // if (invert === 1) {
         //     socket.emit('renderDice', [this.die1, this.die2]); 
         // } else {
@@ -99,15 +98,9 @@ class Nard {
             for (let die of dice) {if (!die.val) die.active = false};
             return dice
         };
-
         let die1 = Math.floor(Math.random() * 6) + 1;
         let die2 = Math.floor(Math.random() * 6) + 1;
         this.dice = getDice(die1, die2);
-        
-        
-        console.log('this.dice', this.dice);
-
-
         this.players[0].emit('renderDice', this.dice);
         this.players[1].emit('renderDice', this.dice);
     };
@@ -124,9 +117,9 @@ class Nard {
         // Roll dice till they show different results
         while (this.dice[0].val === this.dice[1].val) this.rollDice();
         this.turn = (this.dice[0].val > this.dice[1].val) ? 1 : 0;
-        // Send hints
-        this.printHint(this.players[Math.abs(this.turn - 1)], 'your turn');
-        this.printHint(this.players[this.turn], 'rival\'s turn');
+        // // Send hints
+        // this.printHint(this.players[Math.abs(this.turn - 1)], 'your turn');
+        // this.printHint(this.players[this.turn], 'rival\'s turn');
         // setTimeout(() => {}, 4000);
     };
 
@@ -144,7 +137,10 @@ class Nard {
         if (this.winner) return;
         this.rollDice();
         this.turn = Math.abs(this.turn - 1);    // switch the turn
-        
+        // Send hints
+        this.printHint(this.players[Math.abs(this.turn - 1)], 'rival\'s turn');
+        this.printHint(this.players[this.turn], 'your turn');
+
         // 1. Turn off cliking and dragging in checkers' properties for the awaiting player
         let color = this.players[this.turn].player.color;
         let colorN = Number(color);
@@ -165,9 +161,10 @@ class Nard {
 
 
         console.log('makeTurn()');
+        console.log('this.dice', this.dice);
         console.log('this.board', this.board);
         console.log('this.moves', this.moves);
-  
+        
 
         
         // 2. Count allowed moves for the player who's turn
@@ -192,24 +189,34 @@ class Nard {
         // this.rollDice();
     };
 
-    moveIsFinished(moves, board) {
-        console.log('move is finished')
-        // this.board = board;
-        this.board = board;
-        this.moves = moves;
-        this.turn = Math.abs(this.turn - 1);    // switch the turn
+    // moveIsFinished(moves, board) {
+        
+        
+    //     console.log('move is finished')
+        
+        
+        
+    //     // this.board = board;
+    //     this.board = board;
+    //     this.moves = moves;
+        
+        
+    //     console.log('this.moves[0].steps[0]', this.moves[0].steps[0]);
+        
+        
+    //     this.turn = Math.abs(this.turn - 1);    // switch the turn
 
-        // this.renderBoard(this.turn);
+    //     // this.renderBoard(this.turn);
 
 
-        this.makeTurn();
+    //     this.makeTurn();
 
 
 
 
         
 
-    };
+    // };
 
 
 

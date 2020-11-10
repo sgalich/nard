@@ -259,6 +259,11 @@ io.on('connection', (socket) => {
         socket.on('moveIsDone', (moves, board) => {
             let game = findAGameForSocket(socket.player);
             game.board = board;    // TODO: board is different for red/blue !!!
+            
+            
+            console.log('moves[0].steps', moves[0].steps);
+            
+            
             game.moves = moves;
             game.makeTurn();
         });

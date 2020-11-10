@@ -153,18 +153,27 @@ function hideStartModal() {
 // };
 
 // Render checkers
-function renderCheckers(board, colorServ) {
+function renderCheckers(board, color) {
     // Clear all previous checkers
     for (let i = 0; i < 25; i++) {
         document.getElementById(i).innerHTML = '';    // clear the field
     };
-    board = (colorServ === -1) ? getReversedBoard(board) : board;
+    board = (color === -1) ? getReversedBoard(board) : board;
     // Place new checkers from the board variable
-    Object.entries(board).forEach((field) => {
+    for (field of Object.entries(board)) {
         for (let i = 0; i < Math.abs(field[1]); i++) {
-            createChecker(field[0], invert * Math.sign(field[1]));
+            // createChecker(...field);
+            let fieldColor = Math.abs(field[1]) / field[1];
+            createChecker(field[0], fieldColor);
         };
-    });
+    };
+    
+    // Object.entries(board).forEach((field) => {
+    //     for (let i = 0; i < Math.abs(field[1]); i++) {
+            
+    //         createChecker(field[0], field[1]);
+    //     };
+    // });
 };
 socket.on('renderCheckers', renderCheckers);
 
@@ -204,18 +213,13 @@ socket.on('letMeMakeMyStep',
         color = String(colorN);
         moves = movesServ;
         board = (colorN > 0) ? boardServ : getReversedBoard(boardServ);
-        // moves.push({
-        //     color: colorN,
-        //     dice: [dice[0].val, dice[1].val],
-        //     steps: []
-        // });
+
 
         console.log('\n');
         console.log('Before the move is done.');
         console.log('color', color);
         console.log('colorN', colorN);
         console.log('dice', dice);
-        console.log('stepsMade', stepsMade);
         console.log('allowedSteps', allowedSteps);
         console.log('moves', moves);
         console.log('board', board);
