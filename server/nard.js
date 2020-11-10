@@ -11,7 +11,7 @@ class Nard {
         // this.movesCount = 0;    // moves counter
         this.winner = null;
         this.chat = [];
-        this.board = {    // the board with a starting position
+        this.board = {    // the board with a starting position for the 1-colored player. (not for -1-colored)
             1: 15,
             2: 0,
             3: 0,
@@ -128,13 +128,33 @@ class Nard {
         this.printHint(this.players[Math.abs(this.turn - 1)], 'your turn');
         this.printHint(this.players[this.turn], 'rival\'s turn');
         // setTimeout(() => {}, 4000);
-        this.rollDice();
     };
 
+    // The main function that lets players make thier turns
+    // 1. Turn off cliking and dragging in checkers' properties for the awaiting player
+    // 2. Count allowed moves for the player who's turn
+    // 2.1 Allow to make allowed moves
+
+    // 3. Highlight recommend moves when hover above a field
+    // 4. Block moves that are not allowed
+    // 5. Await till he makes right moves
+    // 6. Check if the player won the game => end turns return;
+    // 7. Switch turn & run this function recursively
     makeTurn() {
         if (this.winner) return;
+        this.rollDice();
         this.turn = Math.abs(this.turn - 1);    // switch the turn
-
+        
+        // 1. Turn off cliking and dragging in checkers' properties for the awaiting player
+        let color = this.players[this.turn].player.color;
+        let colorN = Number(color);
+       
+       
+        this.moves.push({
+            color: colorN,
+            dice: [this.dice[0].val, this.dice[1].val],
+            steps: []
+        });
 
         // this.board = board;
         // this.moves = moves;
@@ -142,32 +162,20 @@ class Nard {
 
         this.renderBoard(this.turn);
 
+
+
         console.log('makeTurn()');
         console.log('this.board', this.board);
         console.log('this.moves', this.moves);
   
 
-
-
-        // 1. Turn off cliking and dragging in checkers' properties for the awaiting player
-        // 2. Count allowed moves for the player who's turn
-        // 2.1 Allow to make allowed moves
-
-        // 3. Highlight recommend moves when hover above a field
-        // 4. Block moves that are not allowed
-        // 5. Await till he makes right moves
-        // 6. Check if the player won the game => end turns return;
-        // 7. Switch turn & run this function recursively
-
-        
-        
-        // 1. Turn off cliking and dragging in checkers' properties for the awaiting player
-        let color = this.players[this.turn].player.color;
-        
         
         // 2. Count allowed moves for the player who's turn
-        // TODO: THIS.
-        this.players[this.turn].emit('letMeMakeMyStep', color, this.moves);
+
+
+
+        // Let the player make his move
+        this.players[this.turn].emit('letMeMakeMyStep', color, this.moves, this.board);
         // this.players[Math.abs(this.turn - 1)].emit('restrictMovingCheckers');
         // this.countSteps(color);
 
@@ -184,8 +192,9 @@ class Nard {
         // this.rollDice();
     };
 
-    moveIsFinished(board, moves) {
+    moveIsFinished(moves, board) {
         console.log('move is finished')
+        // this.board = board;
         this.board = board;
         this.moves = moves;
         this.turn = Math.abs(this.turn - 1);    // switch the turn

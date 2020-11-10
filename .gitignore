@@ -4,5 +4,6 @@ logs/
 __pycache__/
 .idea/
 node_modules/
+ignore/
 
 *.zip

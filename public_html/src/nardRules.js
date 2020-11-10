@@ -346,7 +346,7 @@ function addToStepsMadeStepBack(step) {
 // Register in moves a step forward
 function addToStepsMadeStepForward(step) {
    // Trying to find a step which could be a part of a new big step
-   // prev. 1 => 3 and now 3 => 5. So we change pprev step to 1 => 5
+   // prev. 1 => 3 and now 3 => 5. So we change the previous step to 1 => 5
     for (let i = 0; i < stepsMade.length; i++) {
         let [idFrom, idTo] = stepsMade[i].entries().next().value;
         // Find a step that is cancelled
@@ -374,8 +374,6 @@ function addStepToStepsMade(step) {
 
 // Add a step to the allowedSteps
 function addNewAllowedStep(idFrom, idTo, dice, callback) {
-
-    // does not work!!! TODO: HIGH!
     if (moves.length > 2 && !is6CheckersInARowRuleRespected(idFrom, idTo - idFrom)) return;
     allowedSteps.push({
         idFrom: Number(idFrom),
@@ -383,7 +381,6 @@ function addNewAllowedStep(idFrom, idTo, dice, callback) {
         dice: dice,
         callback: callback
     });
-    // console.log('here11', allowedSteps);
 };
 
 // Deactivate dice with a particular index
@@ -532,21 +529,35 @@ function rearrangeAllowedSteps() {
     addHoverNClickEvents();
 
 
-    console.log('Turn is Changed');
-    console.log('color', color);
-    console.log('colorN', colorN);
-    console.log('dice', dice);
-    console.log('stepsMade', stepsMade);
-    console.log('allowedSteps', allowedSteps);
-    console.log('moves', moves);
-    console.log('board', board);
-    console.log('\n');
+
+    // console.log('color', color);
+    // console.log('colorN', colorN);
+    // console.log('dice', dice);
+    // console.log('stepsMade', stepsMade);
+    // console.log('allowedSteps', allowedSteps);
+    // console.log('moves', moves);
+    // console.log('board', board);
+    // console.log('\n');
 
 
 
     // Restrict any other steps when the move is done
     if (!allowedSteps.length) {
-        console.log('Move is complete.\n\n');
+
+        
+        console.log('\n');
+        console.log('Move is complete.');
+        console.log('color', color);
+        console.log('colorN', colorN);
+        console.log('dice', dice);
+        console.log('stepsMade', stepsMade);
+        console.log('allowedSteps', allowedSteps);
+        console.log('moves', moves);
+        console.log('board', board);
+        console.log('\n');
+        
+
+
         if (countMyCheckersInRange(1)) {
             // changeTurn();
             // moveIsFinished();

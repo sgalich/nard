@@ -256,9 +256,9 @@ io.on('connection', (socket) => {
 
         ////////////////////////////////////////////////////////
         // THE GAME
-        socket.on('moveIsDone', (board, moves) => {
+        socket.on('moveIsDone', (moves, board) => {
             let game = findAGameForSocket(socket.player);
-            game.board = board;
+            game.board = board;    // TODO: board is different for red/blue !!!
             game.moves = moves;
             game.makeTurn();
         });

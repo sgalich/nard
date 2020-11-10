@@ -153,11 +153,12 @@ function hideStartModal() {
 // };
 
 // Render checkers
-function renderCheckers(board, invert=1) {
+function renderCheckers(board, colorServ) {
     // Clear all previous checkers
     for (let i = 0; i < 25; i++) {
         document.getElementById(i).innerHTML = '';    // clear the field
     };
+    board = (colorServ === -1) ? getReversedBoard(board) : board;
     // Place new checkers from the board variable
     Object.entries(board).forEach((field) => {
         for (let i = 0; i < Math.abs(field[1]); i++) {
@@ -182,8 +183,6 @@ socket.on('renderDice',
         document.getElementById('die2').setAttribute('result', dice[1].val);
         document.getElementById('die3').setAttribute('result', dice[2].val);
         document.getElementById('die4').setAttribute('result', dice[3].val);
-
-
     }
 );
 // socket.on('renderDice', renderDice);
@@ -200,28 +199,42 @@ socket.on('printHint', printHint);
 
 // The main function that let player to make a move
 socket.on('letMeMakeMyStep',
-    function letMeMakeMyStep(colorS, movesS) {
-        colorN = colorS;
+    function letMeMakeMyStep(colorServ, movesServ, boardServ) {
+        colorN = colorServ;
         color = String(colorN);
-        moves = movesS;
-        
-        moves.push({
-            color: colorN,
-            dice: [dice[0].val, dice[1].val],
-            steps: []
-        });
+        moves = movesServ;
+        board = (colorN > 0) ? boardServ : getReversedBoard(boardServ);
+        // moves.push({
+        //     color: colorN,
+        //     dice: [dice[0].val, dice[1].val],
+        //     steps: []
+        // });
+
+        console.log('\n');
+        console.log('Before the move is done.');
+        console.log('color', color);
+        console.log('colorN', colorN);
+        console.log('dice', dice);
+        console.log('stepsMade', stepsMade);
+        console.log('allowedSteps', allowedSteps);
+        console.log('moves', moves);
+        console.log('board', board);
+        console.log('\n');
+
+
         // board = (colorN < 0) ? getReversedBoard(board) : board;
         // renderCheckers(board);
         rearrangeAllowedSteps();
     }
 );
 
-// The main function that let player to make a move
+// The move is done and we send this info to the server
 function moveIsDone() {
+    let universalBoard = (colorN > 0) ? board : getReversedBoard(board);
     socket.emit(
         'moveIsDone',
-        board,
-        moves
+        moves,
+        universalBoard
     );
 };
 
