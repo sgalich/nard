@@ -6,6 +6,7 @@
 
 
 // TODO: HIGH: Restrict half-moves when it is possible to a full move
+// TODO: HIGH: 2-2 error: adds additional step after 1st 2 is done !!!! 1-1 - the same !!!
 
 
 // TODO: MEDIUM: Split this file for server - client after moving rules are done !
@@ -434,11 +435,6 @@ function arrangeAllowedStepsForTheMiddleOfTheGame() {
     for ([idFrom, _] of Object.entries(board)) {
         idFrom = Number(idFrom);
         if (!isTheFieldMine(idFrom)) continue;    // If it is not my field
-
-
-        console.log('my field: ', idFrom);
-
-
         let nextLevelIsAllowed = false;
         // Level 1: SINGLE DIE: every single die
         // Iterate through the dice in reversed order
@@ -576,14 +572,15 @@ function rearrangeAllowedSteps() {
         console.log('\n');
         
 
+        moveIsDone();
 
-        if (countMyCheckersInRange(1)) {
-            // changeTurn();
-            // moveIsFinished();
-            moveIsDone();
-        } else {
-            document.getElementById('hint').innerHTML = 'Congratulations!';
-        };
+        // if (countMyCheckersInRange(1)) {
+        //     // changeTurn();
+        //     // moveIsFinished();
+        //     moveIsDone();
+        // } else {
+        //     document.getElementById('hint').innerHTML = 'Congratulations! You win!';
+        // };
         
         // changeTurn();
     };

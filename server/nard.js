@@ -123,6 +123,21 @@ class Nard {
         // setTimeout(() => {}, 4000);
     };
 
+    getWinnerInd() {
+        let boardValues = Object.values(board);
+        // If +1 color won the game
+        if (!boardValues.some(el => el > 0)) {
+            // If the 1st player is a winner (1st is always has +1 color)
+            return 0;
+        // If -1 color won the game         
+        };
+        if (!boardValues.some(el => el < 0)) {
+            // If the 2nd player is a winner (2nd is always has +1 color)
+            return 1;
+        };
+        return false;
+    };
+
     // The main function that lets players make thier turns
     // 1. Turn off cliking and dragging in checkers' properties for the awaiting player
     // 2. Count allowed moves for the player who's turn
@@ -134,9 +149,21 @@ class Nard {
     // 6. Check if the player won the game => end turns return;
     // 7. Switch turn & run this function recursively
     makeTurn() {
-        if (this.winner) return;
-        this.rollDice();
+        // Render a step made by the rival
         this.turn = Math.abs(this.turn - 1);    // switch the turn
+        this.renderBoard(this.turn);
+
+        // Check whether we've got a winner or not
+        let winnerInd = this.getWinnerInd();
+        if (winnerInd === 0 || winnerInd === 1) {
+            printHint(this.players[winnerInd], 'You win! Congratulations!');
+            printHint(this.players[Math.abs(winnerInd - 1)], 'You lose');
+            return;
+            // TODO: MEDIUM: decide what to do here? Offer rematch or a new rival?
+        };
+
+        this.rollDice();
+        // this.turn = Math.abs(this.turn - 1);    // switch the turn
         // Send hints
         this.printHint(this.players[Math.abs(this.turn - 1)], 'rival\'s turn');
         this.printHint(this.players[this.turn], 'your turn');
@@ -156,7 +183,7 @@ class Nard {
         // this.moves = moves;
 
 
-        this.renderBoard(this.turn);
+        // this.renderBoard(this.turn);
 
 
 
