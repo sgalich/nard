@@ -1,3 +1,7 @@
+// TODO: LOW: Add a database support (https://sequelize.org/master/)
+// TODO: LOW: Add a chat (https://www.rabbitmq.com)
+
+
 const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
