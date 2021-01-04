@@ -2,7 +2,6 @@
 
 // TESTS:
 // TODO: TEST: cursor: grab on field/checker when click/drag - ???
-// TODO: HIGH: Make normal rules to make steps
 
 
 // TODO: HIGH: Restrict half-moves when it is possible to a full move
@@ -10,9 +9,8 @@
 
 
 // TODO: MEDIUM: Split this file for server - client after moving rules are done !
-// TODO: MEDIUM: Reverse a board for a rival !
 // TODO: MEDIUM: MAKE TRANSPARENT RIVAL'S CHECKERS ON TH FIELD #1 when bearing-off
-// TODO: MEDIUM: Make cancel steps here as idFrom<=idTo (reversed) - highlight them with anothe color (i.e. yellow)
+// TODO: MEDIUM: Make cancel steps here as idFrom<=idTo (reversed) - highlight them with another color (i.e. yellow)
 
 
 ///////////////////////////////////
@@ -535,7 +533,7 @@ function rearrangeAllowedSteps() {
         // ArrangeAllowedSteps for the second move
         arrangeAllowedStepsForTheSecondMove();
     } else {
-        console.log('\nMIDDLE OF THE GAME!');
+        // console.log('\nMIDDLE OF THE GAME!');
         arrangeAllowedStepsForTheMiddleOfTheGame();
         // addCancelSteps();
     };

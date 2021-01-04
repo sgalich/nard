@@ -1,7 +1,6 @@
 // Game physics - Checkers moving algorithms
 
 // TESTS:
-// TODO: TEST: cursor: grab on field/checker when click/drag - ???
 // TODO: MEDIUM: Add some animation to a checkers moving
 
 

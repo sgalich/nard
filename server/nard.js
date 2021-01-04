@@ -62,6 +62,12 @@ class Nard {
     placeInTheGame(ind) {
         let socket = this.players[ind];
         this.renderBoard(ind);
+        this.players[ind].emit('renderDice', this.dice);
+        let color = this.players[ind].player.color
+        console.log(this.turn === ind, this.turn, ind);
+        if (this.turn === ind) {
+            this.players[ind].emit('letMeMakeMyStep', color, this.moves, this.board);
+        };
         socket.emit('hint', `Welcome to the ${socket.player.game} game!`);
         // this.rollDice();
         // socket.on('roll_dice', () => {this.rollDice()});
@@ -124,7 +130,7 @@ class Nard {
     };
 
     getWinnerInd() {
-        let boardValues = Object.values(board);
+        let boardValues = Object.values(this.board);
         // If +1 color won the game
         if (!boardValues.some(el => el > 0)) {
             // If the 1st player is a winner (1st is always has +1 color)
