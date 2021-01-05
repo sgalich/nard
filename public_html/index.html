@@ -138,21 +138,21 @@
     <!-- START SCREEN -->
     <div id="start-back"></div>
     
-        <!-- START MODAL -->
-        <div id="start-modal">
+    <!-- START MODAL -->
+    <div id="start-modal">
 
-            
+        
         <!-- START MODAL HEADER-->
         <div id="start-header">
             <p>Welcome back!</p>
             <p id="greeting-small">We're so exited to see you again!</p>
         </div>
 
-        <!-- Nard / Backgammon -->
+        <!-- Nard / Backgammon
         <div class="start-modal-row">
             <button id="game-nard" class="start option selected">nard</button>
             <button id="game-backgammon" class="start option" title="Sorry, this game is not ready yet.">backgammon</button>
-        </div>
+        </div> -->
 
         <!-- Random / Friend -->
         <div class="start-modal-row">
@@ -160,11 +160,11 @@
             <button id="rival-friend" class="start option">friend</button>
         </div>
 
-            <!-- START MODAL FOOTER-->
+        <!-- START MODAL FOOTER-->
         <div class="start-modal-footer">
             
             <!-- Shown by default -->
-            <button id="start-play-btn" class="start">play</button>
+            <button id="start-play-btn" class="start play show">play</button>
 
             <!-- Hidden by default, shown by PLAY button click -->
             <div id="start-await-random-rival">
@@ -188,6 +188,7 @@
 
         </div>
     </div>
+
 
 
 
@@ -339,8 +340,9 @@
 
     </script>
 
-    <!-- <script src="src/utils.js" defer></script> -->
+    <script src="src/utils.js"></script>
     <!-- type="module" -->
+    <script  src="src/start-modal.js" defer></script> 
     <script  src="src/client.js" defer></script> 
     <script src="src/moving.js" defer></script>
     <script src="src/nardRules.js" defer></script>

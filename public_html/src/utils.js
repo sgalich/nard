@@ -1,3 +1,8 @@
+// Global project variables
+// var domain = 'https://onlinenard.com/';    // Truly domain
+var domain = 'localhost:3000/';
+
+
 // Two Maps comparison
 // https://stackoverflow.com/a/35951373
 function areShallowMapsEqual(map1, map2) {
@@ -14,4 +19,17 @@ function areShallowMapsEqual(map1, map2) {
         };
     };
     return true;
+};
+
+// Generate a pseudo link to share with a friend
+function generateSharePage(length) {
+    let sharePage = '';
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+        let newChar = characters.charAt(Math.floor(Math.random() * charactersLength));
+        sharePage += newChar;
+    }
+    emit('sharePageGenerated', sharePage);
+    return sharePage;
 };

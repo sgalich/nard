@@ -162,8 +162,8 @@ class Nard {
         // Check whether we've got a winner or not
         let winnerInd = this.getWinnerInd();
         if (winnerInd === 0 || winnerInd === 1) {
-            printHint(this.players[winnerInd], 'You win! Congratulations!');
-            printHint(this.players[Math.abs(winnerInd - 1)], 'You lose');
+            this.printHint(this.players[winnerInd], 'You win! Congratulations!');
+            this.printHint(this.players[Math.abs(winnerInd - 1)], 'You lose');
             return;
             // TODO: MEDIUM: decide what to do here? Offer rematch or a new rival?
         };

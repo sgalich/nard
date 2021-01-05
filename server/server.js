@@ -24,7 +24,7 @@ const server = http.createServer(app);
 const io = socketio(server);
 
 // var domain = 'https://onlinenard.com/';    // Truly domain
-var domain = 'localhost:8081/';
+var domain = 'localhost:3000/';
 // var domain = clientPath;
  
 // rooms = {
@@ -71,17 +71,17 @@ function setNewPlayerId(socket) {
     return tabId;
 };
 
-// Generate a pseudo link to share with a friend
-function ganerateSharePage(length) {
-    let sharePage = '';
-    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-    var charactersLength = characters.length;
-    for (var i = 0; i < length; i++) {
-        let newChar = characters.charAt(Math.floor(Math.random() * charactersLength));
-        sharePage += newChar;
-    }
-    return sharePage;
-};
+// // Generate a pseudo link to share with a friend
+// function ganerateSharePage(length) {
+//     let sharePage = '';
+//     var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+//     var charactersLength = characters.length;
+//     for (var i = 0; i < length; i++) {
+//         let newChar = characters.charAt(Math.floor(Math.random() * charactersLength));
+//         sharePage += newChar;
+//     }
+//     return sharePage;
+// };
 
 // Remove the socket from the previous room
 function removeFromWaitingRandom(socket, game=null) {
@@ -180,13 +180,45 @@ io.on('connection', (socket) => {
         };
 
         // Player changes a game type: nard / backgammon
+        // TODO: Deprecate it!
         socket.on('changeGame', (prevGame, currGame) => {
             player.game = currGame;
             console.log(`${player.id} wants to play ${player.game} with ${player.rival}`);
-            removeFromWaitingRandom(socket, prevGame)
+            removeFromWaitingRandom(socket, prevGame);
         });
 
+        // Set redirection preferences for the generated share link
+        socket.on('sharePageGenerated', (sharePage) => {
+            // Add the socket to the waitingFriends
+            waitingFriends[sharePage] = {
+                inviter: socket,
+                invitee: null,
+            };
+            // Redirect an invetee to the main page
+            app.get(`/${sharePage}`, function(req, res, next) {
+                res.cookie('sharePage', sharePage, { expires: false, httpOnly: false });
+                res.redirect('/');    // TODO: Remove blinking start-modal window
+            });
+        });
+        // Generate friend's link
+
+        // socket.on('generateFriendsLink', () => {
+        //     var sharePage = ganerateSharePage(8);
+        //     socket.emit('setFriendsLink', domain + sharePage);
+        //     // Add the socket to the waitingFriends
+        //     waitingFriends[sharePage] = {
+        //         inviter: socket,
+        //         invitee: null,
+        //     };
+        //     // Redirect an invetee to the main page
+        //     app.get(`/${sharePage}`, function(req, res, next) {
+        //         res.cookie('sharePage', sharePage, { expires: false, httpOnly: false });
+        //         res.redirect('/');    // TODO: Remove blinking start-modal window
+        //     });
+        // });
+        
         // Player changes a rival type: random / friend
+        // TODO: Deprecate it!
         socket.on('changeRival', (rival) => {
             socket.player.rival = rival;
             console.log(`${player.id} wants to play ${player.game} with ${player.rival}`);
@@ -232,21 +264,7 @@ io.on('connection', (socket) => {
         };
         if (waitingFriends[sharePage]) { console.log('FAILED TO MATCH FRIENDS !!!') };
 
-        // Generate friend's link
-        socket.on('generateFriendsLink', () => {
-            var sharePage = ganerateSharePage(8);
-            socket.emit('setFriendsLink', domain + sharePage);
-            // Add the socket to the waitingFriends
-            waitingFriends[sharePage] = {
-                inviter: socket,
-                invitee: null,
-            };
-            // Redirect an invetee to the main page
-            app.get(`/${sharePage}`, function(req, res, next) {
-                res.cookie('sharePage', sharePage, { expires: false, httpOnly: false });
-                res.redirect('/');
-            });
-        });
+
 
 
         // Chat
@@ -295,6 +313,6 @@ server.on('error', (err) => {
   console.error('Server error:', err);
 });
 
-server.listen(8081, () => {
-  console.log('server started on 8081');
+server.listen(3000, () => {
+  console.log('server started on 3000');
 });
