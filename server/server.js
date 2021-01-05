@@ -35,15 +35,17 @@ var rooms = {
     nard: [],
     backgammon: []
 }
+var waitingRandom;
 
 // waitingRandom = {
 //     nard: socket,
 //     backgammon: socket
 // };
-var waitingRandom = {
-    nard: null,
-    backgammon: null
-};
+// var waitingRandom = {
+//     nard: null,
+//     backgammon: null
+// };
+// var waitingRandom = {};
 
 // waitingFriends = {
 //     'LWCqJTyv': {
@@ -179,16 +181,9 @@ io.on('connection', (socket) => {
             removeFromWaitingFriendsBySocket(player.id);
         };
 
-        // Player changes a game type: nard / backgammon
-        // TODO: Deprecate it!
-        socket.on('changeGame', (prevGame, currGame) => {
-            player.game = currGame;
-            console.log(`${player.id} wants to play ${player.game} with ${player.rival}`);
-            removeFromWaitingRandom(socket, prevGame);
-        });
-
         // Set redirection preferences for the generated share link
-        socket.on('sharePageGenerated', (sharePage) => {
+        socket.on('rival_friend', (sharePage) => {
+            removeFromWaitingRandom(socket);
             // Add the socket to the waitingFriends
             waitingFriends[sharePage] = {
                 inviter: socket,
@@ -200,46 +195,24 @@ io.on('connection', (socket) => {
                 res.redirect('/');    // TODO: Remove blinking start-modal window
             });
         });
-        // Generate friend's link
 
-        // socket.on('generateFriendsLink', () => {
-        //     var sharePage = ganerateSharePage(8);
-        //     socket.emit('setFriendsLink', domain + sharePage);
-        //     // Add the socket to the waitingFriends
-        //     waitingFriends[sharePage] = {
-        //         inviter: socket,
-        //         invitee: null,
-        //     };
-        //     // Redirect an invetee to the main page
-        //     app.get(`/${sharePage}`, function(req, res, next) {
-        //         res.cookie('sharePage', sharePage, { expires: false, httpOnly: false });
-        //         res.redirect('/');    // TODO: Remove blinking start-modal window
-        //     });
-        // });
-        
-        // Player changes a rival type: random / friend
-        // TODO: Deprecate it!
-        socket.on('changeRival', (rival) => {
+        // Player changes a rival type to a random
+        socket.on('rival_random', () => {
             socket.player.rival = rival;
             console.log(`${player.id} wants to play ${player.game} with ${player.rival}`);
-            if (socket.player.rival === 'friend') {
-                removeFromWaitingRandom(socket);
-            } else if (socket.player.rival === 'random') {
-                // Remove the socket from the waitingFriends
-                removeFromWaitingFriends(socket.player.sharePage);
-            };
+            // Remove the socket from the waitingFriends
+            removeFromWaitingFriends(socket.player.sharePage);
         });
 
         // Start the game with a random rival
         socket.on('play', () => {
             console.log('play', player.id);
-            let waitingRival = waitingRandom[player.game];
-            if (waitingRival && waitingRival.player.id !== socket.player.id) {
+            if (waitingRandom && waitingRandom.player.id !== socket.player.id) {
                 console.log('game starts');
-                rooms[player.game].push(new Nard(waitingRival, socket));
-                waitingRandom[player.game] = null;     
+                rooms[player.game].push(new Nard(waitingRandom, socket));
+                waitingRandom = null;     
             } else {
-                waitingRandom[player.game] = socket;
+                waitingRandom = socket;
             };
         });
 

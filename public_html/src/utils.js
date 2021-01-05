@@ -30,6 +30,5 @@ function generateSharePage(length) {
         let newChar = characters.charAt(Math.floor(Math.random() * charactersLength));
         sharePage += newChar;
     }
-    emit('sharePageGenerated', sharePage);
     return sharePage;
 };

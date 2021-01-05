@@ -1,7 +1,6 @@
 const socket = io();
 var game = 'nard';
 var rival = 'random';
-var wait = false;
 
 
 // var dice;
@@ -245,7 +244,7 @@ function moveIsDone() {
 // document.getElementById('rival-random').onclick = rivalIsRandom;    // a random
 
 
-// TO THE SERVER
+// EMIT TO THE SERVER
 function emit(command, ...args) {
     socket.emit(command, ...args);
 };

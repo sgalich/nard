@@ -1,5 +1,4 @@
 // START-MODAL SCREEN
-var rival = '';
 
 
 // Show play / await / link
@@ -40,13 +39,12 @@ document.getElementById('rival-friend').onclick = function rivalIsFriend() {
     if (friendButton.classList.contains('selected')) {
         return;
     };
-    rival = 'friend';
-    emit('changeRival', rival);    // TODO: Deprecate it (all happens after play button is pressed)
     document.getElementById('rival-random').classList.remove('selected');
     friendButton.classList.add('selected');
-    document.getElementById('start-friends-link').value = domain + generateSharePage(8);
+    let sharePage = generateSharePage(8);
+    emit('rival_friend', sharePage);
+    document.getElementById('start-friends-link').value = domain + sharePage; 
     showInStartFooter('link');
-    wait = true;
 };
 
 // Rival - a random guy
@@ -56,20 +54,16 @@ document.getElementById('rival-random').onclick = function rivalIsRandom() {
     if (randomButton.classList.contains('selected')) {
         return;
     };
-    rival = 'random';
-    emit('changeRival', rival);    // TODO: Deprecate it (all happens after play button is pressed)
+    emit('rival_random');
     document.getElementById('rival-friend').classList.remove('selected');
     randomButton.classList.add('selected');
     showInStartFooter('play');
 };
 
 // PLAY button is clicked
-// TODO: WRITE IN TMP FILE!
 document.getElementById('start-play-btn').onclick = function pressPlayButton() {
     showInStartFooter('await');
     emit('play');
-    wait = true;
-    // console.log(sessionStorage.getItem('tabId'))
 };
 
 // Copy friend's link to clipboard by clicking the copy-icon
