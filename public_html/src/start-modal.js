@@ -25,13 +25,6 @@ function showInStartFooter(el) {
     };
 };
 
-// // Generate & set invitation link
-// function setSharePage() {
-//     let sharePage = domain + ganerateSharePage(8);
-//     document.getElementById('start-friends-link').value = sharePage;
-//     // socket.emit('sharePageGenerated');    // Generate a friend's link
-// };
-
 // Rival - a friend
 document.getElementById('rival-friend').onclick = function rivalIsFriend() {
     // Do nothing if the button is already active

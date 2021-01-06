@@ -108,10 +108,10 @@
             <div class="hint" id="hint">your turn</div>
                 
             <div id="diceBox">
-                <div class=die id="die3" result=""></div>
-                <div class=die id="die1" result=""></div>
-                <div class=die id="die2" result=""></div>
-                <div class=die id="die4" result=""></div>
+                <div class=die id="die3" val=""></div>
+                <div class=die id="die1" val=""></div>
+                <div class=die id="die2" val=""></div>
+                <div class=die id="die4" val=""></div>
             </div>
         
         </div>
@@ -307,38 +307,6 @@
 
     </script>
 
-    <!-- Dice roll -->
-    <script>
-
-
-        // function getDice() {
-        //     die3 = die4 = (die1 === die2) ? die1 : undefined;
-        //     let dice = [die1, die2, die3, die4].filter((die) => {
-        //         return Boolean(die);
-        //     });
-        //     return dice;
-        // };
-
-        // function renderDice() {
-        //     if (!dice) return;
-        //     // let dice = getDice();
-        //     // let die3, die4;
-        //     // die3 = die4 = (die1 === die2) ? die1 : undefined;
-        //     document.getElementById('die1').setAttribute('result', dice[0].val);
-        //     document.getElementById('die2').setAttribute('result', dice[1].val);
-        //     document.getElementById('die3').setAttribute('result', dice[2].val);
-        //     document.getElementById('die4').setAttribute('result', dice[3].val);
-        // };
-
-
-        // rollDice();
-        // Roll dice till they show different results
-        // while (this.die1 == this.die2) this.rollDice();
-
-
-
-
-    </script>
 
     <script src="src/utils.js"></script>
     <!-- type="module" -->

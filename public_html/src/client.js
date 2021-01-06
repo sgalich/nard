@@ -140,10 +140,10 @@ socket.on('renderDice',
     function renderDice(diceS) {
         dice = diceS;
         console.log('dice', dice);
-        document.getElementById('die1').setAttribute('result', dice[0].val);
-        document.getElementById('die2').setAttribute('result', dice[1].val);
-        document.getElementById('die3').setAttribute('result', dice[2].val);
-        document.getElementById('die4').setAttribute('result', dice[3].val);
+        document.getElementById('die1').setAttribute('val', dice[0].val);
+        document.getElementById('die2').setAttribute('val', dice[1].val);
+        document.getElementById('die3').setAttribute('val', dice[2].val);
+        document.getElementById('die4').setAttribute('val', dice[3].val);
     }
 );
 // socket.on('renderDice', renderDice);

@@ -347,21 +347,21 @@ checker.transparent {
             padding: 0;
             background-size: cover;
         }
-        .die[result='1'] {
+        .die[val='1'] {
             background-image: url('../images/die1.svg');
         }
-        .die[result='2'] {
+        .die[val='2'] {
             background-image: url('../images/die2.svg');
         }
-        .die[result='3'] {
+        .die[val='3'] {
             background-image: url('../images/die3.svg');
         }
-        .die[result='4'] {
+        .die[val='4'] {
             background-image: url('../images/die4.svg');
         }
-        .die[result='5'] {
+        .die[val='5'] {
             background-image: url('../images/die5.svg');
         }
-        .die[result='6'] {
+        .die[val='6'] {
             background-image: url('../images/die6.svg');
         }
