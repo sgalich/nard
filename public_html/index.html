@@ -108,10 +108,10 @@
             <div class="hint" id="hint">your turn</div>
                 
             <div id="diceBox">
-                <div class=die id="die3" result=""></div>
-                <div class=die id="die1" result=""></div>
-                <div class=die id="die2" result=""></div>
-                <div class=die id="die4" result=""></div>
+                <div class=die id="die3" val=""></div>
+                <div class=die id="die1" val=""></div>
+                <div class=die id="die2" val=""></div>
+                <div class=die id="die4" val=""></div>
             </div>
         
         </div>
@@ -138,21 +138,21 @@
     <!-- START SCREEN -->
     <div id="start-back"></div>
     
-        <!-- START MODAL -->
-        <div id="start-modal">
+    <!-- START MODAL -->
+    <div id="start-modal">
 
-            
+        
         <!-- START MODAL HEADER-->
         <div id="start-header">
             <p>Welcome back!</p>
             <p id="greeting-small">We're so exited to see you again!</p>
         </div>
 
-        <!-- Nard / Backgammon -->
+        <!-- Nard / Backgammon
         <div class="start-modal-row">
             <button id="game-nard" class="start option selected">nard</button>
             <button id="game-backgammon" class="start option" title="Sorry, this game is not ready yet.">backgammon</button>
-        </div>
+        </div> -->
 
         <!-- Random / Friend -->
         <div class="start-modal-row">
@@ -160,11 +160,11 @@
             <button id="rival-friend" class="start option">friend</button>
         </div>
 
-            <!-- START MODAL FOOTER-->
+        <!-- START MODAL FOOTER-->
         <div class="start-modal-footer">
             
             <!-- Shown by default -->
-            <button id="start-play-btn" class="start">play</button>
+            <button id="start-play-btn" class="start play show">play</button>
 
             <!-- Hidden by default, shown by PLAY button click -->
             <div id="start-await-random-rival">
@@ -188,6 +188,7 @@
 
         </div>
     </div>
+
 
 
 
@@ -306,41 +307,10 @@
 
     </script>
 
-    <!-- Dice roll -->
-    <script>
 
-
-        // function getDice() {
-        //     die3 = die4 = (die1 === die2) ? die1 : undefined;
-        //     let dice = [die1, die2, die3, die4].filter((die) => {
-        //         return Boolean(die);
-        //     });
-        //     return dice;
-        // };
-
-        // function renderDice() {
-        //     if (!dice) return;
-        //     // let dice = getDice();
-        //     // let die3, die4;
-        //     // die3 = die4 = (die1 === die2) ? die1 : undefined;
-        //     document.getElementById('die1').setAttribute('result', dice[0].val);
-        //     document.getElementById('die2').setAttribute('result', dice[1].val);
-        //     document.getElementById('die3').setAttribute('result', dice[2].val);
-        //     document.getElementById('die4').setAttribute('result', dice[3].val);
-        // };
-
-
-        // rollDice();
-        // Roll dice till they show different results
-        // while (this.die1 == this.die2) this.rollDice();
-
-
-
-
-    </script>
-
-    <!-- <script src="src/utils.js" defer></script> -->
+    <script src="src/utils.js"></script>
     <!-- type="module" -->
+    <script  src="src/start-modal.js" defer></script> 
     <script  src="src/client.js" defer></script> 
     <script src="src/moving.js" defer></script>
     <script src="src/nardRules.js" defer></script>

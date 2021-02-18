@@ -62,16 +62,13 @@ class Nard {
     placeInTheGame(ind) {
         let socket = this.players[ind];
         this.renderBoard(ind);
-        this.players[ind].emit('renderDice', this.dice);
+        if (this.dice) this.players[ind].emit('renderDice', this.dice);
         let color = this.players[ind].player.color
         console.log(this.turn === ind, this.turn, ind);
         if (this.turn === ind) {
             this.players[ind].emit('letMeMakeMyStep', color, this.moves, this.board);
         };
         socket.emit('hint', `Welcome to the ${socket.player.game} game!`);
-        // this.rollDice();
-        // socket.on('roll_dice', () => {this.rollDice()});
-        // socket.on('isThisOKMove', this.isThisOKMove);
     };
 
     // Render the whole page
@@ -162,8 +159,8 @@ class Nard {
         // Check whether we've got a winner or not
         let winnerInd = this.getWinnerInd();
         if (winnerInd === 0 || winnerInd === 1) {
-            printHint(this.players[winnerInd], 'You win! Congratulations!');
-            printHint(this.players[Math.abs(winnerInd - 1)], 'You lose');
+            this.printHint(this.players[winnerInd], 'You win! Congratulations!');
+            this.printHint(this.players[Math.abs(winnerInd - 1)], 'You lose');
             return;
             // TODO: MEDIUM: decide what to do here? Offer rematch or a new rival?
         };

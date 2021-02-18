@@ -1,3 +1,6 @@
+*.hide {
+    display: none;
+}
 input:focus,
 select:focus,
 textarea:focus,
@@ -34,10 +37,10 @@ button:focus {
     /* Take a template from jQuery ! */
 #start-modal {
     z-index:     100;
-    height:      90%;
+    height:      45%;
     width:       90%;
-    min-height:  400px;
-    max-height:  400px;
+    min-height:  270px;
+    max-height:  270px;
     min-width:   490px;
     max-width:   490px;
     font-size:   24px;
@@ -56,7 +59,7 @@ button:focus {
     color:        #ffffff;
     background:   #37393F;
     position:       fixed;
-
+    /* border: 10px solid green; */
 }
 #start-modal.hide {
     display: none;
@@ -66,7 +69,7 @@ button:focus {
     
     #start-header {
         font-weight:   600;
-        margin-bottom: 25px;
+        /* margin-bottom: 20px; */
         /* border:      1px dashed yellow; */
     }
         #greeting-small {
@@ -81,12 +84,12 @@ button:focus {
     .start-modal-row {
         margin:      0;
         padding:     0;
-        flex-grow:   2;
+        flex-grow:   0;
         font-size:   12px;
         line-height: 16px;
         font-weight: 600;
         /* border:      1px dashed yellow; */
-        display:         flex;
+        display:         block;
         flex-wrap:       wrap;
         color:         #8e9297;
         flex-direction:  row;
@@ -94,7 +97,6 @@ button:focus {
     }
 
         /* START MODAL BUTTONS */
-
         button.start {
             margin-top:      15px;
             margin-left:     20px;
@@ -106,7 +108,6 @@ button:focus {
             font-size:       16px;
             line-height:     24px;
             border-radius:   3px;
-            background:    #313339;
             color:         #dcddde;
             text-transform:  uppercase;
             text-align:      center;
@@ -116,6 +117,9 @@ button:focus {
             cursor:          pointer;
             border:          1px solid #232428;
             font-family:     "Lucida Sans Unicode", "Lucida Grande", sans-serif; 
+        }
+        button.start.option {
+            background:    #313339;
         }
         button.start:focus {
             outline: none;
@@ -127,14 +131,23 @@ button:focus {
         button.start.option.selected {
             border: 1px solid #7789D4;
         }
-        #start-play-btn {
+        button.start.play {
             background: #7789D4;
+            top: 50%;
+            left: 50%;
+            transform: translate(+43%, 0%);
         }
-        #start-play-btn:hover {
+        button.show {
+            display: inline-flex;
+        }
+        button.hide {
+            display: none;
+        }
+        button.start.play:hover {
             background: #6B7BBF;
             cursor: pointer;
         }
-    
+
     /* START MODAL FOOTER */
     
     .start-modal-footer {
@@ -143,10 +156,10 @@ button:focus {
         line-height: 12px;
         font-weight: 100;
         /* border:      1px dashed yellow; */
-        display:     flex;
+        display:     block;
         flex-wrap:   wrap;
         color:     #8e9297;
-        flex-direction:  column;
+        flex-direction:  row;
         align-items:     center;
         justify-content: center;
         text-align:      left;
@@ -155,21 +168,23 @@ button:focus {
         #start-play-link {
             display: none;
         }
-        #start-play-btn {
+        /* #start-play-btn {
             display: none;
-        }
+        } */
         #start-await-random-rival {
             display: none;
         }
         #start-await-random-rival.show {
-            display: block;
+            display: inline-flex;
+            flex-direction: column;
         }
         #start-play-link.show {
-            display: block;
+            display: inline-flex;
+            flex-direction: column;
         }
-        #start-play-btn.show {
+        /* #start-play-btn.show {
             display: block;
-        }
+        } */
         div.start.await {
             height:        40px;
             width:         380px;
@@ -238,6 +253,10 @@ button:focus {
             color:             #8e9297;
             border:              none;
             background:          inherit;
+        }
+        #start-friends-link::selection {
+            color: #4C4E55;
+            background-color: #E0E0E0;
         }
         #copy-icon {
             width:        27px;
