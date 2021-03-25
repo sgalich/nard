@@ -97,6 +97,7 @@ function removeFromWaitingFriendsBySocket(playerId) {
 // Get a cookie value by it's name
 function getCookVal(cookies, cookiename) {
     // if (typeof cookies !== "string") {return};    // why not String ??!
+    if (!cookies) return;
     for (cook of cookies.split('; ')) {
         [name, value] = cook.split('=');
         if (name === cookiename) return value;
@@ -275,4 +276,3 @@ server.on('error', (err) => {
 server.listen(PORT, () => {
   console.log(`server started on ${PORT}`);
 });
-
