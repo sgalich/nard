@@ -6,6 +6,9 @@
     --checker-size: 100%;
 }
 * {
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
     user-select: none;
 }
 body {
@@ -14,7 +17,6 @@ body {
     margin: 0px;
     padding: 0px;
     font-family: 'Noto Sans', Sans-Serif;
-    user-select: none;
 }
 .hidden {
     display: none;
