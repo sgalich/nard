@@ -162,7 +162,7 @@ io.on('connection', (socket) => {
 
         // Player changes a rival type to a random
         socket.on('rival_random', () => {
-            socket.player.rival = rival;
+            // socket.player.rival = rival;
             console.log(`${player.id} wants to play ${player.game} with ${player.rival}`);
             // Remove the socket from the waitingFriends
             removeFromWaitingFriends(socket.player.sharePage);
