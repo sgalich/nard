@@ -24,7 +24,8 @@ const server = http.createServer(app);
 const io = socketio(server);
 
 // var domain = 'https://onlinenard.com/';    // Truly domain
-var domain = 'localhost:3000/';
+var PORT = 80;
+var domain = `localhost:${PORT}/`;
 // var domain = clientPath;
  
 // rooms = {
@@ -271,6 +272,6 @@ server.on('error', (err) => {
   console.error('Server error:', err);
 });
 
-server.listen(3000, () => {
-  console.log('server started on 3000');
+server.listen(PORT, () => {
+  console.log(`server started on ${PORT}`);
 });
