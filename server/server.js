@@ -24,7 +24,7 @@ const server = http.createServer(app);
 const io = socketio(server);
 
 // var domain = 'https://onlinenard.com/';    // Truly domain
-var PORT = 80;
+var PORT = 3000;
 var domain = `localhost:${PORT}/`;
 // var domain = clientPath;
  
