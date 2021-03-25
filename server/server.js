@@ -97,7 +97,7 @@ function removeFromWaitingFriendsBySocket(playerId) {
 // Get a cookie value by it's name
 function getCookVal(cookies, cookiename) {
     // if (typeof cookies !== "string") {return};    // why not String ??!
-    if (!cookies) return;
+    // if (!cookies) return;
     for (cook of cookies.split('; ')) {
         [name, value] = cook.split('=');
         if (name === cookiename) return value;
@@ -109,7 +109,7 @@ function getCookVal(cookies, cookiename) {
 function findAGameForSocket(player) {
     for (game of rooms[player.game]) {
         if (player.id === game.players[0].player.id || player.id === game.players[1].player.id) {
-        return game;
+            return game;
         };
     };
     return;
