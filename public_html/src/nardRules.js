@@ -439,7 +439,7 @@ function arrangeAllowedStepsForTheMiddleOfTheGame() {
         for (let ind = dice.length - 1; ind >= 0; ind--) {
             let die = dice[ind];
             if (!die.active) continue;
-            // Add usual step
+            // Add single-die step
             if (isStepAllowed(idFrom, idFrom + die.val)) {
                 nextLevelIsAllowed = true;
                 // Do not add repeated moves
@@ -454,7 +454,7 @@ function arrangeAllowedStepsForTheMiddleOfTheGame() {
         };
 
         // Level 2: DOUBLE DICE: die1 + die2 (this equals to "die * 2" for doubles)
-        if (nextLevelIsAllowed && dice[0].active && dice[1].active) {
+        if (nextLevelIsAllowed && dice[1].active && dice[0].active) {
             nextLevelIsAllowed = false;
             let fieldTo = idFrom + dice[0].val + dice[1].val
             let inds = [0, 1];
@@ -475,7 +475,7 @@ function arrangeAllowedStepsForTheMiddleOfTheGame() {
         };
 
         // Level 3: TRIPPLE DICE: die * 3 (only for doubles)
-        if (nextLevelIsAllowed && dice[0].active && dice[1].active && dice[2].active) {
+        if (nextLevelIsAllowed && dice[2].active && dice[1].active && dice[0].active) {
             nextLevelIsAllowed = false;
             let fieldTo = idFrom + dice[0].val * 3;
             let inds = [0, 1, 2];
@@ -492,7 +492,7 @@ function arrangeAllowedStepsForTheMiddleOfTheGame() {
         };
 
         // Level 4: QUARDRIPPLE DICE die * 4 (only for doubles)
-        if (nextLevelIsAllowed && dice[0].active && dice[1].active && dice[2].active) {
+        if (nextLevelIsAllowed && dice[3].active && dice[2].active && dice[1].active && dice[0].active) {
             let fieldTo = idFrom + dice[0].val * 4;
             let inds = [0, 1, 2, 3];
             // Add usual step
