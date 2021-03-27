@@ -103,6 +103,10 @@ class Nard {
         };
         let die1 = Math.floor(Math.random() * 6) + 1;
         let die2 = Math.floor(Math.random() * 6) + 1;
+
+        // let die1 = 2;
+        // let die2 = 2;
+
         this.dice = getDice(die1, die2);
         this.players[0].emit('renderDice', this.dice);
         this.players[1].emit('renderDice', this.dice);
