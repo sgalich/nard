@@ -1,6 +1,6 @@
 // Global project variables
 // var domain = 'https://onlinenard.com/';    // Truly domain
-var domain = 'localhost:3000/';
+var domain = 'https://onlinenard.com/';
 
 
 // Two Maps comparison
