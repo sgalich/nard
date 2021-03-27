@@ -1,33 +1,21 @@
-// TODO: LOW: Add a database support (https://sequelize.org/master/)
-// TODO: LOW: Add a chat (https://www.rabbitmq.com)
-
-
 const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
-
-
 const Nard = require('./nard');
-
 const uuid = require('uuid');
 const { Console } = require('console');
 var cookie = require("cookies");
-
-// const randomColor = require('randomcolor');
-// const createBoard = require('./create-board');
-// const createCooldown = require('./create-cooldown');
-
 const app = express();
 const clientPath = `${__dirname}/../public_html`;
 console.log(`serving static from ${clientPath}`);
 const server = http.createServer(app);
 const io = socketio(server);
 
-// var domain = 'https://onlinenard.com/';    // Truly domain
 var PORT = 443;
-var domain = `localhost:${PORT}/`;
-// var domain = clientPath;
- 
+// var domain = 'https://onlinenard.com/';    // Truly domain
+// var domain = 'http://ec2-3-16-154-245.us-east-2.compute.amazonaws.com:443';    // domain now :(
+var domain = `http://localhost:${PORT}/`;
+
 // rooms = {
 //     nard: [Game(socket1, socket2), Game(socket1, socket2), ...],
 //     backgammon: [Game(socket1, socket2), Game(socket1, socket2), ...]
@@ -63,20 +51,6 @@ function setNewPlayerId(socket) {
     socket.emit('setTabId', tabId);
     return tabId;
 };
-
-// // Generate a pseudo link to share with a friend
-// function ganerateSharePage(length) {
-//     let sharePage = '';
-//     var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-//     var charactersLength = characters.length;
-//     for (var i = 0; i < length; i++) {
-//         let newChar = characters.charAt(Math.floor(Math.random() * charactersLength));
-//         sharePage += newChar;
-//     }
-//     return sharePage;
-// };
-
-
 
 // Remove the entry from waitingFriends by sharePage
 function removeFromWaitingFriends(sharePage) {
@@ -152,10 +126,6 @@ io.on('connection', (socket) => {
                     gm.placeInTheGame(1);
                 };
             });
-            // If the socket is in a waitingRandom we hide a play button, show 'await'
-            if (waitingRandom && waitingRandom.player.id === player.id) {
-                socket.emit('pressPlayButton');    // TODO: WHAT IS IT? Clean it?
-            };
             // If socket is in waitingFriends - remove it from here
             removeFromWaitingFriendsBySocket(player.id);
         };
@@ -207,7 +177,7 @@ io.on('connection', (socket) => {
 
         console.log('sharePage', sharePage);
         console.log('socket.request.headers.cookie', socket.request.headers.cookie);
-        console.log('waitingFriends', waitingFriends);
+        // console.log('waitingFriends', waitingFriends);
 
         // Check for inviter existing in order not to clear that cookie
         if (sharePage && inviter) {
@@ -224,34 +194,15 @@ io.on('connection', (socket) => {
         };
         if (waitingFriends[sharePage]) { console.log('FAILED TO MATCH FRIENDS !!!') };
 
-
-
-
-        // Chat
-        // socket.on('hint', (text) => {             // RECIEVE
-        //     console.log('Someone send this: ', text);
-        //     io.emit('hint', text);                       // SEND TO ALL
-        // });
-
-
-
-
         ////////////////////////////////////////////////////////
         // THE GAME
         socket.on('moveIsDone', (moves, board) => {
             let game = findAGameForSocket(socket.player);
             game.board = board;
-            
-            
-            console.log('moves[0].steps', moves[0].steps);
-            
-            
             game.moves = moves;
             game.makeTurn();
         });
         ////////////////////////////////////////////////////////
-
-
 
         // User is disconnected - remove the user from waitingRandom and from rooms (?)
         socket.on('disconnect', function() {
@@ -270,9 +221,9 @@ io.on('connection', (socket) => {
 });
 
 server.on('error', (err) => {
-  console.error('Server error:', err);
+    console.error('Server error:', err);
 });
 
 server.listen(PORT, () => {
-  console.log(`server started on ${PORT}`);
+    console.log(`server started on ${domain}`);
 });

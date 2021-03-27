@@ -194,10 +194,10 @@ class Nard {
 
 
 
-        console.log('makeTurn()');
-        console.log('this.dice', this.dice);
-        console.log('this.board', this.board);
-        console.log('this.moves', this.moves);
+        // console.log('makeTurn()');
+        // console.log('this.dice', this.dice);
+        // console.log('this.board', this.board);
+        // console.log('this.moves', this.moves);
         
 
         

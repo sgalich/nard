@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
 
     <!-- Favicon -->
-    <link rel="icon" href="images/die6.svg" type="image/svg" sizes="16x16">
+    <link rel="icon" href="images/favicon.svg" type="image/svg" sizes="16x16">
 
     <!-- Fonts -->
     <link href='https://fonts.googleapis.com/css?family=Red Rose' rel='stylesheet'>
@@ -21,23 +21,25 @@
     <!-- Styles -->
     <link rel="stylesheet" href="styles/start.css">
     <link rel="stylesheet" href="styles/game.css">
-    
-    <!-- Drag'n'drop. See: https://github.com/Bernardo-Castilho/dragdroptouch -->
-    <!-- <script src="src/DragDropTouch.js"></script> -->
-
-    <!-- Bootstrap-->
-    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous"> -->
-
-    <!-- Mobile drag'n'drop -->
-    <!-- <link rel="stylesheet" href="libs/mobile-drag-drop/release/default.css"> -->
-    <!-- <script src="libs/mobile-drag-drop/release/index.min.js"></script> -->
 
 </head>
  
 
 <body>
     <div id="board">
+        
+        <div id="horizontal">
+            
+            <div class="hint" id="hint">your turn</div>
+                
+            <div id="diceBox">
+                <div class=die id="die3" val=""></div>
+                <div class=die id="die1" val=""></div>
+                <div class=die id="die2" val=""></div>
+                <div class=die id="die4" val=""></div>
+            </div>
+        
+        </div>
 
         <div class="vertical">
             <div class="field top" id="24"></div>
@@ -102,37 +104,7 @@
             <div class="field top" id="13"></div>
             <div class="field bottom" id="12"></div>
         </div>
-
-        <div id="horizontal">
-            
-            <div class="hint" id="hint">your turn</div>
-                
-            <div id="diceBox">
-                <div class=die id="die3" val=""></div>
-                <div class=die id="die1" val=""></div>
-                <div class=die id="die2" val=""></div>
-                <div class=die id="die4" val=""></div>
-            </div>
-        
-        </div>
-    
     </div>
-
-
-
-    <!--
-        
-        Chat
-        
-        <div class="chet" id="chet">
-            <form id="chat-form" style="bottom: 0px; position: absolute;">
-                <input id="chat-input">
-                <button id="chat-send">Send</button>
-            </form>
-        </div>
-    -->
-
-
 
 
     <!-- START SCREEN -->
@@ -190,24 +162,9 @@
     </div>
 
 
-
-
-  <!-- <div class="test"></div> -->
-
-
-
-
-    <!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script> -->
-
-    <!-- Peer.js -->
-    <!-- <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script> -->
-
     <!-- Socket.io -->
     <script src="/socket.io/socket.io.js"></script>
     
-
 
     <!-- My scripts -->
     <!-- Initiate global variables -->
@@ -314,8 +271,6 @@
     <script  src="src/client.js" defer></script> 
     <script src="src/moving.js" defer></script>
     <script src="src/nardRules.js" defer></script>
-    
-    
 
 
 </body>

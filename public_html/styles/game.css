@@ -1,4 +1,3 @@
-
 :root {
     --scale-hovered-checker: 1.025;
     --scale-selected-checker: 1.05;
@@ -27,33 +26,14 @@ body {
 
 #board {
     /* TEST SETTINGS */
-
-
-
-    
-    
     /* Background & border */
     /* background-image: url('../images/board.svg'); */
     /* background-repeat: no-repeat; */
     /* background-size: 100%; */
     /* Center horizontally & vertically*/
     
-    /* background-color: #ffffff; */
-    /* background-image: url("https://www.transparenttextures.com/patterns/concrete-wall-3.png"); */
-    /* background-image: url("https://www.transparenttextures.com/patterns/egg-shell.png"); */
-    /* background-image: url("https://www.transparenttextures.com/patterns/gplay.png"); */
-    /* background-image: url("https://www.transparenttextures.com/patterns/gray-lines.png"); */
-    /* background-image: url("https://www.transparenttextures.com/patterns/grey-jean.png"); */
-    /* background-image: url("https://www.transparenttextures.com/patterns/groovepaper.png"); */
-    /* background-image: url("https://www.transparenttextures.com/patterns/light-paper-fibers.png"); */
-    /* background-image: url("https://www.transparenttextures.com/patterns/squairy.png"); */
-    /* background-image: url("https://www.transparenttextures.com/patterns/swirl.png"); */
-    /* background-image: url("https://www.transparenttextures.com/patterns/texturetastic-gray.png"); */
-    /* background-image: url("https://www.transparenttextures.com/patterns/translucent-fibres.png"); */
-    /* background-image: url("https://www.transparenttextures.com/patterns/tweed.png"); */
-    /* background-image: url("https://www.transparenttextures.com/patterns/white-wave.png"); */
+
     background-image: url("https://www.transparenttextures.com/patterns/dotnoise-light-grey.png");
-    /* background-image: url("https://www.transparenttextures.com/patterns/zig-zag.png"); */
     
     background-repeat: none;
     /* background-size: cover; */
@@ -83,6 +63,89 @@ body {
     flex-direction: row;
     box-sizing: content-box;
 }
+
+    #horizontal {
+        /* border: 1px dashed purple; */
+        height: 10%;
+        width: 100%;
+        position: absolute;
+        top: calc(50% - 10% / 2);
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: space-evenly;
+        align-items: center;
+    }
+
+        /* HINT */
+
+        #hint {
+            /* Test */
+            /* border: 1px dashed red; */
+            z-index: 2;
+
+            /* Size & position */
+            width: 50%;
+            height: 100%;
+            display: flex;
+            order: 1;
+            font-weight: 90;
+            line-height: 100%;
+            vertical-align: middle;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+
+            /* Font */
+            /* font-family: 'Red Rose'; */
+            /* font-family: 'Source Sans Pro'; */
+            font-family: 'Montserrat';
+            color: #70797B;
+            font-size: 200%;
+        }
+
+        /* DICE */
+
+        #diceBox {
+            
+            /* border: 1px dashed red; */
+            order: 2;
+            display: flex;
+            flex-flow: row nowrap;
+            justify-content: center;
+            align-items: center;
+            align-content: center;
+            width: 50%;
+            height: 100%;
+            z-index: 2;
+        }
+            .die {
+                /* border: 1px dashed purple; */
+                flex-shrink: 4;
+                width: 10%;
+                height: 100%;
+                margin: 2%;
+                padding: 0;
+                background-size: cover;
+            }
+            .die[val='1'] {
+                background-image: url('../images/die1.svg');
+            }
+            .die[val='2'] {
+                background-image: url('../images/die2.svg');
+            }
+            .die[val='3'] {
+                background-image: url('../images/die3.svg');
+            }
+            .die[val='4'] {
+                background-image: url('../images/die4.svg');
+            }
+            .die[val='5'] {
+                background-image: url('../images/die5.svg');
+            }
+            .die[val='6'] {
+                background-image: url('../images/die6.svg');
+            }
+        
     .vertical {
         /* border: 1px dashed yellow; */
         top: 0px;
@@ -115,7 +178,7 @@ body {
             margin: 0;
             padding: 0;
             height: 50%;
-            z-index: 2;
+            z-index: 3;
             position: relative;
             display: flex;
             flex-wrap: nowrap;
@@ -274,96 +337,3 @@ checker.transparent {
   transition-delay: 1s;
   transition:left .33s ease;
 } */
-
-
-
-
-
-
-
-[draggable] {
-    user-select: none;
-}
-
-
-#horizontal {
-    /* border: 1px dashed purple; */
-    height: 10%;
-    width: 100%;
-    position: absolute;
-    top: calc(50% - 10% / 2);
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: space-evenly;
-    align-items: center;
-}
-
-    /* HINT */
-
-    #hint {
-        /* Test */
-        /* border: 1px dashed red; */
-        z-index: 10;
-
-        /* Size & position */
-        width: 50%;
-        height: 100%;
-        display: flex;
-        order: 1;
-        font-weight: 90;
-        line-height: 100%;
-        vertical-align: middle;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-
-        /* Font */
-        /* font-family: 'Red Rose'; */
-        /* font-family: 'Source Sans Pro'; */
-        font-family: 'Montserrat';
-        color: #70797B;
-        font-size: 200%;
-    }
-
-    /* DICE */
-
-    #diceBox {
-        
-        /* border: 1px dashed red; */
-        order: 2;
-        display: flex;
-        flex-flow: row nowrap;
-        justify-content: center;
-        align-items: center;
-        align-content: center;
-        width: 50%;
-        height: 100%;
-        z-index: 3;
-    }
-        .die {
-            /* border: 1px dashed purple; */
-            flex-shrink: 4;
-            width: 10%;
-            height: 100%;
-            margin: 2%;
-            padding: 0;
-            background-size: cover;
-        }
-        .die[val='1'] {
-            background-image: url('../images/die1.svg');
-        }
-        .die[val='2'] {
-            background-image: url('../images/die2.svg');
-        }
-        .die[val='3'] {
-            background-image: url('../images/die3.svg');
-        }
-        .die[val='4'] {
-            background-image: url('../images/die4.svg');
-        }
-        .die[val='5'] {
-            background-image: url('../images/die5.svg');
-        }
-        .die[val='6'] {
-            background-image: url('../images/die6.svg');
-        }
