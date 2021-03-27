@@ -6,7 +6,8 @@ This is a simple web-version of [nard game](https://en.wikipedia.org/wiki/Nard_(
 - [x] ! Fix error: row above hovers under the board brim in narrow screens
 - [x] ! Fix error: cannot select upper checker at the beggining of the game
 - [ ] ! Fix error: a ghost checker hovers sometimes. Get rid of any ghost checkers after a step is done.
-- [ ] Deploy on https://onlinenard.com domain (AWS)
+- [x] Deploy on https://onlinenard.com domain (AWS)
+- [ ] Open modal after board (if needed)
 - [ ] Steps cancellation
 - [ ] Show rival's steps in real time
 - [ ] The whole move cancellation (with timout?)

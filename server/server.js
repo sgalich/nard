@@ -12,9 +12,9 @@ const server = http.createServer(app);
 const io = socketio(server);
 
 var PORT = 443;
-// var domain = 'https://onlinenard.com/';    // Truly domain
+var domain = 'https://onlinenard.com/';    // Truly domain
 // var domain = 'http://ec2-3-16-154-245.us-east-2.compute.amazonaws.com:443';    // domain now :(
-var domain = `http://localhost:${PORT}/`;
+//var domain = `http://localhost:${PORT}/`;
 
 // rooms = {
 //     nard: [Game(socket1, socket2), Game(socket1, socket2), ...],
