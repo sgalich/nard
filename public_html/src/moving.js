@@ -71,14 +71,7 @@ function chooseTheClosestField(fieldFrom, x, y) {
     return theClosestField;
 };
 
-// Finds the id of the field with selected checker or returns null
-function findIdFrom() {
-    let selectedChecker = document.getElementsByClassName('selected')[0];
-    if (selectedChecker) {
-        return selectedChecker.parentNode.getAttribute('id');
-    };
-    return;
-};
+
 
 // Checks if a field is owned by a player
 function isMyField(field) {
@@ -309,6 +302,50 @@ function mouseClicksField(e) {
     };
 };
 
+
+
+
+
+
+// //////////////////////////////////////////// //////////////////////////////////////////
+// // New function
+// // Mouse down
+// // Select a checker from a field we allowed to make a step
+// function mouseClicksField(e) {
+//     e.preventDefault();
+//     // Do nothing if it was not left click
+//     if (e.which === 2 || e.which === 3) return;
+//     // Save mouse click coordinates
+//     mouseDownCoordinates.push({x: e.pageX, y: e.pageY});
+//     // Check whether the event was on a field or not
+//     let field = getFieldClicked(e.target);
+//     if (!field) return;
+//     let selectedChecker = document.getElementsByClassName('selected')[0];
+//     // Just select a new checker
+//     if (!selectedChecker) {
+//         if (isMyField(field)) {
+//             makeCheckerAt(field, 'selected');
+//             highlightAllowedFieldsFor(field);
+//             addDragEventListeners(field.lastChild, e.pageX, e.pageY);
+//         };
+//     // Select another checker
+//     } else if (isMyField(field) && field.lastChild && selectedChecker != field.lastChild) {
+//         unmakeAllCheckers('selected');
+//         highlightAllowedFieldsFor(field);
+//         makeCheckerAt(field, 'selected');
+//         addDragEventListeners(field.lastChild, e.pageX, e.pageY);
+//     // Deselect all
+//     } else unmakeAllCheckers('selected');
+// };
+// //////////////////////////////////////////// //////////////////////////////////////////
+
+
+
+
+
+
+
+
 // Mouse moves when clicked
 function mouseMovesWhenClicked(e) {
     // TODO: Fix bug: center ghost checker position when dragging
@@ -323,6 +360,16 @@ function mouseMovesWhenClicked(e) {
 
 // Mouse up
 function mouseUp(e) {
+
+    // Finds the id of the field with selected checker or returns null
+    function findIdFrom() {
+        let selectedChecker = document.getElementsByClassName('selected')[0];
+        if (selectedChecker) {
+            return selectedChecker.parentNode.getAttribute('id');
+        };
+        return;
+    };
+
     e.preventDefault();
     // Do nothing if it was not left click
     if (e.which === 2 || e.which === 3) return;
@@ -374,7 +421,7 @@ document.getElementById('board').addEventListener('contextmenu', (e) => {
 
 // Add events to highlight allowed steps
 function addHoverNClickEvents() {
-    // TODO: Remove ghost checker here (or do something with it)
+    // Remove a ghost checker before start to make any new steps
     if (ghostChecker) ghostChecker.remove();
     // Hover events
     for (field of fields) {
