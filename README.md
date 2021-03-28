@@ -8,8 +8,11 @@ This is a simple web-version of [nard game](https://en.wikipedia.org/wiki/Nard_(
 - [x] ! Fix error: cannot select upper checker at the beggining of the game
 - [ ] ! Fix error: a ghost checker hovers sometimes. Get rid of any ghost checkers after a step is done.
     - [ ] Noticed when dragging while opponent's turn
-- [ ] ! Fix error: restrict unfull move when full move is possible
-- [ ] Rules: allows steps when only full move is possible
+- [x] ! Fix error: Rules: restrict unfull move when full move is possible
+    - [ ] Check how good does it work
+- [ ] Fix bug: center ghost checker position when dragging by mouse
+- [ ] Rules: restrict dice-steps when only full move is possible
+- [ ] Remove selection for moving (leave it just for checking possible steps)
 - [x] Deploy on https://onlinenard.com domain (AWS)
 - [ ] Open modal after board (if needed)
 - [ ] Steps cancellation

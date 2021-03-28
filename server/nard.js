@@ -76,11 +76,6 @@ class Nard {
         let socket = this.players[ind];
         socket.emit('hideStartModal');
         socket.emit('renderCheckers', this.board, socket.player.color);
-        // if (invert === 1) {
-        //     socket.emit('renderDice', [this.die1, this.die2]); 
-        // } else {
-        //     socket.emit('renderDice', [this.die2, this.die1]);
-        // };
     };
 
     // Main function to roll dice
@@ -103,10 +98,6 @@ class Nard {
         };
         let die1 = Math.floor(Math.random() * 6) + 1;
         let die2 = Math.floor(Math.random() * 6) + 1;
-
-        // let die1 = 2;
-        // let die2 = 2;
-
         this.dice = getDice(die1, die2);
         this.players[0].emit('renderDice', this.dice);
         this.players[1].emit('renderDice', this.dice);

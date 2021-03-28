@@ -1,16 +1,13 @@
-// Game physics - Checkers moving algorithms
-
 // TESTS:
 // TODO: TEST: cursor: grab on field/checker when click/drag - ???
 
 
 // TODO: HIGH: Restrict half-moves when it is possible to a full move
-// TODO: HIGH: 2-2 error: adds additional step after 1st 2 is done !!!! 1-1 - the same !!!
 
 
 // TODO: MEDIUM: Split this file for server - client after moving rules are done !
-// TODO: MEDIUM: MAKE TRANSPARENT RIVAL'S CHECKERS ON TH FIELD #1 when bearing-off
-// TODO: MEDIUM: Make cancel steps here as idFrom<=idTo (reversed) - highlight them with another color (i.e. yellow)
+// TODO: MEDIUM: ??? MAKE TRANSPARENT RIVAL'S CHECKERS ON TH FIELD #1 when bearing-off
+// TODO: MEDIUM: Make cancel steps
 
 
 ///////////////////////////////////
@@ -32,14 +29,12 @@
 function isTheFieldRivals(fieldId, brd=board) {
     if (brd[fieldId] === 0) return false;
     return (Math.sign(colorN) !== Math.sign(brd[fieldId]));
-    // return ((colorN > 0) !== (brd[fieldId] >= 0));
 };
 
 // If the field is mine
 function isTheFieldMine(fieldId, brd=board) {
     if (brd[fieldId] === 0) return false;
     return (Math.sign(colorN) === Math.sign(brd[fieldId]));
-    // return ((colorN > 0) === (brd[fieldId] > 0));
 };
 
 // Rearrange stepsMade, diceMade, allowedSteps
@@ -47,30 +42,14 @@ function resetGlobalVariables() {
     stepsMade = moves[moves.length - 1].steps;    // For convinience
     // Set diceMade
     diceMade = [];
-    // let valMoved = 0;
-    // stepsMade.forEach((step) => {
-    //     let [idFrom, idTo] = step.entries().next().value;
-    //     diceMade.push(idTo - idFrom);
-    //     valMoved += idTo - idFrom;
-    // });
-    // // dice = getDice();    // dice with active/uncative dice values
-    // // Set remainedValToStep
-    // let valToMove = dice
-    //     .map((x) => x.val)
-    //     .filter((die) => {return Boolean(die)})
-    //     .reduce((total, num) => {return total + num});
-    // remainedValToStep = valToMove - valMoved;
     // Empty allowedSteps
     allowedSteps = [];
-    // allowedStepsOld = [];
 };
 
 // Checks if there was a move from the fieldId 1
 function wasThereAStepFromTheHeadField() {
     for (step of stepsMade) {
         if (step.idFrom === 1) return true;
-        // let [idFrom, _] = step.entries().next().value;
-        // if (idFrom === 1) return true;
     };
     return false;
 };
@@ -128,45 +107,13 @@ function is6CheckersInARowRuleRespected(idFrom, die) {
 
 // Checks whether it is allowed step
 function isStepAllowed(idFrom, idTo) {
-    // let idTo = idFrom + die;
-    // Restrict getiing twice a checker from the head
+    // Restrict getting twice a checker from the head
     if (wasThereAStepFromTheHeadField() && idFrom === 1 && moves.length > 2) return false;
-    if (
-        idTo <= 24
-        // && !isTheFieldRivals(idTo)    // if the fieldTo is mine or empty
-        && !isTheFieldRivals(idTo)
-        // && ((colorN > 0) === (board[idTo] >= 0))    // if the fieldTo is mine or empty
-        // && (die <= remainedValToStep)    // for doubles
-    ) {
+    if (idTo <= 24 && !isTheFieldRivals(idTo)) {
         return true;
     };
     return false;
 };
-
-// // Add reversed steps for steps that are already made by a player
-// function addCancelSteps() {
-//     if (!allowedStepsOld.length) return;
-//     // Add cancel steps
-//     stepsMade.forEach((step) => {
-//         let [idFrom, idTo] = step.entries().next().value;
-//         allowedStepsOld.push(new Map().set(idTo, idFrom));
-//         // Add an ability to change a step (make a step back with another dice)
-//         if (idTo - idFrom === die1) {
-//             allowedStepsOld.push(new Map().set(idTo, idFrom + die2));
-//         } else {
-//             allowedStepsOld.push(new Map().set(idTo, idFrom + die1));
-//         };
-//         // Additional cancellations for big steps when the are double dice
-//         if (die1 === die2 && idTo - idFrom > die1) {    // i.e. 1 => 16
-//             if (moves.length < 2) return;    // 3-3 hardcoded
-//             microCancelStep = die1;
-//             while (microCancelStep < idTo - idFrom) {    // i.e. 5 < 16 - 1
-//                 allowedStepsOld.push(new Map().set(idTo, idTo - microCancelStep));
-//                 microCancelStep += die1;
-//             };
-//         };
-//     });
-// };
 
 // Count how many my checkers on the fields range
 function countMyCheckersInRange(idFrom, idTo=24) {
@@ -286,7 +233,6 @@ function arrangeAllowedStepsForTheSecondMove() {
             };
         };
     };
-    // TODO: HIGH: Check this - it was else if in board.html, but it didn't work with the server version
     // If unique dice
     if (dice[0].val !== dice[1].val) {
         if (!stepsMade.length) {
@@ -462,14 +408,10 @@ function arrangeAllowedStepsForTheMiddleOfTheGame() {
             inds = (dice[3].active) ? [2, 3] : (dice[2].active) ? [1, 2] : inds;
             // Add usual step
             if (isStepAllowed(idFrom, fieldTo)) {
-                // Do not add repeated moves
-                // if (getAllAllowedIdTosFor(idFrom).includes(idFrom + die.val)) continue;
                 nextLevelIsAllowed = true;
                 addNewAllowedStep(idFrom, fieldTo, inds, callbackForReplacingChecker);
             // Bearing-off special: straight to the "25"th field
             } else if (isItBearingOff() && fieldTo === 25) {
-                // Do not add repeated moves
-                // if (getAllAllowedIdTosFor(idFrom).includes(finalIdTo)) continue;
                 addNewAllowedStep(idFrom, finalIdTo, inds, callbackForBearingOff);
             };
         };
@@ -519,249 +461,131 @@ function arrangeAllowedStepsForTheMiddleOfTheGame() {
     };
 };
 
+// Get rid of unfull steps (Allow only full moves when it is possible)
+// Example:
+// Dice = [6, 2, null, null]
+// Allowed steps: 9=>15, 10=>12, 10=>16
+// 10=>16 needs to be restricted bc we have a full move 9=>15, 10=>12
+// And if we step 10=>16 then we won't be able to step dice=2
+function restrictStepsLeadToUnfullMoveIfFullMoveIsPossible() {
+
+    // Extract from allowed steps idFroms for single steps
+    function getIdsFromForSingleSteps() {
+        let steps = {'0': new Set(), '1': new Set()};
+        for (let step of allowedSteps) {
+            if (step.dice.length === 1) {
+                
+                // console.log('step.dice.length', step.dice.length);
+                // console.log('steps', steps);
+                // console.log('step.dice', step.dice);
+                // console.log('step.idFrom', step.idFrom);
+
+                steps[String(step.dice[0])].add(step.idFrom);
+            };
+        };
+        
+        
+        // console.log('steps', steps);
+        // console.log('allowedSteps', allowedSteps);
+        
+        
+        return steps;
+    };
+
+    // Checks whether a full move is possible or not
+    function isFullMovePossible(steps) {
+        // If there is possible to make die1 + die2 with one checker
+        for (let step of allowedSteps) {if (step.dice.length === 2) return true};
+        // Or if we can step both die1 & die2 in general
+        if (steps['0'].size && steps['1'].size) {
+            // If we can step from different idFrom
+            let difference = new Set([
+                ...[...steps['0']].filter(x => !steps['1'].has(x)),
+                ...[...steps['1']].filter(x => !steps['0'].has(x))
+            ]);
+            if (difference.size) return true;
+            // If we can make both die1 & die2 steps from the same one fieldId
+            // and there are multiple checkers on this field
+            let union = new Set([...steps['0']].filter(x => steps['1'].has(x)));
+            for (idFrom of union) {
+                if (Math.abs(board[idFrom]) > 1) return true;
+            };
+        };
+        return false;
+    };
+    
+    // Function as applicable to non-double dice only
+    // And it is applicable only for the first step in the move
+    // (later it will be too late to restrict anything)
+    // That's why we ain't got no need to check stepsMade
+    if (dice[0].val === dice[1].val || !stepsMade.length ) return allowedSteps;
+    // And it isn't applicable if there is no opportunity for a full move
+    var steps = getIdsFromForSingleSteps();
+    if (!isFullMovePossible(steps)) return allowedSteps;
+    return allowedSteps.filter((step) => {
+        // If we can make both die1 & die2 steps from the same one fieldId
+        // and there are multiple checkers on this field
+        if (steps['0'].has(step.idFrom)
+            && steps['1'].has(step.idFrom)
+            && Math.abs(board[idFrom]) > 1) return true;
+        // If there is at least one alternative step for another dice
+        if (steps['0'].has(step.idFrom)
+            && new Set([...steps['1']].filter(x => x != step.idFrom)).size) return true;
+        if (steps['1'].has(step.idFrom)
+            && new Set([...steps['0']].filter(x => x != step.idFrom)).size) return true;
+        
+        console.log(`filtered step ${step} from allowedSteps:`, allowedSteps);
+        
+        return false;
+    });
+};
+
 // Get all possible steps according to the board situation
 function rearrangeAllowedSteps() {
     resetGlobalVariables();
     // If it is the first move
     if (moves.length === 1) {
-        // ArrangeAllowedSteps for the first move
-        console.log('\n1ST MOVE !');
+        // ArrangeAllowedSteps for the 1st move
         arrangeAllowedStepsForTheFirstMove();
     // If it is the second move
     } else if (moves.length === 2) {
-        console.log('\n2ND MOVE !');
-        // ArrangeAllowedSteps for the second move
+        // ArrangeAllowedSteps for the 2nd move
         arrangeAllowedStepsForTheSecondMove();
     } else {
-        // console.log('\nMIDDLE OF THE GAME!');
         arrangeAllowedStepsForTheMiddleOfTheGame();
-        // addCancelSteps();
     };
+
+    // console.log('board:', board);
+    // console.log('allowedSteps:', allowedSteps);
+    // console.log('stepsMade:', stepsMade);
+
+    // Restrict unfull moves when full move is possible
+    allowedSteps = restrictStepsLeadToUnfullMoveIfFullMoveIsPossible();
+
+    // TODO: restrict dice-steps when only full move is possible
+
+
     addHoverNClickEvents();
 
-
-    console.log('allowedSteps after rearranging: ', allowedSteps);
-
-
-    // console.log('color', color);
-    // console.log('colorN', colorN);
-    // console.log('dice', dice);
-    // console.log('stepsMade', stepsMade);
-    // console.log('allowedSteps', allowedSteps);
-    // console.log('moves', moves);
-    // console.log('board', board);
-    // console.log('\n');
-
-
+    // console.log('allowedSteps after rearranging: ', allowedSteps);
+    // console.log('stepsMade:', stepsMade);
 
     // Restrict any other steps when the move is done
     if (!allowedSteps.length) {
 
         
-        console.log('\n');
-        console.log('Move is complete.');
-        console.log('color', color);
-        console.log('colorN', colorN);
-        console.log('dice', dice);
-        console.log('stepsMade', stepsMade);
-        console.log('allowedSteps', allowedSteps);
-        console.log('moves', moves);
-        console.log('board', board);
-        console.log('\n');
+        // console.log('\n');
+        // console.log('Move is complete.');
+        // console.log('color', color);
+        // console.log('colorN', colorN);
+        // console.log('dice', dice);
+        // console.log('stepsMade', stepsMade);
+        // console.log('allowedSteps', allowedSteps);
+        // console.log('moves', moves);
+        // console.log('board', board);
+        // console.log('\n');
         
 
         moveIsDone();
-
-        // if (countMyCheckersInRange(1)) {
-        //     // changeTurn();
-        //     // moveIsFinished();
-        //     moveIsDone();
-        // } else {
-        //     document.getElementById('hint').innerHTML = 'Congratulations! You win!';
-        // };
-        
-        // changeTurn();
     };
-    //     //////////////////////////////////////////////////////
-    //     // test
-    //     // dice = [];
-    //     // rollDice();
-    //     // dice = getDice(die1, die2);
-    //     // changeTurn();
-    //     //////////////////////////////////////////////////////
-    //     // console.log('Turn is Changed');
-    //     // console.log('color', color);
-    //     // console.log('colorN', colorN);
-    //     // console.log('dice', dice);
-    //     // console.log('stepsMade', stepsMade);
-    //     // console.log('allowedSteps', allowedSteps);
-    //     // console.log('moves', moves);
-    //     // console.log('board', board);
-    //     // console.log('\n');
-
-
-
-    //     console.log('BEFORE Turn is Changed');
-    //     console.log('BEFORE color', color);
-    //     console.log('BEFORE colorN', colorN);
-    //     console.log('BEFORE dice', dice);
-    //     console.log('BEFORE stepsMade', stepsMade);
-    //     console.log('BEFORE allowedSteps', allowedSteps);
-    //     console.log('BEFORE moves', moves);
-    //     console.log('BEFORE board', board);
-    //     console.log('\n');
-
-
-
-    //     removeHoverNClickEvents();
-
-    //     // Change me
-    //     color = String(-color);
-    //     colorN = -colorN;
-    
-    //     // Flip the board
-    //     board = getReversedBoard(board);
-    //     renderCheckers(board);
-    //     rollDice();
-    //     moves.push({
-    //         color: colorN,
-    //         dice: [die1, die2],
-    //         steps: []
-    //     });
-    //     stepsMade = [];
-    //     rearrangeAllowedSteps();
-        
-
-    //     console.log('Turn is Changed');
-    //     console.log('color', color);
-    //     console.log('colorN', colorN);
-    //     console.log('dice', dice);
-    //     console.log('stepsMade', stepsMade);
-    //     console.log('allowedSteps', allowedSteps);
-    //     console.log('moves', moves);
-    //     console.log('board', board);
-    //     console.log('\n');
-
-
-    // };
 };
-
-// function changeTurn() {
-//     removeHoverNClickEvents();
-
-//     // Change me
-//     color = String(-color);
-//     colorN = -colorN;
-
-//     // Flip the board
-//     board = getReversedBoard(board);
-//     renderCheckers(board);
-
-//     letMeMakeMyStep();
-// };
-
-// // The main function that let player to make a move
-// function letMeMakeMyStep() {
-//     rollDice();
-//     moves.push({
-//         color: colorN,
-//         dice: [die1, die2],
-//         steps: []
-//     });
-//     // board = (colorN < 0) ? getReversedBoard(board) : board;
-//     // renderCheckers(board);
-//     rearrangeAllowedSteps();
-// };
-
-// Count dice - what else to move
-// function setDice(die1, die2) {
-//     let die3, die4;
-//     die3 = die4 = (die1 === die2) ? die1 : undefined;
-//     // Get dice with active & unactive values
-//     dice = [
-//         {val: die1, active: true},
-//         {val: die2, active: true},
-//         {val: die3, active: true},
-//         {val: die4, active: true}
-//     ];
-//     // Make some dice values unactive
-//     stepsMade = (moves.length) ? moves[moves.length - 1].steps : [];    // For convinience
-//     for (die of dice) {if (!die.val) die.active = false};
-// };
-
-
-
-///////////////////
-// FOR TEST ONLY //
-///////////////////
-
-
-// function rollDice() {
-//     die1 = Math.floor(Math.random() * 6) + 1;
-//     die2 = Math.floor(Math.random() * 6) + 1;
-//     setDice(die1, die2);
-//     renderDice();
-// };
-
-// document.getElementById('diceBox').onclick = function startTheGame() {
-//     // die1 = Math.floor(Math.random() * 6) + 1;
-//     // die2 = Math.floor(Math.random() * 6) + 1;     
-//     // rollDice();
-//     // dice = getDice(die1, die2);
-
-
-
-//     // board = getReversedBoard(board);
-//     letMeMakeMyStep();
-// };
-
-// board = {
-//     1: 15,
-//     2: 0,
-//     3: 0,
-//     4: 0,
-//     5: 0,
-//     6: 0,
-//     7: 0,
-//     8: 0,
-//     9: 0,
-//     10: 0,
-//     11: 0,
-//     12: 0,
-//     13: -15,
-//     14: 0,
-//     15: 0,
-//     16: 0,
-//     17: 0,
-//     18: 0,
-//     19: 0,
-//     20: 0,
-//     21: 0,
-//     22: 0,
-//     23: 0,
-//     24: 0
-// };
-
-// document.getElementById('hint').onclick = function startTheGame() {
-//     // die1 = Math.floor(Math.random() * 6) + 1;
-//     // die2 = Math.floor(Math.random() * 6) + 1;     
-//     // rollDice();
-//     // dice = getDice(die1, die2);
-//         // CHANGE TURN
-//     removeHoverNClickEvents();
-
-//     // Change me
-//     color = String(-color);
-//     colorN = -colorN;
-
-//     // Flip the board
-//     board = getReversedBoard(board);
-//     renderCheckers(board);
-    
-//     stepsMade = [];
-
-
-//     letMeMakeMyStep();
-// };
-
-// letMeMakeMyStep();

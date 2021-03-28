@@ -139,7 +139,6 @@ socket.on('renderCheckers', renderCheckers);
 socket.on('renderDice',
     function renderDice(diceS) {
         dice = diceS;
-        console.log('dice', dice);
         document.getElementById('die1').setAttribute('val', dice[0].val);
         document.getElementById('die2').setAttribute('val', dice[1].val);
         document.getElementById('die3').setAttribute('val', dice[2].val);
@@ -168,13 +167,13 @@ socket.on('letMeMakeMyStep',
 
 
         console.log('\n');
-        console.log('Before the move is done.');
-        console.log('color', color);
-        console.log('colorN', colorN);
-        console.log('dice', dice);
-        console.log('allowedSteps', allowedSteps);
-        console.log('moves', moves);
-        console.log('board', board);
+        // console.log('Before the move is done.');
+        // console.log('color', color);
+        // console.log('colorN', colorN);
+        // console.log('dice', dice);
+        // console.log('allowedSteps', allowedSteps);
+        // console.log('moves', moves);
+        // console.log('board', board);
         console.log('\n');
 
 

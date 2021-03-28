@@ -323,6 +323,7 @@ function mouseClicksField(e) {
 
 // Mouse moves when clicked
 function mouseMovesWhenClicked(e) {
+    // TODO: Fix bug: center ghost checker position when dragging
     function moveChecker(pageX, pageY) {
         ghostChecker.setAttribute('style', `transform: translate(${pageX - shift}px, ${pageY - shift}px);`);
         ghostChecker.setAttribute('style', `-webkit-transform: translate(${pageX - shift}px, ${pageY - shift}px);`);
@@ -385,6 +386,7 @@ document.getElementById('board').addEventListener('contextmenu', (e) => {
 
 // Add events to highlight allowed steps
 function addHoverNClickEvents() {
+    // TODO: Remove ghost checker here (or do something with it)
     // Hover events
     for (field of fields) {
         field.addEventListener('mouseenter', mouseEntersField);
