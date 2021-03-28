@@ -461,87 +461,96 @@ function arrangeAllowedStepsForTheMiddleOfTheGame() {
     };
 };
 
-// Get rid of unfull steps (Allow only full moves when it is possible)
-// Example:
-// Dice = [6, 2, null, null]
-// Allowed steps: 9=>15, 10=>12, 10=>16
-// 10=>16 needs to be restricted bc we have a full move 9=>15, 10=>12
-// And if we step 10=>16 then we won't be able to step dice=2
-function restrictStepsLeadToUnfullMoveIfFullMoveIsPossible() {
 
-    // Extract from allowed steps idFroms for single steps
-    function getIdsFromForSingleSteps() {
-        let steps = {'0': new Set(), '1': new Set()};
-        for (let step of allowedSteps) {
-            if (step.dice.length === 1) {
-                
-                // console.log('step.dice.length', step.dice.length);
-                // console.log('steps', steps);
-                // console.log('step.dice', step.dice);
-                // console.log('step.idFrom', step.idFrom);
-
-                steps[String(step.dice[0])].add(step.idFrom);
-            };
-        };
-        
-        
-        // console.log('steps', steps);
-        // console.log('allowedSteps', allowedSteps);
-        
-        
-        return steps;
-    };
-
-    // Checks whether a full move is possible or not
-    function isFullMovePossible(steps) {
-        // If there is possible to make die1 + die2 with one checker
-        for (let step of allowedSteps) {if (step.dice.length === 2) return true};
-        // Or if we can step both die1 & die2 in general
-        if (steps['0'].size && steps['1'].size) {
-            // If we can step from different idFrom
-            let difference = new Set([
-                ...[...steps['0']].filter(x => !steps['1'].has(x)),
-                ...[...steps['1']].filter(x => !steps['0'].has(x))
-            ]);
-            if (difference.size) return true;
-            // If we can make both die1 & die2 steps from the same one fieldId
-            // and there are multiple checkers on this field
-            let union = new Set([...steps['0']].filter(x => steps['1'].has(x)));
-            for (idFrom of union) {
-                if (Math.abs(board[idFrom]) > 1) return true;
-            };
-        };
-        return false;
-    };
-    
-    // Function as applicable to non-double dice only
-    // And it is applicable only for the first step in the move
-    // (later it will be too late to restrict anything)
-    // That's why we ain't got no need to check stepsMade
-    if (dice[0].val === dice[1].val || !stepsMade.length ) return allowedSteps;
-    // And it isn't applicable if there is no opportunity for a full move
-    var steps = getIdsFromForSingleSteps();
-    if (!isFullMovePossible(steps)) return allowedSteps;
-    return allowedSteps.filter((step) => {
-        // If we can make both die1 & die2 steps from the same one fieldId
-        // and there are multiple checkers on this field
-        if (steps['0'].has(step.idFrom)
-            && steps['1'].has(step.idFrom)
-            && Math.abs(board[idFrom]) > 1) return true;
-        // If there is at least one alternative step for another dice
-        if (steps['0'].has(step.idFrom)
-            && new Set([...steps['1']].filter(x => x != step.idFrom)).size) return true;
-        if (steps['1'].has(step.idFrom)
-            && new Set([...steps['0']].filter(x => x != step.idFrom)).size) return true;
-        
-        console.log(`filtered step ${step} from allowedSteps:`, allowedSteps);
-        
-        return false;
-    });
-};
 
 // Get all possible steps according to the board situation
 function rearrangeAllowedSteps() {
+
+    // Get rid of unfull steps (Allow only full moves when it is possible)
+    // Example:
+    // Dice = [6, 2, null, null]
+    // Allowed steps: 9=>15, 10=>12, 10=>16
+    // 10=>16 needs to be restricted bc we have a full move 9=>15, 10=>12
+    // And if we step 10=>16 then we won't be able to step dice=2
+    function restrictStepsLeadToUnfullMoveIfFullMoveIsPossible() {
+
+        // Extract from allowed steps idFroms for single steps
+        function getIdsFromForSingleSteps() {
+            let steps = {'0': new Set(), '1': new Set()};
+            for (let step of allowedSteps) {
+                if (step.dice.length === 1) {
+                    steps[String(step.dice[0])].add(step.idFrom);
+                };
+            };
+            return steps;
+        };
+
+        // Checks whether a full move is possible or not
+        function isFullMovePossible(steps) {
+            // If there is possible to make die1 + die2 with one checker
+            for (let step of allowedSteps) {if (step.dice.length === 2) return true};
+            // Or if we can step both die1 & die2 in general
+            if (steps['0'].size && steps['1'].size) {
+                // If we can step from different idFrom
+                let difference = new Set([
+                    ...[...steps['0']].filter(x => !steps['1'].has(x)),
+                    ...[...steps['1']].filter(x => !steps['0'].has(x))
+                ]);
+                if (difference.size) return true;
+                // If we can make both die1 & die2 steps from the same one fieldId
+                // and there are multiple checkers on this field
+                let union = new Set([...steps['0']].filter(x => steps['1'].has(x)));
+                for (idFrom of union) {
+                    if (Math.abs(board[idFrom]) > 1) return true;
+                };
+            };
+            return false;
+        };
+        
+        // Function as applicable to non-double dice only
+        // And it is applicable only for the first step in the move
+        // (later it will be too late to restrict anything)
+        // That's why we ain't got no need to check stepsMade
+        if (dice[0].val === dice[1].val || !stepsMade.length ) return allowedSteps;
+        // And it isn't applicable if there is no opportunity for a full move
+        var steps = getIdsFromForSingleSteps();
+        if (!isFullMovePossible(steps)) return allowedSteps;
+        return allowedSteps.filter((step) => {
+            // If we can make both die1 & die2 steps from the same one fieldId
+            // and there are multiple checkers on this field
+            if (steps['0'].has(step.idFrom)
+                && steps['1'].has(step.idFrom)
+                && Math.abs(board[idFrom]) > 1) return true;
+            // If there is at least one alternative step for another dice
+            if (steps['0'].has(step.idFrom)
+                && new Set([...steps['1']].filter(x => x != step.idFrom)).size) return true;
+            if (steps['1'].has(step.idFrom)
+                && new Set([...steps['0']].filter(x => x != step.idFrom)).size) return true;
+            
+            console.log(`filtered step ${step} from allowedSteps:`, allowedSteps);
+            
+            return false;
+        });
+    };
+
+    // Restricts dice-steps when only full move is avaliable
+    // Example:
+    // Dice: 1-2
+    // allowedStepd: 1=>2 1=>3 1=>4
+    // We see that to make full move 1=>4 is the only 1 possibility to make a move,
+    // So we don't want to make hints 1=>2 1=>3 because they are usefull.
+    function restrictDiceStepsWhenOnlyFullMoveIsAvaliable() {
+        // Iterate allowedSteps to get: how many different idFroms & which step has the biggest length?
+        let idFroms = new Set();
+        let maxLengthStep = {dice: []};
+        for (step of allowedSteps) {
+            idFroms.add(step.idFrom);
+            if (step.dice.length > maxLengthStep.dice.length) maxLengthStep = step;
+        };
+        if (idFroms.size === 1) return [maxLengthStep];
+        return allowedSteps;
+    };
+
     resetGlobalVariables();
     // If it is the first move
     if (moves.length === 1) {
@@ -554,38 +563,13 @@ function rearrangeAllowedSteps() {
     } else {
         arrangeAllowedStepsForTheMiddleOfTheGame();
     };
-
-    // console.log('board:', board);
-    // console.log('allowedSteps:', allowedSteps);
-    // console.log('stepsMade:', stepsMade);
-
     // Restrict unfull moves when full move is possible
     allowedSteps = restrictStepsLeadToUnfullMoveIfFullMoveIsPossible();
-
-    // TODO: restrict dice-steps when only full move is possible
-
-
+    // Restrict dice-steps when only full move is possible
+    allowedSteps = restrictDiceStepsWhenOnlyFullMoveIsAvaliable();
     addHoverNClickEvents();
-
-    // console.log('allowedSteps after rearranging: ', allowedSteps);
-    // console.log('stepsMade:', stepsMade);
-
     // Restrict any other steps when the move is done
     if (!allowedSteps.length) {
-
-        
-        // console.log('\n');
-        // console.log('Move is complete.');
-        // console.log('color', color);
-        // console.log('colorN', colorN);
-        // console.log('dice', dice);
-        // console.log('stepsMade', stepsMade);
-        // console.log('allowedSteps', allowedSteps);
-        // console.log('moves', moves);
-        // console.log('board', board);
-        // console.log('\n');
-        
-
         moveIsDone();
     };
 };
