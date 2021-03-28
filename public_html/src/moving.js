@@ -98,15 +98,6 @@ function isStepInAllowedSteps(idFrom, idTo) {
     if (!idFrom || !idTo) return;
     let foundedStep = getAStepFromAllowedSteps(idFrom, idTo);
     return Boolean(foundedStep);
-
-    // Old function
-    // let allowedIds = allowedFields.get(idFrom);
-    // if (!allowedIds) {
-    //     return false;
-    // } else if (!allowedIds.includes(idTo)) {
-    //     return false;
-    // };
-    // return true
 };
 
 // Find the step that was made
@@ -132,10 +123,7 @@ function getAStepFromAllowedSteps(idFrom, idTo) {
 function placeChecker(idFrom, idTo) {
     let checker = document.getElementById(idFrom).lastChild;
     let newField = document.getElementById(idTo);
-    // Restrict steps that are not allowed
-    // if (!isItAllowedStep(idFrom, idTo)) return;    
     // Place the checker correctly inside the target
-    // let checkersInNewField = newField.children.length;
     let checkersInFieldTo = Math.abs(board[idTo]);
     // If the checker goes back to it's field, then move it under the new place
     if (checker.parentNode === newField) {checkersInFieldTo -= 1};
@@ -387,6 +375,7 @@ document.getElementById('board').addEventListener('contextmenu', (e) => {
 // Add events to highlight allowed steps
 function addHoverNClickEvents() {
     // TODO: Remove ghost checker here (or do something with it)
+    if (ghostChecker) ghostChecker.remove();
     // Hover events
     for (field of fields) {
         field.addEventListener('mouseenter', mouseEntersField);
