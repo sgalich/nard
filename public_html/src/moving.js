@@ -336,7 +336,10 @@ function mouseUp(e) {
     // Remove a dragging ghost checker from the board
 
 
-    document.getElementById('hint').innerHTML = idTo;
+    // document.getElementById('hint').innerHTML = idTo;
+    let allowedIdTo;
+    for (step in allowedSteps) allowedIdTo.push(step.idTo);
+    document.getElementById('hint').innerHTML = allowedIdTo;
 
 
     // A valid step => place a checker
