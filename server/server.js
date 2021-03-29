@@ -217,18 +217,8 @@ io.on('connection', (socket) => {
             // ...
         });
 
-        socket.on('tryingToMakeAStep', (allowedSteps, idFrom, idTo) => {
-            console.log('allowedSteps', allowedSteps);
-            console.log('idFrom', idFrom);
-            console.log('idTo', idTo);
-        });
-
-        socket.on('allowedFieldsFromIdTo', (allowedFieldsFromIdTo) => {
-            console.log('allowedFieldsFromIdTo', allowedFieldsFromIdTo);
-        })
-
-        socket.on('chooseTheClosestField fieldTo', (fieldTo) => {
-            console.log('chooseTheClosestField fieldTo', fieldTo);
+        socket.on('chooseTheClosestField', (fieldFrom, x, y) => {
+            console.log('chooseTheClosestField', fieldFrom, x, y);
         })
 
 

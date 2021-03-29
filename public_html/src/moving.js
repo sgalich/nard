@@ -51,13 +51,22 @@ function getFieldCenter(field) {
     return [x, y];
 };
 
-// Counts the distance between two points, like ([34, 34] & [234, 323])
-function countDistanceBetween(a, b) {
-    return ((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2) ** 0.5;
-};
+
 
 // Chooses a field that is the closest to the mouse position
 function chooseTheClosestField(fieldFrom, x, y) {
+
+    // Counts the distance between two points, like ([34, 34] & [234, 323])
+    function countDistanceBetween(a, b) {
+        return ((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2) ** 0.5;
+    };
+
+
+
+    socket.emit('chooseTheClosestField', fieldFrom, x, y);
+
+
+
     let idFrom = fieldFrom.getAttribute('id');
     var theClosestField = fieldFrom;
     var distance = countDistanceBetween(getFieldCenter(fieldFrom), [x, y]);
@@ -383,7 +392,6 @@ function mouseUp(e) {
     // Place the checker at the closest valid field
     // TODO: Make throwing - calculate direction, continue it and place checker there (& save the speed)
     let fieldTo = chooseTheClosestField(fieldFrom, e.pageX, e.pageY);
-    socket.emit('chooseTheClosestField fieldTo', fieldTo);
     // Place the checker to the field
     let idTo = fieldTo.getAttribute('id');
     // Remove a dragging ghost checker from the board
@@ -393,7 +401,7 @@ function mouseUp(e) {
     // let allowedIdTo = '';
     // for (step in allowedSteps) allowedIdTo += `- ${step.idTo}`;
     // document.getElementById('hint').innerHTML = allowedIdTo;
-    socket.emit('tryingToMakeAStep', allowedSteps, idFrom, idTo);
+    // socket.emit('tryingToMakeAStep', allowedSteps, idFrom, idTo);
 
 
 
