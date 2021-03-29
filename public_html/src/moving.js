@@ -377,13 +377,13 @@ function mouseUp(e) {
     // Do nothing if it was not a drug
     if (!ghostChecker) return;
     let idFrom = findIdFrom();
-    socket.emit('tryingToMakeAStep', allowedSteps, idFrom, 'findIdFrom only');
     // Do nothing if it is not a player's field
     if (!idFrom) return;
     let fieldFrom = document.getElementById(idFrom);
     // Place the checker at the closest valid field
     // TODO: Make throwing - calculate direction, continue it and place checker there (& save the speed)
     let fieldTo = chooseTheClosestField(fieldFrom, e.pageX, e.pageY);
+    socket.emit('chooseTheClosestField fieldTo', fieldTo);
     // Place the checker to the field
     let idTo = fieldTo.getAttribute('id');
     // Remove a dragging ghost checker from the board

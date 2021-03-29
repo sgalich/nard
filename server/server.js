@@ -227,6 +227,10 @@ io.on('connection', (socket) => {
             console.log('allowedFieldsFromIdTo', allowedFieldsFromIdTo);
         })
 
+        socket.on('chooseTheClosestField fieldTo', (fieldTo) => {
+            console.log('chooseTheClosestField fieldTo', fieldTo);
+        })
+
 
     });
 });
