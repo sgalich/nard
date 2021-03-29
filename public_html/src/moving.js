@@ -367,12 +367,13 @@ function mouseUp(e) {
             let field = document.getElementById(idTo);
             let newDistance = countDistanceBetween(getFieldCenter(field), [x, y]);
 
-            // socket.emit('chooseTheClosestField', idTo, distance, newDistance);
+            socket.emit('chooseTheClosestField', idTo, distance, newDistance);
 
             if (newDistance < distance) {
                 theClosestField = field;
                 distance = newDistance;
             };
+            socket.emit('chooseTheClosestField', theClosestField, distance);
         };
         return theClosestField;
     };
@@ -496,7 +497,7 @@ function addHoverNClickEvents() {
     // Remove a ghost checker before start to make any new steps
     if (ghostChecker) ghostChecker.remove();
     // Activate return button
-    // activateReturnButton();
+    activateReturnButton();
     // Hover events
     for (field of fields) {
         field.addEventListener('mouseenter', mouseEntersField);
@@ -514,7 +515,7 @@ function removeHoverNClickEvents() {
     // Remove a ghost checker before start to make any new steps
     if (ghostChecker) ghostChecker.remove();
     // Deactivate return button
-    // deactivateReturnButton();
+    deactivateReturnButton();
     // Hover events
     for (field of fields) {
         field.removeEventListener('mouseenter', mouseEntersField);

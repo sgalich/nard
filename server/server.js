@@ -217,8 +217,8 @@ io.on('connection', (socket) => {
             // ...
         });
 
-        socket.on('chooseTheClosestField', (fieldFrom, x, y) => {
-            console.log('chooseTheClosestField', fieldFrom, x, y);
+        socket.on('chooseTheClosestField', (...args) => {
+            console.log('chooseTheClosestField', args);
         })
 
 
