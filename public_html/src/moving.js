@@ -335,10 +335,8 @@ function mouseUp(e) {
     let idTo = fieldTo.getAttribute('id');
     // Remove a dragging ghost checker from the board
     // A valid step => place a checker
-   console.log(allowedSteps);
-    if (isStepInAllowedSteps(idFrom, idTo)) {
-    // if (step) {
-        let step = getAStepFromAllowedSteps(idFrom, idTo);
+    let step = getAStepFromAllowedSteps(idFrom, idTo);
+    if (step) {
         placeChecker(step);
         removeHighlightFromAllFields();
         unmakeAllCheckers('selected');
@@ -395,6 +393,7 @@ function deactivateReturnButton() {
     returnButton.classList.remove('active');
     returnButton.classList.add('unactive');
     returnButton.removeEventListener('click', cancelStep);
+    returnButton.removeEventListener('touchstart', cancelStep);
 };
 
 // Add events to highlight allowed steps
@@ -417,6 +416,7 @@ function addHoverNClickEvents() {
         returnButton.classList.add('active');
         // Add event - cancel the last step
         returnButton.addEventListener('click', cancelStep);
+        returnButton.addEventListener('touchstart', cancelStep);
     };
 
     // Remove a ghost checker before start to make any new steps
