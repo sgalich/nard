@@ -123,6 +123,7 @@ function getAStepFromAllowedSteps(idFrom, idTo) {
 
 // Place a checker into a new field
 function placeChecker(step) {
+    console.log(step);
     var checker;
     if (step.isBearingOff && step.isReturn) {
         checker = createChecker(step.idTo, colorN);
@@ -310,7 +311,14 @@ function mouseUp(e) {
         };
         return;
     };
-
+    // Check whether it is allowed step or not
+    // Function must be called when we already have a selected checker reafy to step
+    function isStepInAllowedSteps(idFrom, idTo) {
+        if (!idFrom || !idTo) return;
+        let foundedStep = getAStepFromAllowedSteps(idFrom, idTo);
+        return Boolean(foundedStep);
+    };
+    
     e.preventDefault();
     // Do nothing if it was not left click
     if (e.which === 2 || e.which === 3) return;
@@ -327,8 +335,10 @@ function mouseUp(e) {
     let idTo = fieldTo.getAttribute('id');
     // Remove a dragging ghost checker from the board
     // A valid step => place a checker
-    let step = getAStepFromAllowedSteps(idFrom, idTo);
-    if (step) {
+   
+    if (isStepInAllowedSteps(idFrom, idTo)) {
+    // if (step) {
+        let step = getAStepFromAllowedSteps(idFrom, idTo);
         placeChecker(step);
         removeHighlightFromAllFields();
         unmakeAllCheckers('selected');
