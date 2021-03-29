@@ -311,13 +311,6 @@ function mouseUp(e) {
         };
         return;
     };
-    // Check whether it is allowed step or not
-    // Function must be called when we already have a selected checker reafy to step
-    function isStepInAllowedSteps(idFrom, idTo) {
-        if (!idFrom || !idTo) return;
-        let foundedStep = getAStepFromAllowedSteps(idFrom, idTo);
-        return Boolean(foundedStep);
-    };
 
     e.preventDefault();
     // Do nothing if it was not left click
@@ -341,6 +334,10 @@ function mouseUp(e) {
     // for (step in allowedSteps) allowedIdTo += `- ${step.idTo}`;
     // document.getElementById('hint').innerHTML = allowedIdTo;
     socket.emit('tryingToMakeAStep', allowedSteps, fieldFrom, fieldTo);
+
+
+
+
 
 
     // A valid step => place a checker
