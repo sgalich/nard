@@ -277,6 +277,8 @@ function mouseClicksField(e) {
         unmakeAllCheckers('selected');
         removeHighlightFromAllFields();
     };
+};
+
 // 
 
 // // old function
