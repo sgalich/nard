@@ -367,13 +367,14 @@ function mouseUp(e) {
             let field = document.getElementById(idTo);
             let newDistance = countDistanceBetween(getFieldCenter(field), [x, y]);
 
+            socket.emit('chooseTheClosestField', '\n');
             socket.emit('chooseTheClosestField', idTo, distance, newDistance);
 
             if (newDistance < distance) {
                 theClosestField = field;
                 distance = newDistance;
             };
-            socket.emit('chooseTheClosestField', theClosestField, distance);
+            socket.emit('chooseTheClosestField', theClosestField.getAttribute('id'), distance);
         };
         return theClosestField;
     };
