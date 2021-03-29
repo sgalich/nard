@@ -337,9 +337,10 @@ function mouseUp(e) {
 
 
     // document.getElementById('hint').innerHTML = idTo;
-    let allowedIdTo = '';
-    for (step in allowedSteps) allowedIdTo += `- ${step.idTo}`;
-    document.getElementById('hint').innerHTML = allowedIdTo;
+    // let allowedIdTo = '';
+    // for (step in allowedSteps) allowedIdTo += `- ${step.idTo}`;
+    // document.getElementById('hint').innerHTML = allowedIdTo;
+    socket.emit('tryingToMakeAStep', allowedSteps, fieldFrom, fieldTo);
 
 
     // A valid step => place a checker

@@ -216,6 +216,12 @@ io.on('connection', (socket) => {
             // Send to his opponent a message about their rival disconnection
             // ...
         });
+
+        socket.on('tryingToMakeAStep', (fieldFrom, fieldTo) => {
+            console.log(fieldFrom, fieldTo);
+        });
+
+
     });
 });
 
