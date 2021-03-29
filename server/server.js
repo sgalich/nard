@@ -217,10 +217,10 @@ io.on('connection', (socket) => {
             // ...
         });
 
-        socket.on('tryingToMakeAStep', (allowedSteps, fieldFrom, fieldTo) => {
+        socket.on('tryingToMakeAStep', (allowedSteps, idFrom, idTo) => {
             console.log('allowedSteps', allowedSteps);
-            console.log('fieldFrom', fieldFrom);
-            console.log('fieldTo', fieldTo);
+            console.log('idFrom', idFrom);
+            console.log('idTo', idTo);
         });
 
 

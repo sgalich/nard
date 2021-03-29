@@ -387,7 +387,7 @@ function mouseUp(e) {
     // let allowedIdTo = '';
     // for (step in allowedSteps) allowedIdTo += `- ${step.idTo}`;
     // document.getElementById('hint').innerHTML = allowedIdTo;
-    socket.emit('tryingToMakeAStep', allowedSteps, fieldFrom, fieldTo);
+    socket.emit('tryingToMakeAStep', allowedSteps, idFrom, idTo);
 
 
 
