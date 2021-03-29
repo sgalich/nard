@@ -359,16 +359,21 @@ function mouseUp(e) {
         let allowedIds = getAllAllowedIdTosFor(idFrom);
        
        
-        
-        socket.emit('chooseTheClosestField', 'allowedSteps', allowedSteps);
-        socket.emit('chooseTheClosestField', 'allowedIds', allowedIds);
+        socket.emit('chooseTheClosestField', '   ');
+        socket.emit('chooseTheClosestField', 'getFieldCenter(fieldFrom)', getFieldCenter(fieldFrom))
+        // socket.emit('chooseTheClosestField', 'allowedSteps', allowedSteps);
+        // socket.emit('chooseTheClosestField', 'allowedIds', allowedIds);
 
         if (!allowedIds.length) return theClosestField;
         for (idTo of allowedIds) {
             let field = document.getElementById(idTo);
+            
             let newDistance = countDistanceBetween(getFieldCenter(field), [x, y]);
+            socket.emit('chooseTheClosestField', 'idTo', idTo);
+            socket.emit('chooseTheClosestField', 'getFieldCenter(fieldFrom)', getFieldCenter(field))
+            socket.emit('chooseTheClosestField', '[x, y]', [x, y]);
 
-            socket.emit('chooseTheClosestField', '\n');
+            
             socket.emit('chooseTheClosestField', idTo, distance, newDistance);
 
             if (newDistance < distance) {
