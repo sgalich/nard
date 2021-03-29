@@ -29,7 +29,6 @@ function fadeOutUnactiveDice() {
 
 };
 
-
 // Create a dragging ghost checker
 function createGhostChecker(x, y) {
     ghostChecker = document.createElement('checker');   // Create a checker
@@ -39,16 +38,6 @@ function createGhostChecker(x, y) {
     ghostChecker.style.top = `${y - shift}px`;
     ghostChecker.classList.add('selected');
     document.body.appendChild(ghostChecker);    // Place checker inside the field
-};
-
-
-
-// Get the center point of the field
-function getFieldCenter(field) {
-    let fieldCoordinates = field.getBoundingClientRect();
-    let x = fieldCoordinates.left + fieldCoordinates.width / 2;
-    let y = fieldCoordinates.top + fieldCoordinates.height / 2;
-    return [x, y];
 };
 
 // Checks if a field is owned by a player
@@ -341,6 +330,15 @@ function mouseUp(e) {
         return;
     };
 
+
+    // Get the center point of the field
+    function getFieldCenter(field) {
+        let fieldCoordinates = field.getBoundingClientRect();
+        let x = fieldCoordinates.left + fieldCoordinates.width / 2;
+        let y = fieldCoordinates.top + fieldCoordinates.height / 2;
+        return [x, y];
+    };
+
     // Chooses a field that is the closest to the mouse position
     function chooseTheClosestField(fieldFrom, x, y) {
 
@@ -369,7 +367,7 @@ function mouseUp(e) {
             let field = document.getElementById(idTo);
             let newDistance = countDistanceBetween(getFieldCenter(field), [x, y]);
 
-            socket.emit('chooseTheClosestField', idTo, distance, newDistance);
+            // socket.emit('chooseTheClosestField', idTo, distance, newDistance);
 
             if (newDistance < distance) {
                 theClosestField = field;
@@ -498,7 +496,7 @@ function addHoverNClickEvents() {
     // Remove a ghost checker before start to make any new steps
     if (ghostChecker) ghostChecker.remove();
     // Activate return button
-    activateReturnButton();
+    // activateReturnButton();
     // Hover events
     for (field of fields) {
         field.addEventListener('mouseenter', mouseEntersField);
@@ -516,7 +514,7 @@ function removeHoverNClickEvents() {
     // Remove a ghost checker before start to make any new steps
     if (ghostChecker) ghostChecker.remove();
     // Deactivate return button
-    deactivateReturnButton();
+    // deactivateReturnButton();
     // Hover events
     for (field of fields) {
         field.removeEventListener('mouseenter', mouseEntersField);
