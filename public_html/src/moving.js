@@ -241,46 +241,18 @@ function mouseLeavesField(e) {
 
 // Mouse down
 // Select a checker from a field we allowed to make a step
-// function mouseClicksField(e) {
-
-//     // Checks whether a node is a field (returns this node) or not (returns null)
-//     function getFieldClicked(node) {
-//         if (node.nodeName === 'CHECKER') {
-//             return node.parentNode;
-//         } else if (node.classList.contains('field')) {
-//             return node;
-//         };
-//         return;
-//     };
-
-//     e.preventDefault();
-//     // Do nothing if it was not left click
-//     if (e.which === 2 || e.which === 3) return;
-//     // Save mouse click coordinates
-//     mouseDownCoordinates.push({x: e.pageX, y: e.pageY});
-//     // Check whether the event was on a field or not
-//     let field = getFieldClicked(e.target);
-//     if (field) {
-//         // Unselect a selected checker
-//         let selectedChecker = document.getElementsByClassName('selected')[0];
-//         if (selectedChecker) {
-//             unmakeAllCheckers('selected');
-//             removeHighlightFromAllFields();
-//         };
-//         // Select a new checker
-//         if (isMyField(field) && field.lastChild) {
-//             highlightAllowedFieldsFor(field);
-//             makeCheckerAt(field, 'selected');
-//             addDragEventListeners(field.lastChild, e.pageX, e.pageY);
-//         };
-//     } else {
-//         unmakeAllCheckers('selected');
-//         removeHighlightFromAllFields();
-//     };
-// // 
-
-// old function
 function mouseClicksField(e) {
+
+    // Checks whether a node is a field (returns this node) or not (returns null)
+    function getFieldClicked(node) {
+        if (node.nodeName === 'CHECKER') {
+            return node.parentNode;
+        } else if (node.classList.contains('field')) {
+            return node;
+        };
+        return;
+    };
+
     e.preventDefault();
     // Do nothing if it was not left click
     if (e.which === 2 || e.which === 3) return;
@@ -288,45 +260,73 @@ function mouseClicksField(e) {
     mouseDownCoordinates.push({x: e.pageX, y: e.pageY});
     // Check whether the event was on a field or not
     let field = getFieldClicked(e.target);
-    if (!field) return;
-    let selectedChecker = document.getElementsByClassName('selected')[0];
-    // Just selected a new field to start a step
-    if (!selectedChecker) {
-        if (isMyField(field)) {
-            makeCheckerAt(field, 'selected');
-            highlightAllowedFieldsFor(field);
-            addDragEventListeners(field.lastChild, e.pageX, e.pageY);
-        };
-    // Trying to make a step or select another checker
-    } else if (selectedChecker) {
-        let idFrom = selectedChecker.parentNode.getAttribute('id');
-        let idTo = field.getAttribute('id');
-        // If it is a valid move => make a step
-        if (isStepInAllowedSteps(idFrom, idTo)) {
-            placeChecker(idFrom, idTo);
+    if (field) {
+        // Unselect a selected checker
+        let selectedChecker = document.getElementsByClassName('selected')[0];
+        if (selectedChecker) {
             unmakeAllCheckers('selected');
             removeHighlightFromAllFields();
-        // Select a checker again
-        } else if (field.lastChild) {
-            // Select the same checker
-            // Now: unselect current checker
-            if (selectedChecker === field.lastChild) {
-                // Check is it an another attempt to drag => make drag, then unselect
-                // or it is an unchecking click => unselect the checker
-                addDragEventListeners(field.lastChild, e.pageX, e.pageY);
-            // Select another checker
-            } else if (isMyField(field)) {
-                unmakeAllCheckers('selected');
-                highlightAllowedFieldsFor(field);
-                makeCheckerAt(field, 'selected');
-                addDragEventListeners(field.lastChild, e.pageX, e.pageY);
-            };
-        // An empty field
-        } else {
-            unmakeAllCheckers('selected');
-        };         
+        };
+        // Select a new checker
+        if (isMyField(field) && field.lastChild) {
+            highlightAllowedFieldsFor(field);
+            makeCheckerAt(field, 'selected');
+            addDragEventListeners(field.lastChild, e.pageX, e.pageY);
+        };
+    } else {
+        unmakeAllCheckers('selected');
+        removeHighlightFromAllFields();
     };
-};
+// 
+
+// // old function
+// function mouseClicksField(e) {
+//     e.preventDefault();
+//     // Do nothing if it was not left click
+//     if (e.which === 2 || e.which === 3) return;
+//     // Save mouse click coordinates
+//     mouseDownCoordinates.push({x: e.pageX, y: e.pageY});
+//     // Check whether the event was on a field or not
+//     let field = getFieldClicked(e.target);
+//     if (!field) return;
+//     let selectedChecker = document.getElementsByClassName('selected')[0];
+//     // Just selected a new field to start a step
+//     if (!selectedChecker) {
+//         if (isMyField(field)) {
+//             makeCheckerAt(field, 'selected');
+//             highlightAllowedFieldsFor(field);
+//             addDragEventListeners(field.lastChild, e.pageX, e.pageY);
+//         };
+//     // Trying to make a step or select another checker
+//     } else if (selectedChecker) {
+//         let idFrom = selectedChecker.parentNode.getAttribute('id');
+//         let idTo = field.getAttribute('id');
+//         // If it is a valid move => make a step
+//         if (isStepInAllowedSteps(idFrom, idTo)) {
+//             placeChecker(idFrom, idTo);
+//             unmakeAllCheckers('selected');
+//             removeHighlightFromAllFields();
+//         // Select a checker again
+//         } else if (field.lastChild) {
+//             // Select the same checker
+//             // Now: unselect current checker
+//             if (selectedChecker === field.lastChild) {
+//                 // Check is it an another attempt to drag => make drag, then unselect
+//                 // or it is an unchecking click => unselect the checker
+//                 addDragEventListeners(field.lastChild, e.pageX, e.pageY);
+//             // Select another checker
+//             } else if (isMyField(field)) {
+//                 unmakeAllCheckers('selected');
+//                 highlightAllowedFieldsFor(field);
+//                 makeCheckerAt(field, 'selected');
+//                 addDragEventListeners(field.lastChild, e.pageX, e.pageY);
+//             };
+//         // An empty field
+//         } else {
+//             unmakeAllCheckers('selected');
+//         };         
+//     };
+// };
 
 // Util adds a new ghost checker which actually player drags
 function addDragEventListeners(checker, x, y) {
