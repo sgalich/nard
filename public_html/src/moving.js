@@ -377,6 +377,7 @@ function mouseUp(e) {
     // Do nothing if it was not a drug
     if (!ghostChecker) return;
     let idFrom = findIdFrom();
+    socket.emit('tryingToMakeAStep', allowedSteps, idFrom, 'findIdFrom only');
     // Do nothing if it is not a player's field
     if (!idFrom) return;
     let fieldFrom = document.getElementById(idFrom);
