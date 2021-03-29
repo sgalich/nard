@@ -360,7 +360,8 @@ function mouseUp(e) {
        
        
         
-        
+        socket.emit('chooseTheClosestField', 'allowedSteps', allowedSteps);
+        socket.emit('chooseTheClosestField', 'allowedIds', allowedIds);
 
         if (!allowedIds.length) return theClosestField;
         for (idTo of allowedIds) {
