@@ -337,8 +337,8 @@ function mouseUp(e) {
 
 
     // document.getElementById('hint').innerHTML = idTo;
-    let allowedIdTo;
-    for (step in allowedSteps) allowedIdTo.push(step.idTo);
+    let allowedIdTo = '';
+    for (step in allowedSteps) allowedIdTo += `- ${step.idTo}`;
     document.getElementById('hint').innerHTML = allowedIdTo;
 
 
