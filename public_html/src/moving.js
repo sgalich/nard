@@ -330,18 +330,17 @@ function mouseUp(e) {
         return;
     };
 
-
-    // Get the center point of the field
-    function getFieldCenter(field) {
-        let fieldCoordinates = field.getBoundingClientRect();
-        let x = fieldCoordinates.left + fieldCoordinates.width / 2;
-        let y = fieldCoordinates.top + fieldCoordinates.height / 2;
-        return [x, y];
-    };
-
     // Chooses a field that is the closest to the mouse position
     function chooseTheClosestField(fieldFrom, x, y) {
 
+            // Get the center point of the field
+        function getFieldCenter(field) {
+            let fieldCoordinates = field.getBoundingClientRect();
+            let x = fieldCoordinates.left + fieldCoordinates.width / 2;
+            let y = fieldCoordinates.top + fieldCoordinates.height / 2;
+            return [x, y];
+        };
+        
         // Counts the distance between two points, like ([34, 34] & [234, 323])
         function countDistanceBetween(a, b) {
             return ((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2) ** 0.5;
@@ -352,7 +351,7 @@ function mouseUp(e) {
         
 
 
-
+        y -= 
         let idFrom = fieldFrom.getAttribute('id');
         var theClosestField = fieldFrom;
         var distance = countDistanceBetween(getFieldCenter(fieldFrom), [x, y]);
@@ -370,7 +369,7 @@ function mouseUp(e) {
             
             let newDistance = countDistanceBetween(getFieldCenter(field), [x, y]);
             socket.emit('chooseTheClosestField', 'idTo', idTo);
-            socket.emit('chooseTheClosestField', 'getFieldCenter(fieldFrom)', getFieldCenter(field))
+            socket.emit('chooseTheClosestField', 'getFieldCenter(field)', getFieldCenter(field))
             socket.emit('chooseTheClosestField', '[x, y]', [x, y]);
 
             
@@ -437,12 +436,9 @@ function mouseUp(e) {
 /////////////////////////////////////
 
 // Prevent some default page behavior
-document.ondragstart = function() {
-    return false;
-};
-document.ondragend = function() {
-    return false;
-};
+document.ondragstart = (e) => {return false};
+document.ondragend = (e) => {return false};
+document.ontouchmove = (e) => {return false};
 
 // Restrict a right mouse click on the board
 document.getElementById('board').addEventListener('contextmenu', (e) => {
