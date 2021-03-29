@@ -393,7 +393,9 @@ function addHoverNClickEvents() {
     // Activates return button if there were some previous steps
     function activateReturnButton() {
         let returnButton = document.querySelector('.button.return');
-        let stepsToCancel = moves[moves.length - 1].steps;
+        if (moves.length) {
+            var stepsToCancel = moves[moves.length - 1].steps;
+        } else return;
         stepsToCancel = stepsToCancel.filter(step => {return !step.isReturn && !step.isCancelled});
         // Do not activate the button if there was no steps made
         if (!stepsToCancel.length) {
