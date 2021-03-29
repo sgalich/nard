@@ -223,6 +223,10 @@ io.on('connection', (socket) => {
             console.log('idTo', idTo);
         });
 
+        socket.on('allowedFieldsFromIdTo', (allowedFieldsFromIdTo) => {
+            console.log('allowedFieldsFromIdTo', allowedFieldsFromIdTo);
+        })
+
 
     });
 });

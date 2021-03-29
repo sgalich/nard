@@ -62,6 +62,11 @@ function chooseTheClosestField(fieldFrom, x, y) {
     var theClosestField = fieldFrom;
     var distance = countDistanceBetween(getFieldCenter(fieldFrom), [x, y]);
     let allowedIds = getAllAllowedIdTosFor(idFrom);
+    
+    
+    console.log('allowedFieldsFromIdTo', allowedIds);
+
+
     if (!allowedIds.length) return theClosestField;
     for (idTo of allowedIds) {
         let field = document.getElementById(idTo);
