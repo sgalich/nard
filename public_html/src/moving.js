@@ -224,33 +224,33 @@ function mouseClicksField(e) {
     mouseDownCoordinates.push({x: e.pageX, y: e.pageY});
     // Check whether the event was on a field or not
     let field = getFieldClicked(e.target);
-    // if (field) {
-    //     // Unselect a selected checker
-    //     let selectedChecker = document.getElementsByClassName('selected')[0];
-    //     if (selectedChecker) {
-    //         unmakeAllCheckers('selected');
-    //         removeHighlightFromAllFields();
-    //     };
-    //     // Select a new checker
-    //     if (isMyField(field) && field.lastChild) {
-    //         highlightAllowedFieldsFor(field);
-    //         makeCheckerAt(field, 'selected');
-    //         addDragEventListeners(field.lastChild, e.pageX, e.pageY);
-    //     };
-    // } else {
-    //     unmakeAllCheckers('selected');
-    //     removeHighlightFromAllFields();
-    // };
-    if (field && isMyField(field) && field.lastChild) {
-        unmakeAllCheckers('selected');
-        removeHighlightFromAllFields();
-        highlightAllowedFieldsFor(field);
-        makeCheckerAt(field, 'selected');
-        addDragEventListeners(field.lastChild, e.pageX, e.pageY);
+    if (field) {
+        // Unselect a selected checker
+        let selectedChecker = document.getElementsByClassName('selected')[0];
+        if (selectedChecker) {
+            unmakeAllCheckers('selected');
+            removeHighlightFromAllFields();
+        };
+        // Select a new checker
+        if (isMyField(field) && field.lastChild) {
+            highlightAllowedFieldsFor(field);
+            makeCheckerAt(field, 'selected');
+            addDragEventListeners(field.lastChild, e.pageX, e.pageY);
+        };
     } else {
         unmakeAllCheckers('selected');
         removeHighlightFromAllFields();
     };
+    // if (field && isMyField(field) && field.lastChild) {
+    //     unmakeAllCheckers('selected');
+    //     removeHighlightFromAllFields();
+    //     highlightAllowedFieldsFor(field);
+    //     makeCheckerAt(field, 'selected');
+    //     addDragEventListeners(field.lastChild, e.pageX, e.pageY);
+    // } else {
+    //     unmakeAllCheckers('selected');
+    //     removeHighlightFromAllFields();
+    // };
 };
 
 // 
