@@ -51,45 +51,6 @@ function getFieldCenter(field) {
     return [x, y];
 };
 
-
-
-// Chooses a field that is the closest to the mouse position
-function chooseTheClosestField(fieldFrom, x, y) {
-
-    // Counts the distance between two points, like ([34, 34] & [234, 323])
-    function countDistanceBetween(a, b) {
-        return ((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2) ** 0.5;
-    };
-
-
-
-    socket.emit('chooseTheClosestField', fieldFrom, x, y);
-
-
-
-    let idFrom = fieldFrom.getAttribute('id');
-    var theClosestField = fieldFrom;
-    var distance = countDistanceBetween(getFieldCenter(fieldFrom), [x, y]);
-    let allowedIds = getAllAllowedIdTosFor(idFrom);
-    
-    
-    console.log('allowedFieldsFromIdTo', allowedIds);
-
-
-    if (!allowedIds.length) return theClosestField;
-    for (idTo of allowedIds) {
-        let field = document.getElementById(idTo);
-        let newDistance = countDistanceBetween(getFieldCenter(field), [x, y]);
-        if (newDistance < distance) {
-            theClosestField = field;
-            distance = newDistance;
-        };
-    };
-    return theClosestField;
-};
-
-
-
 // Checks if a field is owned by a player
 function isMyField(field) {
     if (field.lastChild && field.lastChild.getAttribute('color') === color) return true;
@@ -378,6 +339,41 @@ function mouseUp(e) {
             return selectedChecker.parentNode.getAttribute('id');
         };
         return;
+    };
+
+    // Chooses a field that is the closest to the mouse position
+    function chooseTheClosestField(fieldFrom, x, y) {
+
+        // Counts the distance between two points, like ([34, 34] & [234, 323])
+        function countDistanceBetween(a, b) {
+            return ((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2) ** 0.5;
+        };
+
+
+
+        
+
+
+
+        let idFrom = fieldFrom.getAttribute('id');
+        var theClosestField = fieldFrom;
+        var distance = countDistanceBetween(getFieldCenter(fieldFrom), [x, y]);
+        let allowedIds = getAllAllowedIdTosFor(idFrom);
+       
+       
+        socket.emit('chooseTheClosestField', allowedIds, x, y);
+        
+
+        if (!allowedIds.length) return theClosestField;
+        for (idTo of allowedIds) {
+            let field = document.getElementById(idTo);
+            let newDistance = countDistanceBetween(getFieldCenter(field), [x, y]);
+            if (newDistance < distance) {
+                theClosestField = field;
+                distance = newDistance;
+            };
+        };
+        return theClosestField;
     };
 
     e.preventDefault();
