@@ -334,6 +334,11 @@ function mouseUp(e) {
     // Place the checker to the field
     let idTo = fieldTo.getAttribute('id');
     // Remove a dragging ghost checker from the board
+
+
+    document.getElementById('hint').innerHTML = idTo;
+
+
     // A valid step => place a checker
     let step = getAStepFromAllowedSteps(idFrom, idTo);
     if (step) {
