@@ -54,7 +54,7 @@ function resetGlobalVariables() {
 // Checks if there was a move from the fieldId 1
 function wasThereAStepFromTheHeadField() {
     for (step of stepsMade) {
-        if (step.idFrom === 1) return true;
+        if (step.idFrom === 1 && !step.isCancelled) return true;
     };
     return false;
 };
