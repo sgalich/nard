@@ -361,6 +361,9 @@ function mouseUp(e) {
 document.ondragstart = function() {
     return false;
 };
+document.ondragend = function() {
+    return false;
+};
 
 // Restrict a right mouse click on the board
 document.getElementById('board').addEventListener('contextmenu', (e) => {
