@@ -361,13 +361,16 @@ function mouseUp(e) {
         let allowedIds = getAllAllowedIdTosFor(idFrom);
        
        
-        socket.emit('chooseTheClosestField', allowedIds, x, y);
+        
         
 
         if (!allowedIds.length) return theClosestField;
         for (idTo of allowedIds) {
             let field = document.getElementById(idTo);
             let newDistance = countDistanceBetween(getFieldCenter(field), [x, y]);
+
+            socket.emit('chooseTheClosestField', idTo, distance, newDistance);
+
             if (newDistance < distance) {
                 theClosestField = field;
                 distance = newDistance;
