@@ -17,9 +17,7 @@ body {
     padding: 0px;
     font-family: 'Noto Sans', Sans-Serif;
 }
-.hidden {
-    display: none;
-}
+
 
 
 /* BOARD */
@@ -159,7 +157,7 @@ body {
     }
         #middle_side {
             border: 1px solid black;
-            background-color: #D2DAFE;
+            background-color: #dddddd; /* #D2DAFE; */
             top: 0px;
             left: calc(50% - 6.25% / 2);
             margin: 0px;
@@ -208,8 +206,35 @@ body {
             background-position: bottom;
         }
         .field.middle {
-            height: 100%;
+            height: 76%;
         }
+        .buttons {
+            /* border: 1px solid green; */
+            height: 12%;
+            position:relative;
+            /* text-align:center; */
+        }
+            /* .buttons.bottom {
+                background-repeat: no-repeat;
+                background-image: url('../images/return.svg');
+                background-size: 50%;
+                background-position: center;
+            } */
+            .button {
+                /* border: 1px solid green; */
+                display: block;
+                position:   absolute;
+                top:        50%;
+                bottom:     50%;
+                transform:  translate(100%, -50%);
+                cursor: pointer;
+            }
+            .button.active path{
+                stroke: #000000;
+            }
+            .button.unactive path{
+                stroke: #B8B7B7;
+            }
 
 
 
@@ -326,3 +351,7 @@ checker.transparent {
   transition-delay: 1s;
   transition:left .33s ease;
 } */
+
+.hidden {
+    display: none;
+}

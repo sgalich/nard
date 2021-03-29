@@ -39,7 +39,12 @@ function isTheFieldMine(fieldId, brd=board) {
 
 // Rearrange stepsMade, diceMade, allowedSteps
 function resetGlobalVariables() {
-    stepsMade = moves[moves.length - 1].steps;    // For convinience
+    isMoveFinished = false;
+    if (moves.length) {
+        stepsMade = moves[moves.length - 1].steps;    // For convinience
+    } else {
+        stepsMade = [];
+    };
     // Set diceMade
     diceMade = [];
     // Empty allowedSteps
@@ -276,97 +281,111 @@ function arrangeAllowedStepsForTheSecondMove() {
     };
 };
 
-// Register in moves a step back
-function addToStepsMadeStepBack(step) {
-    // If not bearing Off => a step cancelled / changed
-    if (isItBearingOff()) {
-        stepsMade.push(step);
-    } else {
-        for (let i = 0; i < stepsMade.length; i++) {
-            let idFrom = stepsMade[i].idFrom;
-            let idTo = stepsMade[i].idTo;
-            // Find a step that is cancelled
-            if (step.idFrom === idTo) {
-                // If it is cancelled fully => delete this whole step
-                if (idFrom === step.idTo) {
-                    stepsMade.splice(i, 1);
-                // If it is changed => change this move
-                } else {
-                    stepsMade[i].idTo = step.idTo;
-                };
-            };
-        };   
-    };
-};
+// // Register in moves a step back
+// function addToStepsMadeStepBack(step) {
+//     // If not bearing Off => a step cancelled / changed
+//     if (isItBearingOff()) {
+//         stepsMade.push(step);
+//     } else {
+//         for (let i = 0; i < stepsMade.length; i++) {
+//             let idFrom = stepsMade[i].idFrom;
+//             let idTo = stepsMade[i].idTo;
+//             // Find a step that is cancelled
+//             if (step.idFrom === idTo) {
+//                 // If it is cancelled fully => delete this whole step
+//                 if (idFrom === step.idTo) {
+//                     stepsMade.splice(i, 1);
+//                 // If it is changed => change this move
+//                 } else {
+//                     stepsMade[i].idTo = step.idTo;
+//                 };
+//             };
+//         };   
+//     };
+// };
 
-// Register in moves a step forward
-function addToStepsMadeStepForward(step) {
-   // Trying to find a step which could be a part of a new big step
-   // prev. 1 => 3 and now 3 => 5. So we change the previous step to 1 => 5
-    for (let i = 0; i < stepsMade.length; i++) {
-        let idFrom = stepsMade[i].idFrom;
-        let idTo = stepsMade[i].idTo;
-        // Find a step that is cancelled
-        if (idTo === step.idFrom) {
-            stepsMade[i].idTo = step.idTo;
-            return;
-        };
-    };
-    // If we failed to find a first part of a new step =>
-    // just register this step
-    stepsMade.push(step);
-};
+// // Register in moves a step forward
+// function addToStepsMadeStepForward(step) {
+//    // Trying to find a step which could be a part of a new big step
+//    // prev. 1 => 3 and now 3 => 5. So we change the previous step to 1 => 5
+//     for (let i = 0; i < stepsMade.length; i++) {
+//         let idFrom = stepsMade[i].idFrom;
+//         let idTo = stepsMade[i].idTo;
+//         // Find a step that is cancelled
+//         if (idTo === step.idFrom) {
+//             stepsMade[i].idTo = step.idTo;
+//             return;
+//         };
+//     };
+//     // If we failed to find a first part of a new step =>
+//     // just register this step
+//     stepsMade.push(step);
+// };
 
-// Register a step made
-function addStepToStepsMade(step) {
-    // If it is a step forward (change a previous step or it is a new step)
-    if (step.idFrom < step.idTo) {
-        addToStepsMadeStepForward(step);
-    // If it is a step back (change or cancel at all)
-    };
-    if (step.idFrom > step.idTo) {
-        addToStepsMadeStepBack(step);
-    };
-};
+// // Register a step made
+// function addStepToStepsMade(step) {
+//     // If it is a step forward (change a previous step or it is a new step)
+//     if (step.idFrom < step.idTo) {
+//         addToStepsMadeStepForward(step);
+//     // If it is a step back (change or cancel at all)
+//     };
+//     if (step.idFrom > step.idTo) {
+//         addToStepsMadeStepBack(step);
+//     };
+// };
 
 // Add a step to the allowedSteps
-function addNewAllowedStep(idFrom, idTo, dice, callback) {
+function addNewAllowedStep(idFrom, idTo, dice, callback, isBearingOff=false, isReturn=false) {
     if (moves.length > 2 && !is6CheckersInARowRuleRespected(idFrom, idTo - idFrom)) return;
     allowedSteps.push({
         idFrom: Number(idFrom),
         idTo: Number(idTo),
         dice: dice,
-        callback: callback
+        callback: callback,
+        isBearingOff: isBearingOff,
+        isReturn: isReturn
     });
-};
-
-// Deactivate dice with a particular index
-function deactivateDice(ind) {
-    dice[ind].active = false;
 };
 
 // A function that would be called if this step is done
 function callbackForBearingOff(checker) {
-    checker.remove();    // 1. Animation
-    for (ind of this.dice) deactivateDice(ind);    // 2. Dice
-    board[this.idFrom] -= colorN;    // 3. Board
-    addStepToStepsMade(this);    // 4. History
-    rearrangeAllowedSteps();    // 5. Next
+    // If it is step forward
+    if (!this.isReturn) {
+        // 1. Animation
+        checker.remove();
+        // 2. Dice
+        for (ind of this.dice) dice[ind].active = false;
+        // TODO: Change the color of the dice
+    // If it is cancellation step
+    } else {
+        for (ind of this.dice) dice[ind].active = true;
+    };
+    // 3. Board
+    board[this.idFrom] -= colorN;
+    // 4. History
+    stepsMade.push(this);
+    // 5. Next
+    rearrangeAllowedSteps();
 };
 
 // A function that would be called if this step is done
-function callbackForReplacingChecker(checker) {
+function callbackForReplacingChecker(checker, returnStep=false) {
     // 1. Animation
     let newField = document.getElementById(this.idTo);
     newField.append(checker);
     // 2. Dice
-    for (ind of this.dice) deactivateDice(ind);
+    if (!this.isReturn) {
+        for (ind of this.dice) dice[ind].active = false;
+        // TODO: Change the color of the dice
+    } else {
+        for (ind of this.dice) dice[ind].active = true;
+    };
     // 3. Board
     // WHERE ARE FROM THESE IDFROM & IDTO ??? But it works for now
     board[this.idFrom] -= colorN;
     board[this.idTo] += colorN;
     // 4. History
-    addStepToStepsMade(this);
+    stepsMade.push(this);
     // 5. Next
     rearrangeAllowedSteps();
 };
@@ -395,7 +414,7 @@ function arrangeAllowedStepsForTheMiddleOfTheGame() {
             } else if (isItBearingOff() && idFrom + die.val === 25) {
                 // Do not add repeated moves
                 if (getAllAllowedIdTosFor(idFrom).includes(finalIdTo)) continue;
-                addNewAllowedStep(idFrom, finalIdTo, [ind], callbackForBearingOff);
+                addNewAllowedStep(idFrom, finalIdTo, [ind], callbackForBearingOff, isBearingOff=true);
             };
         };
 
@@ -412,7 +431,7 @@ function arrangeAllowedStepsForTheMiddleOfTheGame() {
                 addNewAllowedStep(idFrom, fieldTo, inds, callbackForReplacingChecker);
             // Bearing-off special: straight to the "25"th field
             } else if (isItBearingOff() && fieldTo === 25) {
-                addNewAllowedStep(idFrom, finalIdTo, inds, callbackForBearingOff);
+                addNewAllowedStep(idFrom, finalIdTo, inds, callbackForBearingOff, isBearingOff=true);
             };
         };
 
@@ -527,7 +546,7 @@ function rearrangeAllowedSteps() {
             if (steps['1'].has(step.idFrom)
                 && new Set([...steps['0']].filter(x => x != step.idFrom)).size) return true;
             
-            console.log(`filtered step ${step} from allowedSteps:`, allowedSteps);
+            console.log('filtered step ${step} from allowedSteps:', allowedSteps);
             
             return false;
         });
@@ -547,9 +566,15 @@ function rearrangeAllowedSteps() {
             idFroms.add(step.idFrom);
             if (step.dice.length > maxLengthStep.dice.length) maxLengthStep = step;
         };
-        if (idFroms.size === 1) return [maxLengthStep];
-        return allowedSteps;
+        if (idFroms.size != 1) return allowedSteps;
+        console.log('shrinked allowedSteps to a double-step full move. allowedSteps:', allowedSteps);
+        return [maxLengthStep];
     };
+
+    // function finishMove() {
+    //     removeHoverNClickEvents();
+    //     moveIsDone();
+    // };
 
     resetGlobalVariables();
     // If it is the first move
@@ -570,6 +595,9 @@ function rearrangeAllowedSteps() {
     addHoverNClickEvents();
     // Restrict any other steps when the move is done
     if (!allowedSteps.length) {
+        isMoveFinished = true;
+        // setTimeout(moveIsDone, 2000);    // 2 seconds to cancel the move
+        removeHoverNClickEvents();
         moveIsDone();
     };
 };

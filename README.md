@@ -11,13 +11,14 @@ This is a simple web-version of [nard game](https://en.wikipedia.org/wiki/Nard_(
 - [x] ! Fix error: Rules: restrict unfull move when full move is possible
     - [ ] Check if it works or not
 - [ ] Fix bug: center ghost checker position when dragging by mouse
+- [x] Fix bug: after refreshing page there is a mess with turns
 - [ ] Rules: 2nd move 3-3: allow all the steps (1st 3 & you have to move another checker. Let user use the same checker again)
 - [x] Rules: restrict dice-steps when only full move is possible
 - [x] Remove selection for moving (leave it just for checking possible steps). In order to move a checker you need to drag it.
 - [x] Deploy on https://onlinenard.com domain (AWS)
 - [ ] Open modal after board (if needed)
 - [ ] Make steps cancellation
-    - [ ] Cancel each step but the last one
+    - [x] Cancel each step but the last one
     - [ ] The whole move cancellation (with timout?)
 - [ ] Show rival's steps in real time
 - [ ] Remake design

@@ -4,11 +4,10 @@ class Nard {
         [p0.player.color, p1.player.color] = [1, -1];
         this.players = [p0, p1];
         this.game = game;
-        this.turn = null;    // 0 / 1 - index of the player who's turn
+        this.turn = this.chooseWhoIsFirst();    // 0 / 1 - index of the player who's turn
         this.die1 = null;    // random result from die1
         this.die2 = null;    // random result from die2
         this.wait = null;    // 1 or -1 (for 'white' or 'black') - who is awaiting now
-        // this.movesCount = 0;    // moves counter
         this.winner = null;
         this.chat = [];
         this.board = {    // the board with a starting position for the 1-colored player. (not for -1-colored)
@@ -37,25 +36,12 @@ class Nard {
             23: 0,
             24: 0
         };
-
-
         this.dice = null;
         this.moves = [];    // all moves
-
-
-        // this.players[0].on('moveIsFinished', this.moveIsFinished);
-        // this.players[1].on('moveIsFinished', this.moveIsFinished);
-        // this.players[0].on('moveIsFinished', this.makeTurn());
-        // this.players[1].on('moveIsFinished', this.makeTurn());
-
-
-
         this.placeInTheGame(0);
         this.placeInTheGame(1);
         this.chooseWhoIsFirst();
         this.makeTurn();
-
-
     };
 
     // Socket is in the game
@@ -64,11 +50,17 @@ class Nard {
         this.renderBoard(ind);
         if (this.dice) this.players[ind].emit('renderDice', this.dice);
         let color = this.players[ind].player.color
-        console.log(this.turn === ind, this.turn, ind);
+        // console.log(this.turn === ind, this.turn, ind);
         if (this.turn === ind) {
             this.players[ind].emit('letMeMakeMyStep', color, this.moves, this.board);
         };
         socket.emit('hint', `Welcome to the ${socket.player.game} game!`);
+        // console.log('placed in the game ind: ', ind);
+        // console.log('this.players', this.players);
+        // console.log('this.turn', this.turn);
+        // console.log('this.players[this.turn]', this.players[this.turn]);
+        this.printHint(this.players[Math.abs(this.turn - 1)], 'rival\'s turn');
+        this.printHint(this.players[this.turn], 'your turn');
     };
 
     // Render the whole page
@@ -96,6 +88,7 @@ class Nard {
             for (let die of dice) {if (!die.val) die.active = false};
             return dice
         };
+
         let die1 = Math.floor(Math.random() * 6) + 1;
         let die2 = Math.floor(Math.random() * 6) + 1;
         this.dice = getDice(die1, die2);
@@ -114,7 +107,7 @@ class Nard {
         this.rollDice();
         // Roll dice till they show different results
         while (this.dice[0].val === this.dice[1].val) this.rollDice();
-        this.turn = (this.dice[0].val > this.dice[1].val) ? 1 : 0;
+        return (this.dice[0].val > this.dice[1].val) ? 1 : 0;
         // // Send hints
         // this.printHint(this.players[Math.abs(this.turn - 1)], 'your turn');
         // this.printHint(this.players[this.turn], 'rival\'s turn');

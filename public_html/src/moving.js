@@ -11,13 +11,24 @@ const checkers = document.getElementsByTagName('checker');
 // This is for clicking and dragging
 var mouseDownCoordinates = [];
 // var isCheckerSelectedAtFirst = true;
-var shift = checkers[0].getBoundingClientRect().width / 2;    // TODO: find another way
+var shift = checkers[0].getBoundingClientRect().width / 2;
 var ghostChecker = null;
 
 
 ///////////
 // UTILS //
 ///////////
+
+// Highlights active dice with bright color
+function highlightActiveDice() {
+
+};
+
+// Fade out unactive dice
+function fadeOutUnactiveDice() {
+
+};
+
 
 // Create a dragging ghost checker
 function createGhostChecker(x, y) {
@@ -106,39 +117,35 @@ function getAStepFromAllowedSteps(idFrom, idTo) {
 };
 
 
-
-
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // PLACE CHECKER FUNCTION //
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
 // Place a checker into a new field
-function placeChecker(idFrom, idTo) {
-    let checker = document.getElementById(idFrom).lastChild;
-    let newField = document.getElementById(idTo);
-    // Place the checker correctly inside the target
-    let checkersInFieldTo = Math.abs(board[idTo]);
-    // If the checker goes back to it's field, then move it under the new place
-    if (checker.parentNode === newField) {checkersInFieldTo -= 1};
-    // Place the checker correctly in his field under another checkers
-    checker.style.removeProperty('top');
-    checker.style.removeProperty('bottom');
-    if (newField.classList.contains('top')) {
-        checker.setAttribute('style', `top: calc(${checkersInFieldTo} * ${CHECKEROVERLAP}%);`);
+function placeChecker(step) {
+    var checker;
+    if (step.isBearingOff && step.isReturn) {
+        checker = createChecker(step.idTo, colorN);
     } else {
-        checker.setAttribute('style', `bottom: calc(${checkersInFieldTo} * ${CHECKEROVERLAP}%);`);
+        checker = document.getElementById(step.idFrom).lastChild;
+        let newField = document.getElementById(step.idTo);
+        // Place the checker correctly inside the target
+        let checkersInFieldTo = Math.abs(board[step.idTo]);
+        // If the checker goes back to it's field, then move it under the new place
+        if (checker.parentNode === newField) {checkersInFieldTo -= 1};
+        // Place the checker correctly in his field under another checkers
+        checker.style.removeProperty('top');
+        checker.style.removeProperty('bottom');
+        if (newField.classList.contains('top')) {
+            checker.setAttribute('style', `top: calc(${checkersInFieldTo} * ${CHECKEROVERLAP}%);`);
+        } else {
+            checker.setAttribute('style', `bottom: calc(${checkersInFieldTo} * ${CHECKEROVERLAP}%);`);
+        };
     };
-    idFrom = Number(idFrom);
-    idTo = Number(idTo);
-    
-    // Find this step & call the callback function
-    let step = getAStepFromAllowedSteps(idFrom, idTo);
     step.callback(checker);
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
-
-
 
 // Get all the allowed fieldIds for a particular idFrom
 function getAllAllowedIdTosFor(idFrom) {
@@ -217,39 +224,17 @@ function animatePlacingChecker(xFrom, yFrom) {
 
 // HOVER
 
-// // Mouse enters the field
-// function mouseEntersField(e) {
-//     let selectedChecker = document.getElementsByClassName('selected')[0];
-//     if (!selectedChecker) {
-//         if (isMyField(this)) {
-//             highlightAllowedFieldsFor(this);
-//             makeCheckerAt(this, 'hovered');
-//         };
-//     };
-// };
-
-// New function
 // Mouse enters the field
 function mouseEntersField(e) {
     let selectedChecker = document.getElementsByClassName('selected')[0];
     if (!selectedChecker) removeHighlightFromAllFields();
     unmakeAllCheckers('hovered');
-    if (isMyField(this)) {
+    let ghostCheckers = document.getElementsByClassName('ghost')
+    if (isMyField(this) && !ghostCheckers.length) {
         highlightAllowedFieldsFor(this);
         makeCheckerAt(this, 'hovered');
     };
 };
-
-// // Mouse leaves the field
-// function mouseLeavesField(e) {
-//     let selectedChecker = document.getElementsByClassName('selected')[0];
-//     if (!selectedChecker) {
-//         if (isMyField(this)) {
-//             removeHighlightFromAllFields();
-//             unmakeAllCheckers('hovered');
-//         };
-//     };
-// };
 
 // Mouse leaves the field
 function mouseLeavesField(e) {
@@ -257,7 +242,6 @@ function mouseLeavesField(e) {
     if (!selectedChecker) removeHighlightFromAllFields();
     unmakeAllCheckers('hovered');
 };
-
 
 
 // CLICK & DRAG
@@ -315,58 +299,6 @@ function mouseMovesWhenClicked(e) {
     moveChecker(e.pageX, e.pageY);
 };
 
-// // Mouse up
-// function mouseUp(e) {
-
-//     // Finds the id of the field with selected checker or returns null
-//     function findIdFrom() {
-//         let selectedChecker = document.getElementsByClassName('selected')[0];
-//         if (selectedChecker) {
-//             return selectedChecker.parentNode.getAttribute('id');
-//         };
-//         return;
-//     };
-
-//     e.preventDefault();
-//     // Do nothing if it was not left click
-//     if (e.which === 2 || e.which === 3) return;
-//     let idFrom = findIdFrom();
-//     // Do nothing if it is not a player's field
-//     if (!idFrom) return;
-//     let fieldFrom = document.getElementById(idFrom);
-//     // Place the checker at the closest valid field
-//     let fieldTo = chooseTheClosestField(fieldFrom, e.pageX, e.pageY);
-//     // Place the checker to the field
-//     let idTo = fieldTo.getAttribute('id');
-//     // A valid step => place a checker
-//     if (isStepInAllowedSteps(idFrom, idTo)) {
-//         placeChecker(idFrom, idTo);
-//         removeHighlightFromAllFields();
-//         unmakeAllCheckers('selected');
-//     // If not a valid step
-//     } else {
-//         // If checker the same => return it back to fieldFrom
-//         if (!(isCheckerSelectedAtFirst && idFrom === idTo)) {
-//             unmakeAllCheckers('selected');
-//             removeHighlightFromAllFields();
-//             isCheckerSelectedAtFirst = true;
-//         };
-//     };
-//     // Remove a dragging ghost checker from the board
-//     if (ghostChecker) animatePlacingChecker(e.pageX, e.pageY);
-//     // Remove transparency from the transparent checker
-//     let transparentChecker = document.getElementsByClassName('transparent')[0];
-//     if (transparentChecker) transparentChecker.classList.remove('transparent');
-//     // Stop tracking mouse movements
-//     document.removeEventListener('mousemove', mouseMovesWhenClicked);
-// };
-
-
-
-
-
-//////////////////////////////////////////// //////////////////////////////////////////
-// New function
 // Mouse up
 function mouseUp(e) {
 
@@ -395,16 +327,14 @@ function mouseUp(e) {
     let idTo = fieldTo.getAttribute('id');
     // Remove a dragging ghost checker from the board
     // A valid step => place a checker
-    if (isStepInAllowedSteps(idFrom, idTo)) {
-        placeChecker(idFrom, idTo);
+    let step = getAStepFromAllowedSteps(idFrom, idTo);
+    if (step) {
+        placeChecker(step);
         removeHighlightFromAllFields();
         unmakeAllCheckers('selected');
     } else if (idFrom != idTo) {
             unmakeAllCheckers('selected');
-            // unmakeAllCheckers('hovered');
             removeHighlightFromAllFields();
-            // isCheckerSelectedAtFirst = true;
-        // };
     };
     animatePlacingChecker(e.pageX, e.pageY);
     // Remove transparency from the transparent checker
@@ -413,12 +343,6 @@ function mouseUp(e) {
     // Stop tracking mouse movements
     document.removeEventListener('mousemove', mouseMovesWhenClicked);
 };
-//////////////////////////////////////////// //////////////////////////////////////////
-
-
-
-
-
 
 
 /////////////////////////////////////
@@ -435,10 +359,58 @@ document.getElementById('board').addEventListener('contextmenu', (e) => {
     e.preventDefault();
 });
 
+// Cancels the last step
+function cancelStep(e) {
+    isMoveFinished = true;
+    // Find this step
+    let stepsToCancel = moves[moves.length - 1].steps;
+    stepsToCancel = stepsToCancel.filter(step => {return !step.isReturn && !step.isCancelled});
+    let lastStep = stepsToCancel[stepsToCancel.length - 1];
+    lastStep.isCancelled = true;
+    // Cancel the step
+    let cancellationStep = {
+        idFrom: lastStep.idTo,
+        idTo: lastStep.idFrom,
+        dice: lastStep.dice,
+        callback: lastStep.callback,
+        isBearingOff: lastStep.isBearingOff,
+        isReturn: true
+    };
+    placeChecker(cancellationStep);
+};
+
+// Deactivates return button
+function deactivateReturnButton() {
+    let returnButton = document.querySelector('.button.return');
+    returnButton.classList.remove('active');
+    returnButton.classList.add('unactive');
+    returnButton.removeEventListener('click', cancelStep);
+};
+
 // Add events to highlight allowed steps
 function addHoverNClickEvents() {
+
+    // Activates return button if there were some previous steps
+    function activateReturnButton() {
+        let returnButton = document.querySelector('.button.return');
+        let stepsToCancel = moves[moves.length - 1].steps;
+        stepsToCancel = stepsToCancel.filter(step => {return !step.isReturn && !step.isCancelled});
+        // Do not activate the button if there was no steps made
+        if (!stepsToCancel.length) {
+            deactivateReturnButton();
+            return;
+        };
+        // Change button style
+        returnButton.classList.remove('unactive');
+        returnButton.classList.add('active');
+        // Add event - cancel the last step
+        returnButton.addEventListener('click', cancelStep);
+    };
+
     // Remove a ghost checker before start to make any new steps
     if (ghostChecker) ghostChecker.remove();
+    // Activate return button
+    activateReturnButton();
     // Hover events
     for (field of fields) {
         field.addEventListener('mouseenter', mouseEntersField);
@@ -455,6 +427,8 @@ function addHoverNClickEvents() {
 function removeHoverNClickEvents() {
     // Remove a ghost checker before start to make any new steps
     if (ghostChecker) ghostChecker.remove();
+    // Deactivate return button
+    deactivateReturnButton();
     // Hover events
     for (field of fields) {
         field.removeEventListener('mouseenter', mouseEntersField);

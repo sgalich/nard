@@ -30,7 +30,7 @@
         
         <div id="horizontal">
             
-            <div class="hint" id="hint">your turn</div>
+            <div class="hint" id="hint"></div>
                 
             <div id="diceBox">
                 <div class=die id="die3" val=""></div>
@@ -72,7 +72,22 @@
         </div>
 
         <div id="middle_side">
+            <div class="buttons top">
+                <svg class="button menu unactive hidden" width="36%" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M70 25L20 25" stroke="black" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M69.9999 65H19.9999" stroke="black" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M69.9999 45L19.9999 45" stroke="black" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
             <div class="field middle" id="0"></div>
+            <div class="buttons bottom">
+                
+                <svg class="button return unactive" width="36%" viewBox="0 0 84 97" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M48.5535 13L13.1982 48.3553" stroke="#B8B7B7" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M48.5536 83.7109L13.1982 48.3556" stroke="#B8B7B7" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                    
+            </div>
         </div>
 
         <div class="vertical">
@@ -193,6 +208,7 @@
     </script>
     <!-- Render the checkers -->
     <script>
+        var isMoveFinished;
         var CHECKEROVERLAP = 5.5;
 
         // the board with a starting position
@@ -227,12 +243,7 @@
         function createChecker(id, color) {
             let field = document.getElementById(id);
             let checker = document.createElement('checker');   // Create a checker
-
-            // checker.setAttribute('draggable', 'true');    // make it draggable
-            // checker.classList.add('draggable');
-            // checker.classList.add('hvr-grow');    // hvr-ripple-out
             checker.setAttribute('color', color);
-            // checker.style.visibility = "visible"
             let checkersInField = field.children.length;
             if (field.classList.contains('top')) {
                 checker.setAttribute('style', `top: calc(${checkersInField} * ${CHECKEROVERLAP}%);`);
@@ -240,7 +251,6 @@
                 checker.setAttribute('style', `bottom: calc(${checkersInField} * ${CHECKEROVERLAP}%);`);
             };
             field.appendChild(checker);    // Place checker inside the field
-            // board[id] += color;
         };
 
         // Render checkers
