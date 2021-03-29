@@ -318,7 +318,7 @@ function mouseUp(e) {
         let foundedStep = getAStepFromAllowedSteps(idFrom, idTo);
         return Boolean(foundedStep);
     };
-    
+
     e.preventDefault();
     // Do nothing if it was not left click
     if (e.which === 2 || e.which === 3) return;
@@ -335,7 +335,7 @@ function mouseUp(e) {
     let idTo = fieldTo.getAttribute('id');
     // Remove a dragging ghost checker from the board
     // A valid step => place a checker
-   
+   console.log(allowedSteps);
     if (isStepInAllowedSteps(idFrom, idTo)) {
     // if (step) {
         let step = getAStepFromAllowedSteps(idFrom, idTo);
