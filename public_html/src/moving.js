@@ -241,58 +241,17 @@ function mouseClicksField(e) {
         unmakeAllCheckers('selected');
         removeHighlightFromAllFields();
     };
+    // if (field && isMyField(field) && field.lastChild) {
+    //     unmakeAllCheckers('selected');
+    //     removeHighlightFromAllFields();
+    //     highlightAllowedFieldsFor(field);
+    //     makeCheckerAt(field, 'selected');
+    //     addDragEventListeners(field.lastChild, e.pageX, e.pageY);
+    // } else {
+    //     unmakeAllCheckers('selected');
+    //     removeHighlightFromAllFields();
+    // };
 };
-
-// 
-
-// // old function
-// function mouseClicksField(e) {
-//     e.preventDefault();
-//     // Do nothing if it was not left click
-//     if (e.which === 2 || e.which === 3) return;
-//     // Save mouse click coordinates
-//     mouseDownCoordinates.push({x: e.pageX, y: e.pageY});
-//     // Check whether the event was on a field or not
-//     let field = getFieldClicked(e.target);
-//     if (!field) return;
-//     let selectedChecker = document.getElementsByClassName('selected')[0];
-//     // Just selected a new field to start a step
-//     if (!selectedChecker) {
-//         if (isMyField(field)) {
-//             makeCheckerAt(field, 'selected');
-//             highlightAllowedFieldsFor(field);
-//             addDragEventListeners(field.lastChild, e.pageX, e.pageY);
-//         };
-//     // Trying to make a step or select another checker
-//     } else if (selectedChecker) {
-//         let idFrom = selectedChecker.parentNode.getAttribute('id');
-//         let idTo = field.getAttribute('id');
-//         // If it is a valid move => make a step
-//         if (isStepInAllowedSteps(idFrom, idTo)) {
-//             placeChecker(idFrom, idTo);
-//             unmakeAllCheckers('selected');
-//             removeHighlightFromAllFields();
-//         // Select a checker again
-//         } else if (field.lastChild) {
-//             // Select the same checker
-//             // Now: unselect current checker
-//             if (selectedChecker === field.lastChild) {
-//                 // Check is it an another attempt to drag => make drag, then unselect
-//                 // or it is an unchecking click => unselect the checker
-//                 addDragEventListeners(field.lastChild, e.pageX, e.pageY);
-//             // Select another checker
-//             } else if (isMyField(field)) {
-//                 unmakeAllCheckers('selected');
-//                 highlightAllowedFieldsFor(field);
-//                 makeCheckerAt(field, 'selected');
-//                 addDragEventListeners(field.lastChild, e.pageX, e.pageY);
-//             };
-//         // An empty field
-//         } else {
-//             unmakeAllCheckers('selected');
-//         };         
-//     };
-// };
 
 // Util adds a new ghost checker which actually player drags
 function addDragEventListeners(checker, x, y) {
@@ -306,15 +265,13 @@ function addDragEventListeners(checker, x, y) {
 
 // Mouse moves when clicked
 function mouseMovesWhenClicked(e) {
-    
-    // TODO: Fix bug: center ghost checker position when dragging
+
     function moveChecker(pageX, pageY) {
         ghostChecker.setAttribute('style', `transform: translate(${pageX - shift}px, ${pageY - shift}px);`);
         ghostChecker.setAttribute('style', `-webkit-transform: translate(${pageX - shift}px, ${pageY - shift}px);`);
     };
-    
+
     e.preventDefault();
-    // TODO: MEDIUM: disable page scroll when dragging a checker
     moveChecker(e.pageX, e.pageY);
 };
 
@@ -330,45 +287,29 @@ function mouseUp(e) {
         return;
     };
 
-
-    // Get the center point of the field
-    function getFieldCenter(field) {
-        let fieldCoordinates = field.getBoundingClientRect();
-        let x = fieldCoordinates.left + fieldCoordinates.width / 2;
-        let y = fieldCoordinates.top + fieldCoordinates.height / 2;
-        return [x, y];
-    };
-
     // Chooses a field that is the closest to the mouse position
     function chooseTheClosestField(fieldFrom, x, y) {
 
+            // Get the center point of the field
+        function getFieldCenter(field) {
+            let fieldCoordinates = field.getBoundingClientRect();
+            let x = fieldCoordinates.left + fieldCoordinates.width / 2;
+            let y = fieldCoordinates.top + fieldCoordinates.height / 2;
+            return [x, y];
+        };
+        
         // Counts the distance between two points, like ([34, 34] & [234, 323])
         function countDistanceBetween(a, b) {
             return ((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2) ** 0.5;
         };
-
-
-
-        
-
-
-
         let idFrom = fieldFrom.getAttribute('id');
         var theClosestField = fieldFrom;
         var distance = countDistanceBetween(getFieldCenter(fieldFrom), [x, y]);
         let allowedIds = getAllAllowedIdTosFor(idFrom);
-       
-       
-        
-        
-
         if (!allowedIds.length) return theClosestField;
         for (idTo of allowedIds) {
             let field = document.getElementById(idTo);
             let newDistance = countDistanceBetween(getFieldCenter(field), [x, y]);
-
-            // socket.emit('chooseTheClosestField', idTo, distance, newDistance);
-
             if (newDistance < distance) {
                 theClosestField = field;
                 distance = newDistance;
@@ -429,12 +370,9 @@ function mouseUp(e) {
 /////////////////////////////////////
 
 // Prevent some default page behavior
-document.ondragstart = function() {
-    return false;
-};
-document.ondragend = function() {
-    return false;
-};
+document.ondragstart = (e) => {return false};
+document.ondragend = (e) => {return false};
+// document.ontouchmove = (e) => {return false};
 
 // Restrict a right mouse click on the board
 document.getElementById('board').addEventListener('contextmenu', (e) => {
@@ -443,7 +381,7 @@ document.getElementById('board').addEventListener('contextmenu', (e) => {
 
 // Cancels the last step
 function cancelStep(e) {
-    isMoveFinished = true;
+    e.preventDefault();
     // Find this step
     let stepsToCancel = moves[moves.length - 1].steps;
     stepsToCancel = stepsToCancel.filter(step => {return !step.isReturn && !step.isCancelled});
@@ -496,7 +434,7 @@ function addHoverNClickEvents() {
     // Remove a ghost checker before start to make any new steps
     if (ghostChecker) ghostChecker.remove();
     // Activate return button
-    // activateReturnButton();
+    activateReturnButton();
     // Hover events
     for (field of fields) {
         field.addEventListener('mouseenter', mouseEntersField);
@@ -514,7 +452,7 @@ function removeHoverNClickEvents() {
     // Remove a ghost checker before start to make any new steps
     if (ghostChecker) ghostChecker.remove();
     // Deactivate return button
-    // deactivateReturnButton();
+    deactivateReturnButton();
     // Hover events
     for (field of fields) {
         field.removeEventListener('mouseenter', mouseEntersField);

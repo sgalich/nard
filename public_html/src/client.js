@@ -43,11 +43,13 @@ socket.on('printHint', printHint);
 // The main function that let player to make a move
 socket.on('letMeMakeMyStep',
     function letMeMakeMyStep(colorServ, movesServ, boardServ) {
+        console.log('letMeMakeMyStep');
         colorN = colorServ;
         color = String(colorN);
         moves = movesServ;
         board = (colorN > 0) ? boardServ : getReversedBoard(boardServ);
         rearrangeAllowedSteps();
+        console.log('allowedSteps', allowedSteps);
     }
 );
 
