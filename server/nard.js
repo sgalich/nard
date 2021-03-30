@@ -40,7 +40,6 @@ class Nard {
         this.moves = [];    // all moves
         this.placeInTheGame(0);
         this.placeInTheGame(1);
-        this.chooseWhoIsFirst();
         this.makeTurn();
     };
 
@@ -50,7 +49,6 @@ class Nard {
         this.renderBoard(ind);
         if (this.dice) this.players[ind].emit('renderDice', this.dice);
         let color = this.players[ind].player.color
-        // console.log(this.turn === ind, this.turn, ind);
         if (this.turn === ind) {
             this.players[ind].emit('letMeMakeMyStep', color, this.moves, this.board);
         };
@@ -141,7 +139,6 @@ class Nard {
     // 7. Switch turn & run this function recursively
     makeTurn() {
         // Render a step made by the rival
-        this.turn = Math.abs(this.turn - 1);    // switch the turn
         this.renderBoard(this.turn);
 
         // Check whether we've got a winner or not
@@ -205,6 +202,9 @@ class Nard {
         
         // this.movesCount += 1;
         // this.rollDice();
+        
+        // Switch the turn
+        this.turn = Math.abs(this.turn - 1);
     };
 
     // moveIsFinished(moves, board) {

@@ -265,15 +265,13 @@ function addDragEventListeners(checker, x, y) {
 
 // Mouse moves when clicked
 function mouseMovesWhenClicked(e) {
-    
-    // TODO: Fix bug: center ghost checker position when dragging
+
     function moveChecker(pageX, pageY) {
         ghostChecker.setAttribute('style', `transform: translate(${pageX - shift}px, ${pageY - shift}px);`);
         ghostChecker.setAttribute('style', `-webkit-transform: translate(${pageX - shift}px, ${pageY - shift}px);`);
     };
-    
+
     e.preventDefault();
-    // TODO: MEDIUM: disable page scroll when dragging a checker
     moveChecker(e.pageX, e.pageY);
 };
 
@@ -304,35 +302,14 @@ function mouseUp(e) {
         function countDistanceBetween(a, b) {
             return ((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2) ** 0.5;
         };
-
-
-
-        
-
-
         let idFrom = fieldFrom.getAttribute('id');
         var theClosestField = fieldFrom;
         var distance = countDistanceBetween(getFieldCenter(fieldFrom), [x, y]);
         let allowedIds = getAllAllowedIdTosFor(idFrom);
-       
-       
-        socket.emit('chooseTheClosestField', '   ');
-        socket.emit('chooseTheClosestField', 'getFieldCenter(fieldFrom)', getFieldCenter(fieldFrom))
-        // socket.emit('chooseTheClosestField', 'allowedSteps', allowedSteps);
-        // socket.emit('chooseTheClosestField', 'allowedIds', allowedIds);
-
         if (!allowedIds.length) return theClosestField;
         for (idTo of allowedIds) {
             let field = document.getElementById(idTo);
-            
             let newDistance = countDistanceBetween(getFieldCenter(field), [x, y]);
-            socket.emit('chooseTheClosestField', 'idTo', idTo);
-            socket.emit('chooseTheClosestField', 'field.getBoundingClientRect().top', field.getBoundingClientRect().top);
-            console.log('field.getBoundingClientRect().top', field.getBoundingClientRect().top);
-            socket.emit('chooseTheClosestField', '[x, y]', [x, y]);
-
-            
-
             if (newDistance < distance) {
                 theClosestField = field;
                 distance = newDistance;
@@ -395,7 +372,7 @@ function mouseUp(e) {
 // Prevent some default page behavior
 document.ondragstart = (e) => {return false};
 document.ondragend = (e) => {return false};
-document.ontouchmove = (e) => {return false};
+// document.ontouchmove = (e) => {return false};
 
 // Restrict a right mouse click on the board
 document.getElementById('board').addEventListener('contextmenu', (e) => {
