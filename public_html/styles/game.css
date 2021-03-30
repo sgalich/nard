@@ -66,6 +66,7 @@ html, body {
     display: flex;
     flex-direction: row;
     box-sizing: content-box;
+    overflow: hidden;
 }
 
     #horizontal {
