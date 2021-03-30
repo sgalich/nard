@@ -18,7 +18,9 @@ html, body {
     font-family: 'Noto Sans', Sans-Serif;
     overflow: hidden;
     margin: 0;
-    position: fixed;
+    overflow-y: none;
+    overflow-x: none;
+    -webkit-overflow-scrolling: none;
 }
 
 
